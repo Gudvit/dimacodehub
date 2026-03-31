@@ -1,0 +1,152 @@
+<main class="page">
+  <header class="hero" id="top">
+    <nav class="nav">
+      <div class="logo">{{ profile.name }}</div>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#contact" class="cta">Contact</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid">
+      <div class="hero-text">
+        <p class="eyebrow">{{ profile.location }} · {{ profile.availability }}</p>
+        <h1>{{ profile.name }}</h1>
+        <h2>{{ tagline }}</h2>
+        <p class="lead">{{ profile.summary }}</p>
+        <div class="hero-actions">
+          <a class="primary" href="#projects">View projects</a>
+          <a class="ghost" href="#contact">Let's work together</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="card-title">Current focus</div>
+        <div class="focus">{{ profile.focus }}</div>
+        <div class="stat-grid">
+          @for (stat of stats; track stat.label) {
+            <div class="stat">
+              <div class="stat-value">{{ stat.value }}</div>
+              <div class="stat-label">{{ stat.label }}</div>
+            </div>
+          }
+        </div>
+        <div class="hero-tags">
+          @for (skill of skills[0].items; track skill) {
+            <span class="tag">{{ skill }}</span>
+          }
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section" id="about">
+    <div class="section-head">
+      <p class="section-label">About</p>
+      <h3>What I bring to the table</h3>
+    </div>
+    <div class="highlight-grid">
+      @for (item of highlights; track item.title) {
+        <article class="highlight">
+          <h4>{{ item.title }}</h4>
+          <p>{{ item.description }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section" id="skills">
+    <div class="section-head">
+      <p class="section-label">Skills</p>
+      <h3>Toolbox I use daily</h3>
+    </div>
+    <div class="skills-grid">
+      @for (skillGroup of skills; track skillGroup.group) {
+        <article class="skill-card">
+          <h4>{{ skillGroup.group }}</h4>
+          <ul>
+            @for (item of skillGroup.items; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section" id="projects">
+    <div class="section-head">
+      <p class="section-label">Projects</p>
+      <h3>Selected work</h3>
+    </div>
+    <div class="projects-grid">
+      @for (project of projects; track project.name) {
+        <article class="project-card">
+          <div class="project-head">
+            <div>
+              <h4>{{ project.name }}</h4>
+              <p>{{ project.summary }}</p>
+            </div>
+            <span class="stack">{{ summarizeStack(project.stack) }}</span>
+          </div>
+          <p class="impact">{{ project.impact }}</p>
+          <div class="project-tags">
+            @for (item of project.stack; track item) {
+              <span class="tag">{{ item }}</span>
+            }
+          </div>
+          <a class="project-link" href="{{ project.link }}" target="_blank" rel="noreferrer">
+            View repository
+          </a>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section" id="timeline">
+    <div class="section-head">
+      <p class="section-label">Timeline</p>
+      <h3>Where I've worked</h3>
+    </div>
+    <div class="timeline">
+      @for (item of timeline; track item.period) {
+        <article class="timeline-item" id="{{ toKebabCase(item.company) }}">
+          <div class="timeline-period">{{ item.period }}</div>
+          <div class="timeline-content">
+            <h4>{{ item.role }}</h4>
+            <p class="timeline-company">{{ item.company }}</p>
+            <p>{{ item.description }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section contact" id="contact">
+    <div class="section-head">
+      <p class="section-label">Contact</p>
+      <h3>Let's build something sharp</h3>
+    </div>
+    <div class="contact-card">
+      <p>Share a quick brief and I'll respond within 48 hours.</p>
+      <div class="contact-links">
+        @for (link of contactLinks; track link.label) {
+          <a href="{{ link.href }}" target="_blank" rel="noreferrer">
+            <span>{{ link.label }}</span>
+            <strong>{{ link.value }}</strong>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>© {{ profile.name }} · {{ profile.location }}</span>
+    <div class="footer-links">
+      <a href="#top">Back to top</a>
+      <a href="{{ contactLinks[1].href }}" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+  </footer>
+</main>
