@@ -1,0 +1,102 @@
+.section {
+  padding: 3rem clamp(2rem, 6vw, 5rem);
+  border-bottom: 1px solid var(--brand-outline);
+  background: #fff;
+}
+
+.section:first-of-type {
+  padding-top: 6.5rem;
+}
+
+.section-head {
+  max-width: 720px;
+  display: grid;
+  gap: 1rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  color: var(--brand-wine);
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--brand-ink);
+}
+
+h2 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  color: var(--brand-ink);
+}
+
+h3 {
+  margin: 0 0 0.4rem;
+  color: var(--brand-ink);
+}
+
+h4 {
+  margin: 0 0 0.4rem;
+  color: var(--brand-ink);
+}
+
+.lead {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--brand-muted);
+}
+
+.timeline {
+  display: grid;
+  gap: 2rem;
+}
+
+.role {
+  border: 1px solid var(--brand-outline);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: var(--brand-surface);
+}
+
+.meta {
+  margin: 0 0 1rem;
+  color: var(--brand-muted);
+  font-size: 0.95rem;
+}
+
+.role ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--brand-muted);
+  line-height: 1.6;
+}
+
+.education {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--brand-muted);
+  line-height: 1.6;
+}
+
+.competencies {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.competencies > div {
+  border: 1px solid var(--brand-outline);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: var(--brand-surface);
+}
+
+.competencies p {
+  margin: 0;
+  color: var(--brand-muted);
+  line-height: 1.5;
+}

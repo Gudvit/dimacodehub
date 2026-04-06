@@ -1,0 +1,38 @@
+.site-footer {
+  border-top: 1px solid var(--brand-outline);
+  padding: 2rem;
+  display: grid;
+  gap: 1rem;
+  text-align: center;
+  background: var(--brand-white);
+}
+
+.footer-brand {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  color: var(--brand-ink);
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.footer-nav a {
+  color: var(--brand-muted);
+  text-decoration: none;
+}
+
+.footer-meta {
+  color: var(--brand-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .footer-nav {
+    flex-wrap: wrap;
+  }
+}

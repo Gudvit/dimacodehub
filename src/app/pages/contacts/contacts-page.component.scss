@@ -1,0 +1,179 @@
+.contact {
+  min-height: calc(100vh - 88px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 6vw, 5rem);
+  background: var(--brand-surface);
+}
+
+.contact-layout {
+  width: min(1100px, 100%);
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.contact-info {
+  background: #fff;
+  border: 1px solid var(--brand-outline);
+  border-radius: 18px;
+  padding: 2.5rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.message-form {
+  background: #fff;
+  border: 1px solid var(--brand-outline);
+  border-radius: 18px;
+  padding: 2.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  color: var(--brand-wine);
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--brand-ink);
+}
+
+.lead {
+  margin: 0 0 0.5rem;
+  color: var(--brand-muted);
+}
+
+.contact-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.contact-list .label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--brand-muted);
+  margin-bottom: 0.25rem;
+}
+
+.contact-list a {
+  color: var(--brand-ink);
+  font-weight: 600;
+}
+
+.socials {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.socials a {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--brand-outline);
+  color: var(--brand-ink);
+  background: var(--brand-surface);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.socials a:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-wine);
+}
+
+.socials svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.message-form h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--brand-ink);
+}
+
+.message-form label {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--brand-muted);
+}
+
+.message-form input,
+.message-form textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--brand-outline);
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--brand-ink);
+}
+
+.message-form input.ng-invalid.ng-touched,
+.message-form textarea.ng-invalid.ng-touched {
+  border-color: #d64545;
+  box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.12);
+}
+
+.message-form input:focus,
+.message-form textarea:focus {
+  outline: none;
+  border-color: var(--brand-wine);
+  box-shadow: 0 0 0 3px rgba(97, 34, 51, 0.15);
+}
+
+.message-form .error {
+  color: #b23434;
+  font-size: 0.75rem;
+}
+
+.message-form .success {
+  color: #1b6f3b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.message-form button {
+  justify-self: start;
+  padding: 0.8rem 1.8rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--brand-ink);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.message-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.message-form button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(25, 29, 63, 0.18);
+}
+
+@media (max-width: 900px) {
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+}
