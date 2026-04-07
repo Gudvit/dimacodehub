@@ -1,27 +1,27 @@
-.hero-title {
+.title-animation {
   background: linear-gradient(90deg, #111, #444, #111);
   background-size: 200%;
   -webkit-background-clip: text;
   color: transparent;
   animation: shine 3s linear infinite;
-}
 
-.word {
-  display: inline-flex;
-}
+  .word {
+    display: inline-flex;
 
-.word.space {
-  width: 0.6em;
-}
+    &.space {
+      width: 0.6em;
+    }
+  }
 
-.letter,
-[animate\.enter="letter"] {
-  opacity: 0;
-  display: inline-block;
-  filter: blur(8px);
-  transform: translateY(40px) scale(0.98);
-  animation: letterReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: calc(var(--i) * 0.05s);
+  .letter,
+  [animate\.enter="letter"] {
+    opacity: 0;
+    display: inline-block;
+    filter: blur(8px);
+    transform: translateY(40px) scale(0.98);
+    animation: letterReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--i) * 0.05s);
+  }
 }
 
 @keyframes letterReveal {
