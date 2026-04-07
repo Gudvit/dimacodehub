@@ -1,44 +1,51 @@
-.text {
-  display: flex;
-  flex-wrap: wrap;
+.hero-title {
+  background: linear-gradient(90deg, #111, #444, #111);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: shine 3s linear infinite;
 }
 
 .word {
   display: inline-flex;
 }
 
-.space {
-  width: 0.5em;
+.word.space {
+  width: 0.6em;
 }
 
-.letter {
-  display: inline-block;
+.letter,
+[animate\.enter="letter"] {
   opacity: 0;
-  transform: translateY(40px) scale(0.95);
+  display: inline-block;
   filter: blur(8px);
-}
-
-.text.is-ready .letter {
-  animation: letterReveal var(--duration, 0.7s) cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: calc(var(--word-delay, 0s) + var(--i) * var(--delay, 0.05s));
+  transform: translateY(40px) scale(0.98);
+  animation: letterReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--i) * 0.05s);
 }
 
 @keyframes letterReveal {
   0% {
     opacity: 0;
-    transform: translateY(40px) scale(0.95);
     filter: blur(10px);
+    transform: translateY(40px) scale(0.95);
   }
 
   60% {
     opacity: 1;
-    transform: translateY(-6px) scale(1.02);
     filter: blur(2px);
+    transform: translateY(-6px) scale(1.02);
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0);
     filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shine {
+  to {
+    background-position: 200%;
   }
 }

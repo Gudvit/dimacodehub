@@ -1,0 +1,13 @@
+<div class="hero-title">
+  @for (word of words(); track $index; let wi = $index) {
+    <span class="word">
+      @for (letter of word.letters; track $index; let li = $index) {
+        <span animate.enter="letter" [style.--i]="word.startIndex + li">{{ letter }}</span>
+      }
+    </span>
+
+    @if (wi < words().length - 1) {
+      <span class="word space"></span>
+    }
+  }
+</div>

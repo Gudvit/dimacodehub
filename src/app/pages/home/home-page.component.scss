@@ -16,7 +16,7 @@
   position: absolute;
   top: -30vh;
   left: 47%;
-  width: 220px;
+  width: 170px;
   height: 170vh;
   background: linear-gradient(135deg, var(--brand-ink), var(--brand-wine));
   transform: rotate(45deg);
@@ -41,6 +41,7 @@
 .name {
   margin: 0;
   font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 600;
   line-height: 0.95;
   letter-spacing: -0.02em;
   color: var(--brand-ink);

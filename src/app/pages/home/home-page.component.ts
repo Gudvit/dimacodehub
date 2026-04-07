@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { RouterLink } from "@angular/router";
+import { AnimatedTextComponent } from "../../components/animated-text/animated-text.component";
 
 @Component({
   selector: "app-home-page",
@@ -11,6 +12,7 @@ import { RouterLink } from "@angular/router";
     HeaderComponent,
     FooterComponent,
     RouterLink,
+    AnimatedTextComponent,
   ],
 })
 export class HomePageComponent {}
