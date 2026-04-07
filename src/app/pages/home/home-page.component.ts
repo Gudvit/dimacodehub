@@ -15,4 +15,5 @@ import { AnimatedTextComponent } from "../../components/animated-text/animated-t
     AnimatedTextComponent,
   ],
 })
-export class HomePageComponent {}
+export class HomePageComponent {
+}

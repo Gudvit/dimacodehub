@@ -1,15 +1,101 @@
-<app-header></app-header>
+<div class="route-shell" animate.enter="route-enter" animate.leave="route-leave">
+  <div class="home-slider">
+    <section class="hero slide-section">
+      <app-header></app-header>
+      <div class="hero-text">
+        <h1 class="eyebrow">
+          <app-animated-text [text]="'Frontend Engineer'"></app-animated-text>
+        </h1>
+        <p class="name">Dmytro Huliaiev</p>
+        <div class="hero-actions">
+          <a class="primary" routerLink="/contacts">
+            Contact me
+          </a>
+        </div>
+      </div>
+    </section>
 
-<section class="hero">
-  <div class="hero-text">
-    <h1 class="eyebrow">Frontend Engineer</h1>
-    <p class="name">
-      <app-animated-text [text]="'DMYTRO HULIAIEV'"></app-animated-text>
-    </p>
-    <div class="hero-actions">
-      <a class="primary" routerLink="/contacts">Contact me</a>
-    </div>
+    <section class="about-hero slide-section">
+      <div class="about-hero__grid">
+        <div class="about-hero__copy">
+          <p class="about-hero__eyebrow">About</p>
+          <h1>Senior Frontend Engineer</h1>
+          <p class="lead">
+            I design and build scalable frontend systems.
+            I focus on architecture, performance, and long-term maintainability.
+            I turn complex requirements into clear, reliable interfaces.
+            I care about testing strategy and developer experience.
+            I build systems, not just features.
+          </p>
+        </div>
+
+        <div class="about-hero__cta">
+          <a class="cv-button" href="/assets/cv.pdf" download>
+            <span class="cv-button__line">Download</span>
+            <span class="cv-button__line">CV</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section competencies-section slide-section">
+      <h2>Core Competencies</h2>
+      <div class="competencies">
+        <div>
+          <h4>Frontend Architecture</h4>
+          <p>Angular (latest versions), Standalone APIs, Signals, scalable architectures, feature ownership.</p>
+        </div>
+        <div>
+          <h4>State Management</h4>
+          <p>NgRx, NGXS, Component Store, signal-based patterns.</p>
+        </div>
+        <div>
+          <h4>Testing & Quality</h4>
+          <p>Playwright (E2E), Jest, Vitest, test pyramid.</p>
+        </div>
+        <div>
+          <h4>Performance</h4>
+          <p>Change detection optimization, lazy loading, bundle splitting.</p>
+        </div>
+        <div>
+          <h4>Tooling</h4>
+          <p>Nx, Monorepo, CI/CD, Docker, ESLint, Prettier.</p>
+        </div>
+        <div>
+          <h4>Collaboration</h4>
+          <p>Product-oriented development, code reviews, mentoring.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide-section work-section">
+      <div class="work-section__inner">
+        <h2>Selected Work</h2>
+        <p class="lead">
+          A few highlights focused on architecture, performance, and real-world impact.
+        </p>
+        <div class="work-grid">
+          <article>
+            <h4>Platform Re-Architecture</h4>
+            <p>Modularized a large Angular app into scalable feature domains and shared UI layers.</p>
+          </article>
+          <article>
+            <h4>Performance & UX</h4>
+            <p>Improved loading time and runtime responsiveness through smart lazy loading and profiling.</p>
+          </article>
+          <article>
+            <h4>Quality at Scale</h4>
+            <p>Introduced E2E testing with Playwright and built a reliable release pipeline.</p>
+          </article>
+        </div>
+        <div class="work-cta">
+          <a class="primary" routerLink="/contacts">Contact me</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide-section footer-section">
+      <app-footer></app-footer>
+    </section>
   </div>
-</section>
-
-<app-footer></app-footer>
+</div>

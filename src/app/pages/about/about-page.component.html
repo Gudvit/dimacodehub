@@ -2,18 +2,10 @@
   <app-header></app-header>
 
   <section class="section">
-    <div class="section-head">
-      <p class="eyebrow">Profile</p>
-      <h1>Senior Frontend Engineer</h1>
-      <p class="lead">
-        Senior Software Engineer with 10+ years of web development experience and deep expertise in modern
-        Angular ecosystems. Currently working in a PE-backed product company, owning frontend architecture,
-        state management, testing strategy, and long-term scalability of a business-critical platform.
-      </p>
-    </div>
-  </section>
+    <p class="eyebrow">
+      <app-animated-text [text]="'Profile'"></app-animated-text>
+    </p>
 
-  <section class="section">
     <h2>Professional Experience</h2>
     <div class="timeline">
       <article class="role">
@@ -89,36 +81,6 @@
       <li>Mentor — GoIT Frontend Program</li>
       <li>Continuous professional learning in frontend architecture and testing strategies</li>
     </ul>
-  </section>
-
-  <section class="section">
-    <h2>Core Competencies</h2>
-    <div class="competencies">
-      <div>
-        <h4>Frontend Architecture</h4>
-        <p>Angular (latest versions), Standalone APIs, Signals, scalable architectures, feature ownership.</p>
-      </div>
-      <div>
-        <h4>State Management</h4>
-        <p>NgRx, NGXS, Component Store, signal-based patterns.</p>
-      </div>
-      <div>
-        <h4>Testing & Quality</h4>
-        <p>Playwright (E2E), Jest, Vitest, test pyramid.</p>
-      </div>
-      <div>
-        <h4>Performance</h4>
-        <p>Change detection optimization, lazy loading, bundle splitting.</p>
-      </div>
-      <div>
-        <h4>Tooling</h4>
-        <p>Nx, Monorepo, CI/CD, Docker, ESLint, Prettier.</p>
-      </div>
-      <div>
-        <h4>Collaboration</h4>
-        <p>Product-oriented development, code reviews, mentoring.</p>
-      </div>
-    </div>
   </section>
 
   <app-footer></app-footer>

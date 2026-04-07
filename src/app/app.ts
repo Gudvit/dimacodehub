@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 
@@ -25,5 +25,13 @@ export class App {
         }
         this.routeAnimationsEnabled = true;
       });
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    const x = `${event.clientX}px`;
+    const y = `${event.clientY}px`;
+    document.documentElement.style.setProperty('--cursor-x', x);
+    document.documentElement.style.setProperty('--cursor-y', y);
   }
 }
