@@ -18,9 +18,6 @@ export class App {
       .subscribe(() => {
         if (!this.hasNavigated) {
           this.hasNavigated = true;
-          setTimeout(() => {
-            this.routeAnimationsEnabled = true;
-          }, 0);
           return;
         }
         this.routeAnimationsEnabled = true;

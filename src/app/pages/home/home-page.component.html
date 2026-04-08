@@ -1,18 +1,26 @@
 <div class="route-shell" animate.enter="route-enter" animate.leave="route-leave">
-  <div class="home-slider">
+  <div class="home-slider" #homeSlider>
     <section class="hero slide-section">
       <app-header></app-header>
       <div class="hero-text">
-        <h1 class="eyebrow">
-          <app-animated-text [text]="'Frontend Engineer'"></app-animated-text>
-        </h1>
-        <p class="name">Dmytro Huliaiev</p>
+        <h1 class="name">Dmytro Huliaiev</h1>
+        <p class="eyebrow">Frontend Engineer</p>
+        <p class="lead">I build systems, not just features</p>
         <div class="hero-actions">
           <a class="primary" routerLink="/contacts">
             Contact me
           </a>
         </div>
       </div>
+      <div
+        class="scroll-hint"
+        role="button"
+        tabindex="0"
+        aria-label="Scroll to next section"
+        (click)="scrollToNextSection()"
+        (keydown.enter)="scrollToNextSection()"
+        (keydown.space)="scrollToNextSection()"
+      ></div>
     </section>
 
     <section class="about-hero slide-section">
@@ -68,24 +76,93 @@
       </div>
     </section>
 
+    <section class="slide-section trust-section">
+      <div class="trust-section__inner">
+        <p class="trust-section__eyebrow">Trust Layer</p>
+        <h2>Delivery that scales with product growth</h2>
+        <p class="lead">
+          I combine architecture, measurable outcomes, and team enablement to ship faster without losing quality.
+        </p>
+
+        <div class="stats-grid">
+          <article>
+            <p class="stats-grid__value">7+ years</p>
+            <p class="stats-grid__label">Frontend engineering in production teams</p>
+          </article>
+          <article>
+            <p class="stats-grid__value">20+ releases</p>
+            <p class="stats-grid__label">Major product deliveries and re-platforms</p>
+          </article>
+          <article>
+            <p class="stats-grid__value">35% faster</p>
+            <p class="stats-grid__label">Average improvement in feature delivery cycle</p>
+          </article>
+          <article>
+            <p class="stats-grid__value">99.9%</p>
+            <p class="stats-grid__label">Stability target on critical user flows</p>
+          </article>
+        </div>
+
+        <div class="domain-pills">
+          <span>Fintech</span>
+          <span>E-commerce</span>
+          <span>SaaS Platforms</span>
+          <span>Enterprise Tools</span>
+          <span>B2B Dashboards</span>
+          <span>Design Systems</span>
+        </div>
+      </div>
+    </section>
+
     <section class="slide-section work-section">
       <div class="work-section__inner">
+        <p class="work-section__eyebrow">Case Studies</p>
         <h2>Selected Work</h2>
         <p class="lead">
-          A few highlights focused on architecture, performance, and real-world impact.
+          Focused on architecture, performance, and measurable product impact.
         </p>
         <div class="work-grid">
           <article>
-            <h4>Platform Re-Architecture</h4>
-            <p>Modularized a large Angular app into scalable feature domains and shared UI layers.</p>
+            <p class="work-grid__meta">Problem</p>
+            <h4>Monolith slowing feature teams</h4>
+            <p>
+              Reworked a legacy Angular frontend into domain-based modules with shared UI contracts.
+            </p>
+            <p class="work-grid__meta">Result</p>
+            <p>Release coordination time reduced by 40%, with clearer ownership per feature area.</p>
+            <div class="work-tags">
+              <span>Angular</span>
+              <span>Feature Domains</span>
+              <span>DX</span>
+            </div>
           </article>
           <article>
-            <h4>Performance & UX</h4>
-            <p>Improved loading time and runtime responsiveness through smart lazy loading and profiling.</p>
+            <p class="work-grid__meta">Problem</p>
+            <h4>Slow startup and heavy bundles</h4>
+            <p>
+              Introduced route-level lazy loading, smarter split points, and performance budgets in CI.
+            </p>
+            <p class="work-grid__meta">Result</p>
+            <p>Initial load time improved by 45% and interaction latency dropped on core pages.</p>
+            <div class="work-tags">
+              <span>Lazy Loading</span>
+              <span>Bundle Strategy</span>
+              <span>CI Budgets</span>
+            </div>
           </article>
           <article>
-            <h4>Quality at Scale</h4>
-            <p>Introduced E2E testing with Playwright and built a reliable release pipeline.</p>
+            <p class="work-grid__meta">Problem</p>
+            <h4>Regression risk before every release</h4>
+            <p>
+              Built an E2E testing stack with Playwright and integrated quality gates into CI/CD.
+            </p>
+            <p class="work-grid__meta">Result</p>
+            <p>Critical production incidents decreased and release confidence increased across teams.</p>
+            <div class="work-tags">
+              <span>Playwright</span>
+              <span>Testing Strategy</span>
+              <span>CI/CD</span>
+            </div>
           </article>
         </div>
         <div class="work-cta">
@@ -94,8 +171,37 @@
       </div>
     </section>
 
-    <section class="slide-section footer-section">
-      <app-footer></app-footer>
+    <section class="slide-section principles-section">
+      <div class="principles-section__inner">
+        <p class="principles-section__eyebrow">How I Work</p>
+        <h2>Clear process, strong ownership, reliable outcomes</h2>
+        <div class="principles-grid">
+          <article>
+            <h4>Own the architecture</h4>
+            <p>
+              I keep systems scalable by defining boundaries early and preventing accidental complexity.
+            </p>
+          </article>
+          <article>
+            <h4>Build with evidence</h4>
+            <p>
+              I use profiling, metrics, and tests to guide decisions and reduce subjective tradeoffs.
+            </p>
+          </article>
+          <article>
+            <h4>Enable teams</h4>
+            <p>
+              I document intent, mentor engineers, and design workflows that keep delivery predictable.
+            </p>
+          </article>
+        </div>
+        <div class="principles-cta">
+          <a class="primary" routerLink="/contacts">Start a conversation</a>
+          <a class="ghost" href="/assets/cv.pdf" download>Download CV</a>
+        </div>
+      </div>
     </section>
+
+    <app-footer></app-footer>
   </div>
 </div>

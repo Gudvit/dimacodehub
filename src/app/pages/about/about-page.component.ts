@@ -12,7 +12,6 @@ import { RouterLink } from "@angular/router";
     HeaderComponent,
     FooterComponent,
     AnimatedTextComponent,
-    RouterLink,
   ],
 })
 export class AboutPageComponent {}
