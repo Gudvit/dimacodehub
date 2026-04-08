@@ -24,25 +24,62 @@
     </section>
 
     <section class="about-hero slide-section">
+      <h2 class="about-hero__display-title">ABOUT ME</h2>
       <div class="about-hero__grid">
         <div class="about-hero__copy">
-          <p class="about-hero__eyebrow">About</p>
-          <h1>Senior Frontend Engineer</h1>
-          <p class="lead">
-            I design and build scalable frontend systems.
-            I focus on architecture, performance, and long-term maintainability.
-            I turn complex requirements into clear, reliable interfaces.
-            I care about testing strategy and developer experience.
-            I build systems, not just features.
+          <h3 class="about-hero__headline" #aboutHeadline [class.is-visible]="aboutHeadlineVisible()">
+            @if (aboutHeadlineVisible()) {
+              <app-animated-text [text]="'I build scalable frontend systems that don\'t break under real-world complexity.'"></app-animated-text>
+            } @else {
+              I build scalable frontend systems that don't break under real-world complexity.
+            }
+          </h3>
+          <p class="about-hero__subhead">
+            Senior Software Engineer with 10+ years of experience
+            specializing in Angular, architecture, and performance.
           </p>
+          <div class="about-hero__body">
+            <p>
+              Currently working in a PE-backed product company,
+              owning frontend architecture and driving technical decisions
+              for a business-critical platform.
+            </p>
+            <p>
+              I design state management systems, define testing strategies,
+              and ensure long-term scalability.
+            </p>
+            <p>
+              My focus is on clean, maintainable code, high performance,
+              and building products that actually deliver value.
+            </p>
+          </div>
+          <div class="about-hero__pills" aria-label="Key skills">
+            <span>Angular</span>
+            <span>Architecture</span>
+            <span>Performance</span>
+            <span>Testing</span>
+            <span>Scalability</span>
+          </div>
         </div>
+      </div>
 
-        <div class="about-hero__cta">
-          <a class="cv-button" href="/assets/cv.pdf" download>
-            <span class="cv-button__line">Download</span>
-            <span class="cv-button__line">CV</span>
-          </a>
-        </div>
+      <div class="about-hero__metrics" aria-label="Engineering metrics">
+        <article>
+          <p class="about-hero__metric-value">10+</p>
+          <p class="about-hero__metric-label">Years Experience</p>
+        </article>
+        <article>
+          <p class="about-hero__metric-value">5+</p>
+          <p class="about-hero__metric-label">Large-scale Projects</p>
+        </article>
+        <article>
+          <p class="about-hero__metric-value">100k+</p>
+          <p class="about-hero__metric-label">Users Impact</p>
+        </article>
+        <article>
+          <p class="about-hero__metric-value">&infin;</p>
+          <p class="about-hero__metric-label">Focus on Quality</p>
+        </article>
       </div>
     </section>
 
