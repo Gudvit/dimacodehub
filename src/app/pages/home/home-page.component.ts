@@ -1,67 +1,24 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, signal, viewChild } from '@angular/core';
-import { HeaderComponent } from '../../components/header/header.component';
+import { Component, ElementRef, viewChild } from '@angular/core';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { RouterLink } from "@angular/router";
-import { AnimatedTextComponent } from "../../components/animated-text/animated-text.component";
+import { HomeAboutSectionComponent } from "./components/home-about-section/home-about-section.component";
+import { HomeExperienceSectionComponent } from "./components/home-experience-section/home-experience-section.component";
+import { HomeHeroSectionComponent } from "./components/home-hero-section/home-hero-section.component";
 
 @Component({
   selector: "app-home-page",
   templateUrl: "./home-page.component.html",
   styleUrl: "./home-page.component.scss",
   imports: [
-    HeaderComponent,
+    HomeHeroSectionComponent,
+    HomeAboutSectionComponent,
+    HomeExperienceSectionComponent,
     FooterComponent,
     RouterLink,
-    AnimatedTextComponent,
   ],
 })
-export class HomePageComponent implements AfterViewInit, OnDestroy {
+export class HomePageComponent {
   readonly homeSliderRef = viewChild<ElementRef<HTMLElement>>("homeSlider");
-  readonly aboutHeadlineRef = viewChild<ElementRef<HTMLElement>>("aboutHeadline");
-  readonly aboutHeadlineVisible = signal(false);
-  private aboutHeadlineObserver: IntersectionObserver | null = null;
-
-  ngAfterViewInit(): void {
-    const headline = this.aboutHeadlineRef()?.nativeElement;
-    const slider = this.homeSliderRef()?.nativeElement;
-    if (!headline) {
-      return;
-    }
-
-    if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
-      this.aboutHeadlineVisible.set(true);
-      return;
-    }
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      this.aboutHeadlineVisible.set(true);
-      return;
-    }
-
-    this.aboutHeadlineObserver = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (!entry?.isIntersecting) {
-          return;
-        }
-
-        this.aboutHeadlineVisible.set(true);
-        this.aboutHeadlineObserver?.disconnect();
-        this.aboutHeadlineObserver = null;
-      },
-      {
-        root: slider ?? null,
-        threshold: 0.35,
-      },
-    );
-
-    this.aboutHeadlineObserver.observe(headline);
-  }
-
-  ngOnDestroy(): void {
-    this.aboutHeadlineObserver?.disconnect();
-    this.aboutHeadlineObserver = null;
-  }
 
   scrollToNextSection(): void {
     const slider = this.homeSliderRef()?.nativeElement;

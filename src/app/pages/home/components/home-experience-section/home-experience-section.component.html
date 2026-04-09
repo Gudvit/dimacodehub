@@ -1,0 +1,64 @@
+<section class="experience slide-section">
+  <h2 class="experience__display-title">EXPERIENCE</h2>
+  <div class="experience__inner">
+    <div class="experience-layout">
+      <nav class="timeline" aria-label="Experience timeline">
+        @for (role of roles; track role.title; let i = $index) {
+          <button
+            class="timeline__item"
+            type="button"
+            [class.is-active]="activeIndex() === i"
+            (click)="setActive(i)"
+          >
+            <span class="timeline__dot"></span>
+            <span class="timeline__line"></span>
+            <span class="timeline__text">
+              <span class="timeline__company">{{ role.company }}</span>
+              <span class="timeline__label">{{ role.shortLabel }}</span>
+            </span>
+          </button>
+        }
+      </nav>
+
+      <article
+        class="focus-panel"
+        [style.animationName]="panelKey() % 2 === 0 ? 'panel-enter-a' : 'panel-enter-b'"
+      >
+        <header class="focus-panel__header">
+          <h3>{{ activeRole().title }} - {{ activeRole().company }}</h3>
+          <p class="meta">{{ activeRole().period }}</p>
+        </header>
+
+        <ul class="focus-panel__bullets">
+          @for (item of activeRole().bullets; track item; let i = $index) {
+            <li [style.animationDelay]="(0.08 + i * 0.06) + 's'">{{ item }}</li>
+          }
+        </ul>
+
+        <div class="focus-panel__impact" aria-label="Role impact metrics">
+          @for (item of activeRole().impact; track item.label) {
+            <article>
+              <p class="value">{{ item.value }}</p>
+              <p class="label">{{ item.label }}</p>
+            </article>
+          }
+        </div>
+      </article>
+
+      <div class="experience-mobile-nav">
+        <button
+          class="experience-mobile-nav__arrow experience-mobile-nav__arrow--prev"
+          type="button"
+          aria-label="Previous role"
+          (click)="prevRole()"
+        ></button>
+        <button
+          class="experience-mobile-nav__arrow experience-mobile-nav__arrow--next"
+          type="button"
+          aria-label="Next role"
+          (click)="nextRole()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</section>
