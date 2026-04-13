@@ -70,6 +70,49 @@
   z-index: 1;
 }
 
+.back-to-top {
+  position: absolute;
+  right: clamp(1.1rem, 2.4vw, 2rem);
+  bottom: 6rem;
+  margin: 0;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(25, 29, 63, 0.16);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: rgba(25, 29, 63, 0.74);
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 10px 20px -14px rgba(25, 29, 63, 0.45);
+  transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  z-index: 2;
+}
+
+.back-to-top:hover {
+  transform: translateY(-1px);
+  color: var(--brand-ink);
+  background: #fff;
+  border-color: rgba(25, 29, 63, 0.28);
+  box-shadow: 0 14px 26px -14px rgba(25, 29, 63, 0.5);
+}
+
+.back-to-top::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 11px;
+  height: 11px;
+  border-left: 2px solid currentColor;
+  border-top: 2px solid currentColor;
+  transform: translate(-50%, -40%) rotate(45deg);
+}
+
+.back-to-top:focus-visible {
+  outline: 2px solid rgba(97, 34, 51, 0.42);
+  outline-offset: 2px;
+}
+
 .contact-intro,
 .message-form {
   height: 100%;
@@ -296,5 +339,10 @@
     height: 340px;
     left: -170px;
     bottom: -165px;
+  }
+
+  .back-to-top {
+    right: 1.25rem;
+    bottom: 4.9rem;
   }
 }

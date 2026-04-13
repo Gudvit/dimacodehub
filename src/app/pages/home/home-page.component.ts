@@ -25,7 +25,7 @@ export class HomePageComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.route.fragment
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((fragment) => this.scrollToFragment(fragment));
+      .subscribe((fragment) => this.scrollToFragment(fragment, "auto"));
   }
 
   scrollToNextSection(): void {
@@ -34,13 +34,37 @@ export class HomePageComponent implements AfterViewInit {
       return;
     }
 
+    const sections = Array.from(slider.querySelectorAll<HTMLElement>(".slide-section"));
+    const currentTop = slider.scrollTop + this.getHeaderOffset() + 1;
+    const nextSection = sections.find((section) => section.offsetTop > currentTop);
+
+    if (!nextSection) {
+      return;
+    }
+
     slider.scrollTo({
-      top: slider.scrollTop + slider.clientHeight,
+      top: Math.max(0, nextSection.offsetTop - this.getHeaderOffset()),
       behavior: "smooth",
     });
   }
 
-  private scrollToFragment(fragment: string | null): void {
+  scrollToContactsSection(): void {
+    this.scrollToFragment("contacts", "smooth");
+  }
+
+  scrollToTop(): void {
+    const slider = this.homeSliderRef()?.nativeElement;
+    if (!slider) {
+      return;
+    }
+
+    slider.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  private scrollToFragment(fragment: string | null, behavior: ScrollBehavior): void {
     if (!fragment) {
       return;
     }
@@ -56,8 +80,13 @@ export class HomePageComponent implements AfterViewInit {
     }
 
     slider.scrollTo({
-      top: target.offsetTop,
-      behavior: "smooth",
+      top: Math.max(0, target.offsetTop - this.getHeaderOffset()),
+      behavior,
     });
+  }
+
+  private getHeaderOffset(): number {
+    const header = document.querySelector<HTMLElement>(".site-header");
+    return header?.offsetHeight ?? 0;
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, EventEmitter, Output } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { FooterComponent } from "../../../../components/footer/footer.component";
 
@@ -9,6 +9,7 @@ import { FooterComponent } from "../../../../components/footer/footer.component"
   imports: [ReactiveFormsModule, FooterComponent],
 })
 export class HomeContactSectionComponent {
+  @Output() backToTop = new EventEmitter<void>();
   submitted = false;
   successMessage = "";
 
@@ -45,5 +46,9 @@ export class HomeContactSectionComponent {
 
   get message() {
     return this.messageForm.get("message");
+  }
+
+  onBackToTop(): void {
+    this.backToTop.emit();
   }
 }
