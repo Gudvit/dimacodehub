@@ -215,7 +215,7 @@
     align-items: center;
     justify-items: center;
     padding-top: 6.2rem;
-    padding-bottom: 6.2rem;
+    padding-bottom: 2rem;
   }
 
   .hero-text {
@@ -235,6 +235,11 @@
       font-size: 1rem;
       max-width: 32ch;
     }
+  }
+
+  .hero-actions {
+    justify-content: center;
+    width: 100%;
   }
 
   .scroll-hint {
