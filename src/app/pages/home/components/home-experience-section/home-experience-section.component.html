@@ -23,6 +23,9 @@
       <article
         class="focus-panel"
         [style.animationName]="panelKey() % 2 === 0 ? 'panel-enter-a' : 'panel-enter-b'"
+        (touchstart)="onTouchStart($event)"
+        (touchend)="onTouchEnd($event)"
+        (touchcancel)="onTouchCancel()"
       >
         <header class="focus-panel__header">
           <h3>{{ activeRole().title }} - {{ activeRole().company }}</h3>
@@ -46,18 +49,16 @@
       </article>
 
       <div class="experience-mobile-nav">
-        <button
-          class="experience-mobile-nav__arrow experience-mobile-nav__arrow--prev"
-          type="button"
-          aria-label="Previous role"
-          (click)="prevRole()"
-        ></button>
-        <button
-          class="experience-mobile-nav__arrow experience-mobile-nav__arrow--next"
-          type="button"
-          aria-label="Next role"
-          (click)="nextRole()"
-        ></button>
+        @for (role of roles; track role.title; let i = $index) {
+          <button
+            class="experience-mobile-nav__dot"
+            type="button"
+            [class.is-active]="activeIndex() === i"
+            [attr.aria-label]="'Go to role ' + (i + 1)"
+            [attr.aria-current]="activeIndex() === i ? 'true' : null"
+            (click)="setActive(i)"
+          ></button>
+        }
       </div>
     </div>
   </div>

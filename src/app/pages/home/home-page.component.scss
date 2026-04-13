@@ -1,6 +1,7 @@
 .home-slider {
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   overscroll-behavior: contain;
@@ -12,6 +13,18 @@
   scroll-snap-stop: always;
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .home-slider {
+    scroll-snap-type: none;
+    overscroll-behavior: auto;
+  }
+
+  .slide-section {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
 }
 
 .lead {

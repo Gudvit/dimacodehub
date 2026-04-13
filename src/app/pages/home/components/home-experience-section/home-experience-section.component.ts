@@ -20,6 +20,10 @@ type ExperienceRole = {
   styleUrl: "./home-experience-section.component.scss",
 })
 export class HomeExperienceSectionComponent {
+  private readonly swipeThresholdPx = 40;
+  private touchStartX: number | null = null;
+  private touchStartY: number | null = null;
+
   readonly roles: ExperienceRole[] = [
     {
       company: "Apomedical",
@@ -142,5 +146,53 @@ export class HomeExperienceSectionComponent {
   nextRole(): void {
     const nextIndex = this.activeIndex() < this.roles.length - 1 ? this.activeIndex() + 1 : 0;
     this.setActive(nextIndex);
+  }
+
+  onTouchStart(event: TouchEvent): void {
+    const touch = event.touches[0];
+    if (!touch) {
+      return;
+    }
+
+    this.touchStartX = touch.clientX;
+    this.touchStartY = touch.clientY;
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    if (this.touchStartX === null || this.touchStartY === null) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+    if (!touch) {
+      this.resetTouch();
+      return;
+    }
+
+    const deltaX = touch.clientX - this.touchStartX;
+    const deltaY = touch.clientY - this.touchStartY;
+
+    this.resetTouch();
+
+    // React only to intentional horizontal swipes to avoid accidental switches on vertical scroll.
+    if (Math.abs(deltaX) < this.swipeThresholdPx || Math.abs(deltaX) <= Math.abs(deltaY)) {
+      return;
+    }
+
+    if (deltaX < 0) {
+      this.nextRole();
+      return;
+    }
+
+    this.prevRole();
+  }
+
+  onTouchCancel(): void {
+    this.resetTouch();
+  }
+
+  private resetTouch(): void {
+    this.touchStartX = null;
+    this.touchStartY = null;
   }
 }
