@@ -90,3 +90,51 @@ a {
     filter: blur(3px);
   }
 }
+
+.loader {
+  width: 120px;
+  height: 120px;
+}
+
+.loader svg {
+  width: 100%;
+  height: 100%;
+}
+
+.loader svg {
+  animation: rotate 4s linear infinite;
+}
+
+.path {
+  fill: none;
+  stroke: url(#gradientMove);
+  stroke-width: 12;
+
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+
+  animation: draw 2.5s ease-in-out infinite;
+}
+
+.center-shape {
+  fill: #191D3F;
+  opacity: 0.8;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes draw {
+  0% {
+    stroke-dashoffset: 3000;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 3000;
+  }
+}

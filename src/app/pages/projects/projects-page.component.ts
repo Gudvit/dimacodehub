@@ -4,9 +4,9 @@ import { FooterComponent } from '../../components/footer/footer.component';
 import { LoadingDirective } from "../../directives/loading.directive";
 
 @Component({
-  selector: "app-blog-page",
-  templateUrl: "./blog-page.component.html",
-  styleUrl: "./blog-page.component.scss",
+  selector: "app-projects-page",
+  templateUrl: "./projects-page.component.html",
+  styleUrl: "./projects-page.component.scss",
   imports: [HeaderComponent, FooterComponent, LoadingDirective],
 })
-export class BlogPageComponent {}
+export class ProjectsPageComponent {}

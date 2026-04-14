@@ -1,8 +1,7 @@
 <div class="route-shell" animate.enter="route-enter" animate.leave="route-leave">
   <div class="home-slider" #homeSlider>
-    <app-home-hero-section
-      (scrollNext)="scrollToNextSection()"
-      (scrollToContacts)="scrollToContactsSection()"
+    <app-home-hero-section (scrollNext)="scrollToNextSection()"
+                           (scrollToContacts)="scrollToContactsSection()"
     ></app-home-hero-section>
 
     <app-home-about-section></app-home-about-section>
