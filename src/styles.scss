@@ -11,13 +11,17 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: clip;
+}
+
 body {
   margin: 0;
   font-family: "Urbanist", "Segoe UI", sans-serif;
   background: var(--brand-surface);
   color: var(--brand-ink);
+  overflow-x: clip;
 }
-
 
 body::before {
   content: "";

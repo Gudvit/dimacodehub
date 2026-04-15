@@ -1,4 +1,4 @@
-import { Component, computed, signal } from "@angular/core";
+import { Component, ElementRef, computed, signal, viewChild } from "@angular/core";
 
 type ExperienceImpact = {
   label: string;
@@ -21,8 +21,18 @@ type ExperienceRole = {
 })
 export class HomeExperienceSectionComponent {
   private readonly swipeThresholdPx = 40;
+  private readonly desktopBreakpointPx = 980;
+  private readonly wheelThresholdPx = 84;
+  private readonly wheelCooldownMs = 360;
+  private readonly edgeExitThresholdPx = 170;
   private touchStartX: number | null = null;
   private touchStartY: number | null = null;
+  private sawHorizontalSwipe = false;
+  private wheelAccumulator = 0;
+  private wheelLockedUntil = 0;
+  private edgeExitAccumulator = 0;
+  private edgeExitDirection: 1 | -1 | null = null;
+  private readonly timelineRef = viewChild<ElementRef<HTMLElement>>("timeline");
 
   readonly roles: ExperienceRole[] = [
     {
@@ -56,7 +66,7 @@ export class HomeExperienceSectionComponent {
       impact: [
         { label: "Region", value: "EU" },
         { label: "Domain", value: "CRM" },
-        { label: "Stack", value: "Angular + NgRx" },
+        { label: "Stack", value: "Angular" },
       ],
     },
     {
@@ -136,6 +146,7 @@ export class HomeExperienceSectionComponent {
 
     this.activeIndex.set(index);
     this.panelKey.update((value) => value + 1);
+    this.scrollTimelineItemIntoView(index);
   }
 
   prevRole(): void {
@@ -156,6 +167,24 @@ export class HomeExperienceSectionComponent {
 
     this.touchStartX = touch.clientX;
     this.touchStartY = touch.clientY;
+    this.sawHorizontalSwipe = false;
+  }
+
+  onTouchMove(event: TouchEvent): void {
+    if (this.touchStartX === null || this.touchStartY === null) {
+      return;
+    }
+
+    const touch = event.touches[0];
+    if (!touch) {
+      return;
+    }
+
+    const deltaX = touch.clientX - this.touchStartX;
+    const deltaY = touch.clientY - this.touchStartY;
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      this.sawHorizontalSwipe = true;
+    }
   }
 
   onTouchEnd(event: TouchEvent): void {
@@ -171,11 +200,14 @@ export class HomeExperienceSectionComponent {
 
     const deltaX = touch.clientX - this.touchStartX;
     const deltaY = touch.clientY - this.touchStartY;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+    const isHorizontalIntent = this.sawHorizontalSwipe || absX > absY;
 
     this.resetTouch();
 
     // React only to intentional horizontal swipes to avoid accidental switches on vertical scroll.
-    if (Math.abs(deltaX) < this.swipeThresholdPx || Math.abs(deltaX) <= Math.abs(deltaY)) {
+    if (!isHorizontalIntent || absX < this.swipeThresholdPx || absX <= absY) {
       return;
     }
 
@@ -191,8 +223,82 @@ export class HomeExperienceSectionComponent {
     this.resetTouch();
   }
 
+  onFocusPanelWheel(event: WheelEvent): void {
+    if (!this.isDesktopViewport()) {
+      return;
+    }
+
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
+      return;
+    }
+
+    const direction = event.deltaY > 0 ? 1 : -1;
+    const currentIndex = this.activeIndex();
+    const atFirstItem = currentIndex === 0;
+    const atLastItem = currentIndex === this.roles.length - 1;
+    const shouldPassToOuterScroll =
+      (direction > 0 && atLastItem) || (direction < 0 && atFirstItem);
+
+    // On boundaries, require a small extra scroll budget before passing wheel to outer page scroll.
+    if (shouldPassToOuterScroll) {
+      if (this.edgeExitDirection !== direction) {
+        this.edgeExitDirection = direction;
+        this.edgeExitAccumulator = 0;
+      }
+
+      this.edgeExitAccumulator += Math.abs(event.deltaY);
+      if (this.edgeExitAccumulator < this.edgeExitThresholdPx) {
+        event.preventDefault();
+        return;
+      }
+
+      this.edgeExitAccumulator = 0;
+      this.edgeExitDirection = null;
+      this.wheelAccumulator = 0;
+      this.wheelLockedUntil = 0;
+      return;
+    }
+
+    this.edgeExitAccumulator = 0;
+    this.edgeExitDirection = null;
+
+    const now = performance.now();
+    if (now < this.wheelLockedUntil) {
+      event.preventDefault();
+      return;
+    }
+
+    this.wheelAccumulator += event.deltaY;
+    if (Math.abs(this.wheelAccumulator) < this.wheelThresholdPx) {
+      event.preventDefault();
+      return;
+    }
+
+    event.preventDefault();
+    const nextIndex = Math.min(this.roles.length - 1, Math.max(0, currentIndex + direction));
+    this.setActive(nextIndex);
+
+    this.wheelAccumulator = 0;
+    this.wheelLockedUntil = now + this.wheelCooldownMs;
+  }
+
   private resetTouch(): void {
     this.touchStartX = null;
     this.touchStartY = null;
+    this.sawHorizontalSwipe = false;
+  }
+
+  private isDesktopViewport(): boolean {
+    return typeof window !== "undefined" && window.innerWidth > this.desktopBreakpointPx;
+  }
+
+  private scrollTimelineItemIntoView(index: number): void {
+    const timeline = this.timelineRef()?.nativeElement;
+    if (!timeline || !this.isDesktopViewport()) {
+      return;
+    }
+
+    const target = timeline.querySelector<HTMLElement>(`.timeline__item[data-index="${index}"]`);
+    target?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 }

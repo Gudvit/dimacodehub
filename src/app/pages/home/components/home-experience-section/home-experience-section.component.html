@@ -2,11 +2,12 @@
   <h2 class="experience__display-title">EXPERIENCE</h2>
   <div class="experience__inner">
     <div class="experience-layout">
-      <nav class="timeline" aria-label="Experience timeline">
+      <nav class="timeline" #timeline aria-label="Experience timeline">
         @for (role of roles; track role.title; let i = $index) {
           <button
             class="timeline__item"
             type="button"
+            [attr.data-index]="i"
             [class.is-active]="activeIndex() === i"
             (click)="setActive(i)"
           >
@@ -23,7 +24,9 @@
       <article
         class="focus-panel"
         [style.animationName]="panelKey() % 2 === 0 ? 'panel-enter-a' : 'panel-enter-b'"
+        (wheel)="onFocusPanelWheel($event)"
         (touchstart)="onTouchStart($event)"
+        (touchmove)="onTouchMove($event)"
         (touchend)="onTouchEnd($event)"
         (touchcancel)="onTouchCancel()"
       >
@@ -46,20 +49,19 @@
             </article>
           }
         </div>
+        <div class="experience-mobile-nav">
+          @for (role of roles; track role.title; let i = $index) {
+            <button
+              class="experience-mobile-nav__dot"
+              type="button"
+              [class.is-active]="activeIndex() === i"
+              [attr.aria-label]="'Go to role ' + (i + 1)"
+              [attr.aria-current]="activeIndex() === i ? 'true' : null"
+              (click)="setActive(i)"
+            ></button>
+          }
+        </div>
       </article>
-
-      <div class="experience-mobile-nav">
-        @for (role of roles; track role.title; let i = $index) {
-          <button
-            class="experience-mobile-nav__dot"
-            type="button"
-            [class.is-active]="activeIndex() === i"
-            [attr.aria-label]="'Go to role ' + (i + 1)"
-            [attr.aria-current]="activeIndex() === i ? 'true' : null"
-            (click)="setActive(i)"
-          ></button>
-        }
-      </div>
     </div>
   </div>
 </section>
