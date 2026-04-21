@@ -1,0 +1,51 @@
+<div class="route-shell" animate.enter="route-enter" animate.leave="route-leave">
+  <app-header></app-header>
+
+  @if (post(); as post) {
+    <main class="post-page">
+      <div class="post-page__inner">
+        <a class="post-back" routerLink="/blog">
+          <span class="post-back__arrow" aria-hidden="true">←</span>
+          Back to blog
+        </a>
+
+        <header class="post-header">
+          <div class="post-header__tags">
+            @for (tag of post.tags; track tag) {
+              <span class="post-header__tag">{{ tag }}</span>
+            }
+          </div>
+          <h1 class="post-header__title">{{ post.title }}</h1>
+          <div class="post-header__meta">
+            <span>{{ post.date | date: 'MMMM d, y' }}</span>
+            <span class="post-header__sep">·</span>
+            <span>{{ post.readingTime }} min read</span>
+          </div>
+        </header>
+
+        <div class="post-divider"></div>
+
+        <article class="post-content">
+          @for (section of post.sections; track $index) {
+            @if (section.heading) {
+              <h2 class="post-content__heading">{{ section.heading }}</h2>
+            }
+            @for (para of section.paragraphs; track $index) {
+              <p class="post-content__para">{{ para }}</p>
+            }
+            @if (section.code) {
+              <pre class="post-content__code"><code>{{ section.code }}</code></pre>
+            }
+          }
+        </article>
+      </div>
+    </main>
+  } @else {
+    <main class="post-not-found">
+      <p>Post not found.</p>
+      <a routerLink="/blog">← Back to blog</a>
+    </main>
+  }
+
+  <app-footer></app-footer>
+</div>

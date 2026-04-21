@@ -1,16 +1,39 @@
 <div class="route-shell" animate.enter="route-enter" animate.leave="route-leave">
   <app-header></app-header>
 
-  <section class="blog-placeholder">
-    <div class="content">
-      <p class="subtitle">
-        I’m currently working on this section to showcase my blog. Stay tuned.
-      </p>
-      <p class="status">Coming soon</p>
+  <main class="blog-page">
+    <section class="blog-hero">
+      <div class="blog-hero__inner">
+        <p class="blog-hero__label">Blog</p>
+        <h1 class="blog-hero__title">Thoughts on frontend engineering</h1>
+        <p class="blog-hero__subtitle">
+          Architecture, performance, and lessons from building products that scale.
+        </p>
+      </div>
+    </section>
 
-      <div [appLoading]="true" class="loader"></div>
-    </div>
-  </section>
+    <section class="blog-list">
+      <div class="blog-list__inner">
+        @for (post of posts; track post.slug) {
+          <article class="post-card" [routerLink]="['/blog', post.slug]">
+            <div class="post-card__tags">
+              @for (tag of post.tags; track tag) {
+                <span class="post-card__tag">{{ tag }}</span>
+              }
+            </div>
+            <h2 class="post-card__title">{{ post.title }}</h2>
+            <p class="post-card__preview">{{ post.preview }}</p>
+            <footer class="post-card__meta">
+              <span class="post-card__date">{{ post.date | date: 'MMM d, y' }}</span>
+              <span class="post-card__sep">·</span>
+              <span class="post-card__read">{{ post.readingTime }} min read</span>
+              <span class="post-card__arrow" aria-hidden="true">→</span>
+            </footer>
+          </article>
+        }
+      </div>
+    </section>
+  </main>
 
   <app-footer></app-footer>
 </div>
