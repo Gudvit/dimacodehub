@@ -2,3 +2,7 @@ node_modules
 dist
 .angular
 .idea
+npm-debug.log*
+.vscode/*
+.idea/*
+.DS_Store
