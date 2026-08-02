@@ -79,13 +79,101 @@
 
     <article class="message-cta">
       <h3>Send a message</h3>
-      <p class="message-cta__lead">
-        Tell me about your project - the stack, the timeline, and what is currently blocking you. I
-        read every message and usually reply within a day.
-      </p>
-      <a class="message-cta__button" [href]="mailtoHref">Write me an email</a>
+
+      @if (sent()) {
+        <div class="message-cta__done" role="status">
+          <p class="message-cta__done-title">Message sent.</p>
+          <p class="message-cta__lead">
+            It landed in my inbox - I usually reply within a day. If it is urgent, Telegram is the
+            fastest way to reach me.
+          </p>
+          <button class="message-cta__button" type="button" (click)="writeAnother()">
+            Send another
+          </button>
+        </div>
+      } @else {
+        <p class="message-cta__lead">
+          Tell me about your project - the stack, the timeline, and what is currently blocking you.
+          I read every message and usually reply within a day.
+        </p>
+
+        <form class="contact-form" novalidate [formGroup]="form" (ngSubmit)="submit()">
+          <div class="contact-form__row">
+            <div class="field">
+              <label for="contact-name">Name</label>
+              <input
+                id="contact-name"
+                type="text"
+                formControlName="name"
+                autocomplete="name"
+                placeholder="Your name"
+                [attr.aria-invalid]="showsError('name')"
+                [attr.aria-describedby]="showsError('name') ? 'contact-name-error' : null"
+              />
+              @if (showsError("name")) {
+                <p class="field__error" id="contact-name-error">
+                  Please enter your name (at least 2 characters).
+                </p>
+              }
+            </div>
+
+            <div class="field">
+              <label for="contact-email">Email</label>
+              <input
+                id="contact-email"
+                type="email"
+                formControlName="email"
+                autocomplete="email"
+                placeholder="you@email.com"
+                [attr.aria-invalid]="showsError('email')"
+                [attr.aria-describedby]="showsError('email') ? 'contact-email-error' : null"
+              />
+              @if (showsError("email")) {
+                <p class="field__error" id="contact-email-error">
+                  Please enter a valid email address so I can reply.
+                </p>
+              }
+            </div>
+          </div>
+
+          <div class="field field--message">
+            <label for="contact-message">Message</label>
+            <textarea
+              id="contact-message"
+              rows="4"
+              formControlName="message"
+              placeholder="What are you building?"
+              [attr.aria-invalid]="showsError('message')"
+              [attr.aria-describedby]="showsError('message') ? 'contact-message-error' : null"
+            ></textarea>
+            @if (showsError("message")) {
+              <p class="field__error" id="contact-message-error">
+                A couple of sentences is enough (at least 10 characters).
+              </p>
+            }
+          </div>
+
+          <!-- Honeypot: hidden from people, irresistible to bots. Web3Forms drops filled ones. -->
+          <label class="honeypot" aria-hidden="true">
+            <input type="checkbox" formControlName="botcheck" tabindex="-1" autocomplete="off" />
+          </label>
+
+          <button class="message-cta__button" type="submit" [disabled]="sending()">
+            {{ sending() ? "Sending..." : "Send message" }}
+          </button>
+
+          @if (failed()) {
+            <p class="contact-form__failure" role="alert">
+              The message could not be sent. Please write to
+              <a [href]="mailtoHref">{{ contactEmail }}</a> directly - that always works.
+            </p>
+          }
+        </form>
+      }
+
       <p class="message-cta__note">
-        Prefer something faster? Telegram and LinkedIn are linked on the left.
+        Prefer email? <a class="message-cta__mailto" [href]="mailtoHref">Write me an email</a> -
+        Telegram and LinkedIn are linked on the left.
       </p>
     </article>
   </div>

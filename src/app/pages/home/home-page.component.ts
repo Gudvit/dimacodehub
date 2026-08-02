@@ -87,7 +87,9 @@ export class HomePageComponent {
       return;
     }
 
-    const target = slider.querySelector<HTMLElement>(`#${fragment}`);
+    // The fragment comes from the URL: `/#2024` is not a valid selector unescaped, and the
+    // SyntaxError would kill the subscription this runs in.
+    const target = slider.querySelector<HTMLElement>(`#${CSS.escape(fragment)}`);
     if (!target) {
       return;
     }

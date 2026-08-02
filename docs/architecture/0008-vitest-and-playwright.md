@@ -24,14 +24,19 @@ A two-tier setup.
 
 - **Vitest 4** (`vitest.config.ts`, jsdom environment, `globals: true`,
   `include: src/**/*.spec.ts`, setup file `src/vitest.setup.ts` with a `matchMedia`
-  polyfill). Only things that need no rendering are tested: currently
-  `blog.service.spec.ts`, instantiated with a plain `new BlogService()` — no `TestBed`.
+  polyfill). Only things that need no rendering are tested: `blog.service.spec.ts`,
+  instantiated with a plain `new BlogService()`, and `contact-form.service.spec.ts`, which
+  calls the exported `postToWeb3Forms()` with a stubbed global `fetch`. No `TestBed`:
+  `npm run test:unit` is plain `vitest run` without the Angular compiler, so anything that
+  needs a compiled component belongs in Playwright.
 - **Playwright** (`playwright.config.ts`, `testDir: ./e2e`, `fullyParallel`, a `webServer`
   block that starts `npm start` on `127.0.0.1:4200` and reuses an already running server
   locally). It covers user-facing flows: the hero and its CTAs, the relative CV link,
   navigation with `<title>` assertions, keyboard reachability of blog cards, a deep link
-  to a post with an OG-tag assertion, "Post not found", the mobile menu, the `mailto` CTA
-  and the absence of a fake form.
+  to a post with an OG-tag assertion, "Post not found", the mobile menu, the `mailto`
+  fallback and the contact form — validation, a successful send asserted against the
+  intercepted Web3Forms payload, and a failing send that must not confirm delivery
+  (ADR 0015).
 - Both suites must be green before deployment (ADR 0009).
 
 ## Consequences

@@ -10,10 +10,11 @@ Three areas: `/` (hero → about → experience → contacts, a vertical slider)
 `/projects` (a "coming soon" placeholder), `/blog` (post list and post page).
 
 The constraint that drives almost everything else: **there is no backend and none is
-planned**. The site is static files on GitHub Pages. No HTTP client, no database, no
-migrations, no authentication, no external APIs. The only runtime external dependencies
-are Google Fonts (the Urbanist typeface, linked from `src/index.html`) and outbound
-links to GitHub / X / LinkedIn / Telegram / `mailto:` / `tel:`.
+planned**. The site is static files on GitHub Pages. No `HttpClient`, no database, no
+migrations, no authentication. The only runtime external dependencies are Google Fonts
+(the Urbanist typeface, linked from `src/index.html`), Web3Forms — a single `fetch` from
+the contact form (ADR 0015) — and outbound links to GitHub / X / LinkedIn / Telegram /
+`mailto:` / `tel:`.
 
 The reasoning behind the decisions lives in `docs/architecture/` (ADRs). Read them
 before any large architectural change — they record why things are the way they are.
@@ -30,8 +31,8 @@ before any large architectural change — they record why things are the way the
 - **npm 10.9.4** (`packageManager` in `package.json`), Node 20 in CI.
 - **GitHub Actions** → GitHub Pages.
 
-`@angular/animations`, `@angular/forms` and `rxjs` are listed as dependencies, but only
-`rxjs` is actually imported (in `app.ts` and `home-page.component.ts`).
+`@angular/animations` is listed as a dependency but imported nowhere. `rxjs` is used in
+`app.ts` and `home-page.component.ts`; `@angular/forms` is used by the contact form.
 
 ## Commands
 
@@ -162,19 +163,33 @@ this step.
 
 ## Contacts
 
-There is no submission form and there must not be one until there is a backend: contact
-happens through the `mailto` button (`message-cta` in the contact section), phone, email
-and social links. Do not bring back a form that claims "message sent" while sending
-nothing — this is covered by an e2e test.
+The contact section has a real form (ADR 0015). It posts with `fetch` straight to
+Web3Forms, which relays the message by email — that is the app's only outbound request
+and the only reason `@angular/forms` is a dependency.
+
+- The transport is `postToWeb3Forms()` in `home-contact-section/contact-form.service.ts`.
+  It rejects unless the response is `ok` **and** the body says `success: true`.
+- The Web3Forms access key is a plain constant in that file. It is public by design (it
+  only allows posting to the owner's inbox) — do not move it into a "secret".
+- The success screen may only appear after the promise resolves. A form that claims
+  "message sent" without a confirmed send is the one thing this section must never do —
+  e2e asserts both the success path (against the intercepted request payload) and the
+  failure path.
+- `mailto`, phone, Telegram and LinkedIn stay as fallbacks below the form.
+- Spam protection is the hidden `botcheck` honeypot control; Web3Forms drops filled ones.
 
 ## Known debt
+
+The agreed plan for working this off — with priorities, exact locations and a
+"done when" for each item — is `docs/work-plan.md`. Read it before picking up cleanup
+work, and tick entries off there as they land.
 
 - `public/shared-images/` holds unused JPGs for a future Projects section. If that
   section is not happening — delete them.
 - `LoadingDirective` builds its overlay with `innerHTML` and always creates it, even if
   `appLoading` never becomes `true`. The overlay styles (`.loader`, `.path`,
   `.center-shape`) live in the global `styles.scss` — directive and styles have drifted apart.
-- `@angular/animations` and `@angular/forms` are in `dependencies` but imported nowhere.
-- Only `BlogService` has unit tests; components have none — their behaviour is verified
-  exclusively through e2e.
+- `@angular/animations` is in `dependencies` but imported nowhere.
+- Only `BlogService` and the contact-form transport have unit tests; components have none —
+  their behaviour is verified exclusively through e2e.
 - `src/images/background.jpg` is 812 KB, with no `webp`/`avif` variant and no `<picture>`.

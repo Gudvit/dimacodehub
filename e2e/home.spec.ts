@@ -73,7 +73,7 @@ test("mobile menu toggles open and closed", async ({ page }) => {
   await expect(blogLink).toBeHidden();
 });
 
-test("contact section offers a real mailto link, not a fake form", async ({ page }) => {
+test("contact section keeps the mailto link as a fallback", async ({ page }) => {
   await page.goto("/#contacts");
 
   const cta = page.getByRole("link", { name: "Write me an email" });
@@ -82,7 +82,68 @@ test("contact section offers a real mailto link, not a fake form", async ({ page
   const href = await cta.getAttribute("href");
   expect(href).toContain("mailto:gudvitt@gmail.com");
   expect(href).toContain("subject=Project%20inquiry");
+});
 
-  // The form used to claim a message was sent while sending nothing - it must stay gone.
-  await expect(page.locator("form.message-form")).toHaveCount(0);
+test("an unusable url fragment is ignored instead of throwing", async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+
+  // `#2024` is a legal fragment but an illegal CSS selector: unescaped, it takes the
+  // fragment subscription down with it and anchor scrolling dies for the whole session.
+  await page.goto("/#2024");
+
+  await expect(page.getByRole("heading", { name: "Dmytro Huliaiev", level: 1 })).toBeVisible();
+  expect(pageErrors).toEqual([]);
+});
+
+test("contact form refuses to submit an invalid message", async ({ page }) => {
+  let requests = 0;
+  await page.route("https://api.web3forms.com/**", async (route) => {
+    requests += 1;
+    await route.fulfill({ json: { success: true } });
+  });
+
+  await page.goto("/#contacts");
+  await page.getByRole("button", { name: "Send message" }).click();
+
+  await expect(page.getByText("Please enter your name")).toBeVisible();
+  await expect(page.getByText("Please enter a valid email address")).toBeVisible();
+  await expect(page.getByText("A couple of sentences is enough")).toBeVisible();
+  expect(requests).toBe(0);
+});
+
+test("contact form posts the message and confirms only after the service accepts it", async ({
+  page,
+}) => {
+  const payloads: Record<string, unknown>[] = [];
+  await page.route("https://api.web3forms.com/**", async (route) => {
+    payloads.push(route.request().postDataJSON());
+    await route.fulfill({ json: { success: true, message: "Email sent successfully!" } });
+  });
+
+  await page.goto("/#contacts");
+  await page.getByLabel("Name").fill("Ada Lovelace");
+  await page.getByLabel("Email").fill("ada@example.com");
+  await page.getByLabel("Message").fill("I would like to talk about an Angular rewrite.");
+  await page.getByRole("button", { name: "Send message" }).click();
+
+  await expect(page.getByText("Message sent.")).toBeVisible();
+  expect(payloads).toHaveLength(1);
+  expect(payloads[0]!["email"]).toBe("ada@example.com");
+  expect(payloads[0]!["message"]).toBe("I would like to talk about an Angular rewrite.");
+});
+
+test("contact form admits failure instead of claiming a message was sent", async ({ page }) => {
+  await page.route("https://api.web3forms.com/**", async (route) => {
+    await route.fulfill({ status: 500, json: { success: false, message: "Server error" } });
+  });
+
+  await page.goto("/#contacts");
+  await page.getByLabel("Name").fill("Ada Lovelace");
+  await page.getByLabel("Email").fill("ada@example.com");
+  await page.getByLabel("Message").fill("I would like to talk about an Angular rewrite.");
+  await page.getByRole("button", { name: "Send message" }).click();
+
+  await expect(page.getByText("The message could not be sent")).toBeVisible();
+  await expect(page.getByText("Message sent.")).toHaveCount(0);
 });

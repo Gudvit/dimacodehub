@@ -33,10 +33,11 @@ root and in the local `CLAUDE.md` files under `src/app/pages/home/` and
 
 Cross-cutting facts that explain nearly every decision below:
 
-- **There is no backend.** No HTTP client, no database, no migrations, no server-side
-  models, no authentication. All content is part of the bundle.
-- **External integrations are minimal:** Google Fonts (the Urbanist typeface) and nothing
-  else. The rest are outbound links (`mailto:`, `tel:`, GitHub, X, LinkedIn, Telegram) and
+- **There is no backend.** No database, no migrations, no server-side models, no
+  authentication. All content is part of the bundle.
+- **External integrations are minimal:** Google Fonts (the Urbanist typeface) and
+  Web3Forms, which receives the contact form (ADR 0015) — one `fetch`, no `HttpClient`.
+  The rest are outbound links (`mailto:`, `tel:`, GitHub, X, LinkedIn, Telegram) and
   the CV file.
 - **The build is static**, deployed into the `/dimacodehub/` subdirectory on GitHub Pages.
 - **The app is zoneless**, so state is signals and animations are CSS.
@@ -54,11 +55,12 @@ Cross-cutting facts that explain nearly every decision below:
 | [0007](0007-scss-no-ui-framework.md)            | Styling                          | hand-written SCSS and CSS variables, no UI framework             |
 | [0008](0008-vitest-and-playwright.md)           | Testing                          | Vitest for logic, Playwright for behaviour; no Karma             |
 | [0009](0009-ci-quality-gate-before-deploy.md)   | CI                               | one workflow: format → lint → tests → build → deploy             |
-| [0010](0010-mailto-instead-of-contact-form.md)  | Contact                          | `mailto` instead of a form that sent nothing                     |
+| [0010](0010-mailto-instead-of-contact-form.md)  | Contact (superseded)             | `mailto` instead of a form that sent nothing                     |
 | [0011](0011-asset-placement.md)                 | Assets                           | `public/` versus `src/images/`, removing build duplicates        |
 | [0012](0012-css-animations-and-dom-access.md)   | Animations and DOM               | CSS + `animate.enter/leave`, `afterNextRender`, rAF              |
 | [0013](0013-seo-metadata.md)                    | Metadata                         | static OG in `index.html`, `title` from routes, `Meta` for posts |
 | [0014](0014-accessibility-approach.md)          | Accessibility                    | semantic markup + ESLint a11y + role-based locators in e2e       |
+| [0015](0015-contact-form-via-web3forms.md)      | Contact                          | a real form posting to Web3Forms, `mailto` as the fallback       |
 
 ## What the architecture deliberately does not solve
 
@@ -76,5 +78,6 @@ the requirements change:
 One file per decision, named `NNNN-short-title.md`, numbered sequentially and never
 reused. Structure: title, status, context, decision, consequences (including the
 downsides). A decision is never rewritten: if it is reversed, the old ADR gets the status
-"Superseded by NNNN" and the new one is written separately (ADR 0010, which replaced the
-contact form, is the example).
+"Superseded by NNNN" and the new one is written separately (the contact section is the
+example: 0010 replaced the fake form with `mailto`, 0015 brought the form back with a
+real receiver).

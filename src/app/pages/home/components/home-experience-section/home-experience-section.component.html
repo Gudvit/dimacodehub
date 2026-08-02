@@ -3,7 +3,8 @@
   <div class="experience__inner">
     <div class="experience-layout">
       <nav class="timeline" #timeline aria-label="Experience timeline">
-        @for (role of roles; track role.title; let i = $index) {
+        <!-- Tracked by index: the list is static, and job titles repeat across companies. -->
+        @for (role of roles; track $index; let i = $index) {
           <button
             class="timeline__item"
             type="button"
@@ -50,7 +51,7 @@
           }
         </div>
         <div class="experience-mobile-nav">
-          @for (role of roles; track role.title; let i = $index) {
+          @for (role of roles; track $index; let i = $index) {
             <button
               class="experience-mobile-nav__dot"
               type="button"

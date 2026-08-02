@@ -2,7 +2,10 @@
 
 ## Status
 
-Accepted. Supersedes an earlier decision (a form in the contact section).
+Superseded in part by [0015](0015-contact-form-via-web3forms.md): the form is back, now
+with a real receiver (Web3Forms), and `mailto` became the fallback instead of the only
+channel. The rule this ADR exists for still holds — the UI must never claim a message was
+sent unless it was.
 
 ## Context
 

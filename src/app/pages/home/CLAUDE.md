@@ -11,7 +11,7 @@ home-page.component.*                     slider container, owns #homeSlider
 components/home-hero-section/             first screen, header lives inside it
 components/home-about-section/            "about", revealed by IntersectionObserver
 components/home-experience-section/       role timeline: clicks, swipes, wheel
-components/home-contact-section/          contacts + mailto CTA + footer
+components/home-contact-section/          contacts + working message form + footer
 ```
 
 The sections are dumb components: they know nothing about scrolling and talk to the
@@ -86,5 +86,9 @@ Role data (`roles`) is hardcoded in the component. That is deliberate — see
 - Do not attach high-frequency listeners with `@HostListener` (see the root CLAUDE.md).
 - The about-heading animation must respect `prefers-reduced-motion` — the early return is
   already there; repeat it in any new animation.
-- The contact section: there is no form and must not be one, only `mailto` — covered by
-  the e2e test `contact section offers a real mailto link, not a fake form`.
+- The contact section has a real form that posts to Web3Forms (`contact-form.service.ts`,
+  ADR 0015). The success state may only be shown after the send is confirmed — the e2e
+  test `contact form admits failure instead of claiming a message was sent` is there to
+  keep it that way. The `mailto` link stays as the fallback.
+- The form is the only place in the home page that uses reactive forms. `status` is a
+  signal; the request is cancelled through an `AbortController` in `DestroyRef.onDestroy`.
