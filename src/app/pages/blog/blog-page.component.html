@@ -15,16 +15,18 @@
     <section class="blog-list">
       <div class="blog-list__inner">
         @for (post of posts; track post.slug) {
-          <article class="post-card" [routerLink]="['/blog', post.slug]">
+          <article class="post-card">
             <div class="post-card__tags">
               @for (tag of post.tags; track tag) {
                 <span class="post-card__tag">{{ tag }}</span>
               }
             </div>
-            <h2 class="post-card__title">{{ post.title }}</h2>
+            <h2 class="post-card__title">
+              <a class="post-card__link" [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+            </h2>
             <p class="post-card__preview">{{ post.preview }}</p>
             <footer class="post-card__meta">
-              <span class="post-card__date">{{ post.date | date: 'MMM d, y' }}</span>
+              <span class="post-card__date">{{ post.date | date: "MMM d, y" }}</span>
               <span class="post-card__sep">·</span>
               <span class="post-card__read">{{ post.readingTime }} min read</span>
               <span class="post-card__arrow" aria-hidden="true">→</span>

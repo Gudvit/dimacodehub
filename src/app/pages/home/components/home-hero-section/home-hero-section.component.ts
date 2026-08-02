@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+import { ChangeDetectionStrategy, Component, output } from "@angular/core";
 import { HeaderComponent } from "../../../../components/header/header.component";
 
 @Component({
@@ -6,16 +6,9 @@ import { HeaderComponent } from "../../../../components/header/header.component"
   templateUrl: "./home-hero-section.component.html",
   styleUrl: "./home-hero-section.component.scss",
   imports: [HeaderComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeHeroSectionComponent {
-  @Output() scrollNext = new EventEmitter<void>();
-  @Output() scrollToContacts = new EventEmitter<void>();
-
-  onScrollNext(): void {
-    this.scrollNext.emit();
-  }
-
-  onScrollToContacts(): void {
-    this.scrollToContacts.emit();
-  }
+  readonly scrollNext = output<void>();
+  readonly scrollToContacts = output<void>();
 }

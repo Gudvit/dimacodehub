@@ -1,23 +1,31 @@
-import { Component, ElementRef, computed, signal, viewChild } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  signal,
+  viewChild,
+} from "@angular/core";
 
-type ExperienceImpact = {
+interface ExperienceImpact {
   label: string;
   value: string;
-};
+}
 
-type ExperienceRole = {
+interface ExperienceRole {
   company: string;
   shortLabel: string;
   title: string;
   period: string;
   bullets: string[];
   impact: ExperienceImpact[];
-};
+}
 
 @Component({
   selector: "app-home-experience-section",
   templateUrl: "./home-experience-section.component.html",
   styleUrl: "./home-experience-section.component.scss",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeExperienceSectionComponent {
   private readonly swipeThresholdPx = 40;
@@ -236,8 +244,7 @@ export class HomeExperienceSectionComponent {
     const currentIndex = this.activeIndex();
     const atFirstItem = currentIndex === 0;
     const atLastItem = currentIndex === this.roles.length - 1;
-    const shouldPassToOuterScroll =
-      (direction > 0 && atLastItem) || (direction < 0 && atFirstItem);
+    const shouldPassToOuterScroll = (direction > 0 && atLastItem) || (direction < 0 && atFirstItem);
 
     // On boundaries, require a small extra scroll budget before passing wheel to outer page scroll.
     if (shouldPassToOuterScroll) {

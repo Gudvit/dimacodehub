@@ -62,7 +62,9 @@
   box-shadow:
     0 16px 32px rgba(25, 29, 63, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   animation: competency-rise 0.6s ease both;
 }
 
@@ -88,12 +90,24 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-.competencies > div:nth-child(1) { animation-delay: 0.05s; }
-.competencies > div:nth-child(2) { animation-delay: 0.1s; }
-.competencies > div:nth-child(3) { animation-delay: 0.15s; }
-.competencies > div:nth-child(4) { animation-delay: 0.2s; }
-.competencies > div:nth-child(5) { animation-delay: 0.25s; }
-.competencies > div:nth-child(6) { animation-delay: 0.3s; }
+.competencies > div:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.competencies > div:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.competencies > div:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.competencies > div:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.competencies > div:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.competencies > div:nth-child(6) {
+  animation-delay: 0.3s;
+}
 
 @keyframes competency-rise {
   from {
@@ -238,7 +252,9 @@
   padding: 1.6rem;
   background: linear-gradient(135deg, #ffffff, #f6f2f5);
   box-shadow: 0 16px 32px rgba(25, 29, 63, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   border: 1px solid rgba(25, 29, 63, 0.08);
 }
 
@@ -343,7 +359,9 @@
   padding: 0.8rem 1.35rem;
   font-weight: 700;
   border: 1px solid transparent;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .principles-cta .primary {

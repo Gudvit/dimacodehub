@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { HeaderComponent } from '../../components/header/header.component';
-import { FooterComponent } from '../../components/footer/footer.component';
+import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { HeaderComponent } from "../../components/header/header.component";
+import { FooterComponent } from "../../components/footer/footer.component";
 import { LoadingDirective } from "../../directives/loading.directive";
 
 @Component({
@@ -8,5 +8,6 @@ import { LoadingDirective } from "../../directives/loading.directive";
   templateUrl: "./projects-page.component.html",
   styleUrl: "./projects-page.component.scss",
   imports: [HeaderComponent, FooterComponent, LoadingDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsPageComponent {}

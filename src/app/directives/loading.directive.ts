@@ -1,13 +1,13 @@
 import { Directive, effect, ElementRef, inject, input, Renderer2 } from "@angular/core";
 
 @Directive({
-  selector: '[appLoading]',
+  selector: "[appLoading]",
 })
 export class LoadingDirective {
-  isLoading = input<boolean>(false, { alias: 'appLoading' });
+  readonly isLoading = input<boolean>(false, { alias: "appLoading" });
 
-  private el = inject(ElementRef<HTMLElement>);
-  private renderer = inject(Renderer2);
+  private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   private overlay!: HTMLElement;
 
@@ -16,22 +16,22 @@ export class LoadingDirective {
     effect(() => this.toggleLoader(this.isLoading()));
   }
 
-  private createOverlay() {
+  private createOverlay(): void {
     const parent = this.el.nativeElement;
 
-    this.renderer.setStyle(parent, 'position', 'relative');
+    this.renderer.setStyle(parent, "position", "relative");
 
-    this.overlay = this.renderer.createElement('div');
-    this.renderer.addClass(this.overlay, 'loader-overlay');
+    this.overlay = this.renderer.createElement("div");
+    this.renderer.addClass(this.overlay, "loader-overlay");
 
     this.overlay.innerHTML = this.getLoaderSvg();
 
     this.renderer.appendChild(parent, this.overlay);
-    this.renderer.setStyle(this.overlay, 'display', 'none');
+    this.renderer.setStyle(this.overlay, "display", "none");
   }
 
-  private toggleLoader(isLoading: boolean) {
-    this.renderer.setStyle(this.overlay, 'display', isLoading ? 'flex' : 'none');
+  private toggleLoader(isLoading: boolean): void {
+    this.renderer.setStyle(this.overlay, "display", isLoading ? "flex" : "none");
   }
 
   private getLoaderSvg(): string {

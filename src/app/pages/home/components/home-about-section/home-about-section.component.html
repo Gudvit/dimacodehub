@@ -4,28 +4,29 @@
     <div class="about-hero__copy">
       <h3 class="about-hero__headline" #aboutHeadline [class.is-visible]="aboutHeadlineVisible()">
         @if (aboutHeadlineVisible()) {
-          <app-animated-text [text]="'I build scalable frontend systems that don\'t break under real-world complexity.'"></app-animated-text>
+          <app-animated-text
+            [text]="'I build scalable frontend systems that don\'t break under real-world complexity.'"
+          ></app-animated-text>
         } @else {
           I build scalable frontend systems that don't break under real-world complexity.
         }
       </h3>
       <p class="about-hero__subhead">
-        Senior Software Engineer with 10+ years of experience
-        specializing in Angular, architecture, and performance.
+        Senior Software Engineer with 10+ years of experience specializing in Angular, architecture,
+        and performance.
       </p>
       <div class="about-hero__body">
         <p>
-          Currently working in a PE-backed product company,
-          owning frontend architecture and driving technical decisions
-          for a business-critical platform.
+          Currently working in a PE-backed product company, owning frontend architecture and driving
+          technical decisions for a business-critical platform.
         </p>
         <p>
-          I design state management systems, define testing strategies,
-          and ensure long-term scalability.
+          I design state management systems, define testing strategies, and ensure long-term
+          scalability.
         </p>
         <p>
-          My focus is on clean, maintainable code, high performance,
-          and building products that actually deliver value.
+          My focus is on clean, maintainable code, high performance, and building products that
+          actually deliver value.
         </p>
       </div>
       <div class="about-hero__pills" aria-label="Key skills">

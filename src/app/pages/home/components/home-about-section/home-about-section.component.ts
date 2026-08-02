@@ -1,4 +1,13 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, signal, viewChild } from "@angular/core";
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from "@angular/core";
 import { AnimatedTextComponent } from "../../../../components/animated-text/animated-text.component";
 
 @Component({
@@ -6,51 +15,56 @@ import { AnimatedTextComponent } from "../../../../components/animated-text/anim
   templateUrl: "./home-about-section.component.html",
   styleUrl: "./home-about-section.component.scss",
   imports: [AnimatedTextComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeAboutSectionComponent implements AfterViewInit, OnDestroy {
+export class HomeAboutSectionComponent {
   readonly aboutHeadlineRef = viewChild<ElementRef<HTMLElement>>("aboutHeadline");
   readonly aboutHeadlineVisible = signal(false);
-  private aboutHeadlineObserver: IntersectionObserver | null = null;
 
-  ngAfterViewInit(): void {
+  private readonly destroyRef = inject(DestroyRef);
+  private observer: IntersectionObserver | null = null;
+
+  constructor() {
+    afterNextRender(() => this.observeHeadline());
+    this.destroyRef.onDestroy(() => this.disconnect());
+  }
+
+  private observeHeadline(): void {
     const headline = this.aboutHeadlineRef()?.nativeElement;
-    const slider = headline?.closest(".home-slider") as HTMLElement | null;
     if (!headline) {
       return;
     }
 
-    if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
+    // Reveal immediately when the animation cannot or should not run.
+    if (!("IntersectionObserver" in window) || this.prefersReducedMotion()) {
       this.aboutHeadlineVisible.set(true);
       return;
     }
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      this.aboutHeadlineVisible.set(true);
-      return;
-    }
-
-    this.aboutHeadlineObserver = new IntersectionObserver(
+    this.observer = new IntersectionObserver(
       (entries) => {
-        const [entry] = entries;
-        if (!entry?.isIntersecting) {
+        if (!entries.some((entry) => entry.isIntersecting)) {
           return;
         }
 
         this.aboutHeadlineVisible.set(true);
-        this.aboutHeadlineObserver?.disconnect();
-        this.aboutHeadlineObserver = null;
+        this.disconnect();
       },
       {
-        root: slider,
+        root: headline.closest<HTMLElement>(".home-slider"),
         threshold: 0.35,
       },
     );
 
-    this.aboutHeadlineObserver.observe(headline);
+    this.observer.observe(headline);
   }
 
-  ngOnDestroy(): void {
-    this.aboutHeadlineObserver?.disconnect();
-    this.aboutHeadlineObserver = null;
+  private prefersReducedMotion(): boolean {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  private disconnect(): void {
+    this.observer?.disconnect();
+    this.observer = null;
   }
 }

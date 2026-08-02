@@ -37,7 +37,7 @@
 
         <ul class="focus-panel__bullets">
           @for (item of activeRole().bullets; track item; let i = $index) {
-            <li [style.animationDelay]="(0.08 + i * 0.06) + 's'">{{ item }}</li>
+            <li [style.animationDelay]="0.08 + i * 0.06 + 's'">{{ item }}</li>
           }
         </ul>
 

@@ -5,8 +5,8 @@
     <p class="eyebrow">Frontend Engineer</p>
     <p class="lead">I build systems, not just features</p>
     <div class="hero-actions">
-      <a class="primary" href="/dmytro_huliaiev_cv.pdf" download>Download CV</a>
-      <button class="primary" type="button" (click)="onScrollToContacts()">Contact me</button>
+      <a class="primary" href="dmytro_huliaiev_cv.pdf" download>Download CV</a>
+      <button class="primary" type="button" (click)="scrollToContacts.emit()">Contact me</button>
     </div>
   </div>
   <div
@@ -14,8 +14,8 @@
     role="button"
     tabindex="0"
     aria-label="Scroll to next section"
-    (click)="onScrollNext()"
-    (keydown.enter)="onScrollNext()"
-    (keydown.space)="onScrollNext()"
+    (click)="scrollNext.emit()"
+    (keydown.enter)="scrollNext.emit()"
+    (keydown.space)="scrollNext.emit()"
   ></div>
 </section>
