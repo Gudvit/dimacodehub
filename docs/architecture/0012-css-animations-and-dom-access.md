@@ -19,8 +19,8 @@ scrolling, measuring the header height, `IntersectionObserver`, global listeners
 
 ## Decision
 
-**Animations are CSS.** `@angular/animations` is imported nowhere (although it remains in
-`dependencies`).
+**Animations are CSS.** `@angular/animations` is imported nowhere, and since the cleanup
+that followed the 2026-08-03 review it is no longer a dependency either.
 
 - The route-transition keyframes (`route-enter`, `route-leave`) are declared in the global
   `styles.scss` and applied through the template attributes
@@ -46,14 +46,14 @@ scrolling, measuring the header height, `IntersectionObserver`, global listeners
 - High-frequency events are coalesced with `requestAnimationFrame` (`trackCursor` in `app.ts`).
 - The `IntersectionObserver` in the about section is given `root: .home-slider`, because
   the container scrolls, not the viewport.
-- `Renderer2` is used only in `LoadingDirective`.
+- `Renderer2` is used nowhere: the one directive that needed it, `LoadingDirective`, was
+  replaced by the `app-loader` component, which draws its SVG from a template.
 
 ## Consequences
 
 - Animations run in the browser's compositor and do not depend on change detection —
   which is what makes zoneless mode practical.
-- Zero kilobytes of animation runtime; `@angular/animations` can be removed from the
-  dependencies.
+- Zero kilobytes of animation runtime, and one dependency fewer.
 - The price: animations are not orchestrated from TypeScript. Sequences, interruptions and
   "on complete" callbacks would have to be built by hand; duplicating the keyframes for
   `panelKey` is precisely a workaround for the missing imperative "replay this animation".

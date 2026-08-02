@@ -31,8 +31,8 @@ before any large architectural change — they record why things are the way the
 - **npm 10.9.4** (`packageManager` in `package.json`), Node 20 in CI.
 - **GitHub Actions** → GitHub Pages.
 
-`@angular/animations` is listed as a dependency but imported nowhere. `rxjs` is used in
-`app.ts` and `home-page.component.ts`; `@angular/forms` is used by the contact form.
+`rxjs` is used in `app.ts` and `home-page.component.ts`; `@angular/forms` is used by the
+contact form. Nothing else in `dependencies` is optional.
 
 ## Commands
 
@@ -55,15 +55,14 @@ src/
   index.html                  static meta/OG tags, font link
   main.ts                     bootstrapApplication(App, appConfig)
   styles.scss                 brand CSS variables, background effects, route-animation
-                              keyframes, loader styles (used by LoadingDirective)
+                              keyframes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
   images/                     assets referenced only from SCSS (hashed by the bundler)
   app/
     app.ts / app.html / app.scss   root component: router-outlet + cursor spotlight
     app.config.ts             provideZonelessChangeDetection + provideRouter(withComponentInputBinding)
     app.routes.ts             root routes, lazy blog, `**` → redirect to `/`
-    components/               reusable: header, footer, animated-text
-    directives/loading.directive.ts   overlay loader driven by `[appLoading]`
+    components/               reusable: header, footer, animated-text, loader
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
@@ -184,12 +183,10 @@ The agreed plan for working this off — with priorities, exact locations and a
 "done when" for each item — is `docs/work-plan.md`. Read it before picking up cleanup
 work, and tick entries off there as they land.
 
-- `public/shared-images/` holds unused JPGs for a future Projects section. If that
-  section is not happening — delete them.
-- `LoadingDirective` builds its overlay with `innerHTML` and always creates it, even if
-  `appLoading` never becomes `true`. The overlay styles (`.loader`, `.path`,
-  `.center-shape`) live in the global `styles.scss` — directive and styles have drifted apart.
-- `@angular/animations` is in `dependencies` but imported nowhere.
+- `public/shared-images/` holds four unused JPGs (~200 KB) for a future Projects section.
+  They ship in every deployment and are kept on purpose until that section exists.
 - Only `BlogService` and the contact-form transport have unit tests; components have none —
   their behaviour is verified exclusively through e2e.
-- `src/images/background.jpg` is 812 KB, with no `webp`/`avif` variant and no `<picture>`.
+- `src/images/background.jpg` is 217 KB (2400×1800 JPEG). No `webp`/`avif` variant: the
+  machine it was compressed on had no encoder for either. An avif at the same quality
+  would roughly halve it again.

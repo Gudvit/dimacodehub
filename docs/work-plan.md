@@ -7,7 +7,6 @@ decision rather than a task belongs in `docs/architecture/` instead.
 Each entry says **where** it lives, **what** to change and **done when** — the condition
 that makes it verifiably finished. Priorities:
 
-- **P1** — correctness and security. Small, cheap, no reason to wait.
 - **P2** — dead weight and payload: code nobody executes, bytes nobody needs.
 - **P3** — the test gap. The largest structural weakness of the project.
 - **P4** — desirable. Do when touching the area anyway.
@@ -15,113 +14,32 @@ that makes it verifiably finished. Priorities:
 Nothing here is critical: the site works, CI is green, and no finding puts data or users
 at risk.
 
----
-
-## P1 — correctness and security
-
-- [ ] **Bump Angular to 21.2.19.**
-      `package.json` pins `^21.2.0`, the lock resolves 21.2.6, which carries two XSS
-      advisories on `@angular/core` / `@angular/compiler`
-      (GHSA-58w9-8g37-x9v5, GHSA-f3m7-gqxr-g87x). The fix is inside the declared range,
-      so it is a lockfile refresh, not a migration.
-      _Done when:_ `npm audit --omit=dev` reports no advisories and the full CI gate
-      (`format:check`, `lint`, `test:unit`, `test:e2e`, `build:gh`) is green.
-
-- [ ] **Fix the duplicated `@for` track key in the experience section.**
-      `home-experience-section.component.html:6` and `:53` track by `role.title`, but
-      `"Angular Developer"` appears twice in `roles` (IdeaSoft and Lazy Ants). Angular
-      reports NG0955 and may reuse the wrong DOM node. Track `$index` (the list is
-      static) or `role.company + role.period`.
-      _Done when:_ both loops use a key that is unique across `roles`, and switching
-      through every role in the browser produces no NG0955 in the console.
-
-- [ ] **Escape the URL fragment before it reaches `querySelector`.**
-      `home-page.component.ts:90` builds `` `#${fragment}` `` from the URL. `/#2024` or
-      `/#a b` is an invalid selector: the `SyntaxError` is thrown inside the
-      `route.fragment` subscription (`:38-40`), which has no error handler, so the
-      subscription dies and anchor navigation stops working until a reload. Use
-      `CSS.escape(fragment)` or `getElementById` plus a containment check.
-      _Done when:_ `/#2024` scrolls nowhere and leaves the console clean, and `/#contacts`
-      still works afterwards in the same session. Cover it with an e2e case.
-
-- [ ] **Tell `AbortError` apart from a real failure in the contact form.**
-      `home-contact-section.component.ts:72` catches everything into `status = "error"`.
-      When the component is destroyed mid-flight, `DestroyRef.onDestroy` (`:52`) aborts
-      the request and the rejection writes an error state into a component that is
-      already gone. Nothing is logged either, so an outage at Web3Forms leaves no trace.
-      _Done when:_ an aborted request sets no status, other failures still show the error
-      block, and the underlying error is at least logged. Add a unit case for the
-      transport rejecting with `AbortError`.
-
-- [ ] **Fix the stale comment above the Web3Forms key.**
-      `contact-form.service.ts:8-9` still says "Until a real key is in place every send
-      fails", while `:11` holds a working key. It describes the previous state of the
-      feature and misleads on first read.
-      _Done when:_ the comment describes what the key is and why it is public (it already
-      does that part), without the obsolete condition.
+**P1 is done** (correctness and security): Angular raised to 21.2.19 and both XSS
+advisories cleared, the duplicated `@for` track key fixed, the URL fragment escaped before
+it reaches `querySelector`, and an abort told apart from a real send failure in the contact
+form. Most of P2 has landed too — what is left below is what still needs a decision or a
+tool this machine does not have.
 
 ---
 
 ## P2 — dead code and payload
 
-- [ ] **Delete the dead CSS in `home-page.component.scss` (~330 of 413 lines).**
-      `.competencies-*`, `.principles-*`, `.trust-*`, `.work-*`, `.stats-grid`,
-      `.domain-pills`, `.work-grid`, `.work-tags`, `.work-cta`, `.principles-cta` match
-      nothing in any template — leftovers of removed sections.
-      _Done when:_ every class selector left in the file exists in a template, and the
-      home page is visually unchanged.
+Landed: the dead CSS in `home-page.component.scss` is gone (413 lines down to 20), the
+shared `.slide-section` snap rules moved to `src/styles.scss` and the four per-section
+copies were removed, `@angular/animations` is uninstalled, `LoadingDirective` became
+`app/components/loader/` (a real template, local styles, a per-instance gradient id), and
+the contact details now live in one pair of constants that both the template and the e2e
+specs read.
 
-- [ ] **Move `.slide-section` to `src/styles.scss`.**
-      The block at `home-page.component.scss:10-16` (and its `:23-27` media override)
-      cannot apply: under emulated encapsulation a component's styles only match its own
-      template, and the `.slide-section` elements live in the four section components.
-      It works today because each section repeats the same rules
-      (`home-hero-section.component.scss:6,27-28`, `home-about-section.component.scss:8,14-15`,
-      `home-experience-section.component.scss:7-8,14-15`,
-      `home-contact-section.component.scss:7-9`). Keep the `.home-slider` half of the
-      media query where it is — that one does work.
-      _Done when:_ the shared rules live in one place, the per-section duplicates are
-      gone, and scroll snapping still behaves on desktop and stays off below 768px.
-
-- [ ] **Recompress `src/images/background.jpg` (811 kB).**
-      It is the hero background (`home-hero-section.component.scss:20`) and the single
-      largest thing on first paint — roughly nine times the compressed JS bundle (93 kB
-      transfer). No `webp`/`avif` variant, no `image-set()`.
-      _Done when:_ the hero ships an avif/webp variant with a jpg fallback, the file is
-      under ~150 kB, and the hero looks unchanged on a retina screen.
-
-- [ ] **Delete `public/shared-images/` (~200 kB).**
-      Four unused images for a Projects section that does not exist; they are copied into
-      every deployment (verified in `dist/`). Already listed under "Known debt" in
-      `CLAUDE.md`.
-      _Done when:_ the directory is gone, `dist/dimacodehub/browser` no longer contains
-      it, and the `CLAUDE.md` debt entry is removed with it.
-
-- [ ] **Remove `@angular/animations`.**
-      In `dependencies`, imported nowhere (the app uses `animate.enter/leave` and CSS —
-      ADR 0012).
-      _Done when:_ the package is out of `package.json`, `npm ci && npm run build` passes,
-      and the `CLAUDE.md` debt entry is removed.
-
-- [ ] **Decide what happens to `LoadingDirective`.**
-      Used once, on the "coming soon" placeholder (`projects-page.component.html:11`).
-      It builds its overlay with `innerHTML` (`loading.directive.ts:27`), creates it even
-      when `appLoading` is never true, references `.loader-overlay` — a class that is not
-      styled anywhere in the project — carries a hardcoded SVG `id="gradientMove"` that
-      would collide on a second instance, and its `.loader` class fights the global one
-      (`styles.scss:98` at 120px versus `projects-page.component.scss:47` at 1rem).
-      Either replace it with a small component that has a real template, or delete it and
-      the orphaned global styles.
-      _Done when:_ there is one loader implementation, its styles sit next to it, and the
-      placeholder page still shows the spinner.
-
-- [ ] **Stop duplicating the contact details.**
-      `CONTACT_EMAIL` lives in `home-contact-section.component.ts:14`, yet the same
-      address is hardcoded in the template (`home-contact-section.component.html:19`)
-      along with the phone number (`:15`). E2E only asserts the constant-driven link, so
-      a divergence would ship unnoticed.
-      _Done when:_ address and phone come from one place in the component, and e2e checks
-      the visible address too.
+- [ ] **Ship an avif or webp variant of the hero background.**
+      `src/images/background.jpg` went from 811 kB to 217 kB by dropping 3088x2316 to
+      2400x1800 at quality 50, which was as far as the machine it was compressed on could
+      go: it has no `cwebp`, no `avifenc` and no ImageMagick, and `sips` refuses to write
+      either format. An avif at the same visual quality is worth roughly half of what is
+      left.
+      _Done when:_ the hero declares the modern format with the jpg as fallback (an
+      `image-set()` in `home-hero-section.component.scss:20`), and the jpg stays for
+      browsers that need it.
 
 ---
 
@@ -218,11 +136,6 @@ at risk.
       `format`, or of the `npx playwright install chromium` step, while repeating
       base-href instructions that `CLAUDE.md` covers better.
 
-- [ ] **Correct the slider notes in `src/app/pages/home/CLAUDE.md`.**
-      It presents `.slide-section` and the mobile snap override as rules of
-      `home-page.component.scss`; in practice the per-section copies are what apply. Fold
-      this in with the `.slide-section` move above.
-
 - [ ] **Decide on `cli.analytics` in `angular.json:6`.**
       A telemetry UUID that reports from every dev machine and CI run. Set it to `false`
       unless it is wanted.
@@ -237,6 +150,10 @@ at risk.
 ---
 
 ## Deliberately not doing yet
+
+- **Deleting `public/shared-images/`.** Four unused images (~200 kB) that ship with every
+  deployment. Kept deliberately: they are the material for the Projects section, so they
+  stay until that section is either built or abandoned.
 
 - **Per-post chunking for the blog.** Every post ships inside the lazy blog chunk
   (23 kB for three). The list page will eventually carry full article bodies it never

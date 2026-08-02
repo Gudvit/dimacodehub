@@ -24,8 +24,6 @@
   border-bottom: 1px solid var(--brand-outline);
   position: relative;
   overflow: hidden;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 
 .hero::before {

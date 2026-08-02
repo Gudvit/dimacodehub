@@ -1,0 +1,47 @@
+:host {
+  display: inline-flex;
+}
+
+.loader {
+  width: 120px;
+  height: 120px;
+  animation: loader-rotate 4s linear infinite;
+}
+
+.loader__ring {
+  fill: none;
+  stroke-width: 12;
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+  animation: loader-draw 2.5s ease-in-out infinite;
+}
+
+.loader__mark {
+  fill: var(--brand-ink);
+  opacity: 0.8;
+}
+
+@keyframes loader-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-draw {
+  0% {
+    stroke-dashoffset: 3000;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 3000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader,
+  .loader__ring {
+    animation: none;
+  }
+}

@@ -82,6 +82,16 @@ test("contact section keeps the mailto link as a fallback", async ({ page }) => 
   const href = await cta.getAttribute("href");
   expect(href).toContain("mailto:gudvitt@gmail.com");
   expect(href).toContain("subject=Project%20inquiry");
+
+  // The visible details come from the same constants as the link above.
+  await expect(page.getByRole("link", { name: "gudvitt@gmail.com" })).toHaveAttribute(
+    "href",
+    "mailto:gudvitt@gmail.com",
+  );
+  await expect(page.getByRole("link", { name: "+48 577 68 22 99" })).toHaveAttribute(
+    "href",
+    "tel:+48577682299",
+  );
 });
 
 test("an unusable url fragment is ignored instead of throwing", async ({ page }) => {

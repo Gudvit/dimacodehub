@@ -12,11 +12,11 @@
       <div class="contact-info-grid">
         <article>
           <span class="key">Phone</span>
-          <a href="tel:+48577682299">+48 577 68 22 99</a>
+          <a [href]="phoneHref">{{ contactPhone }}</a>
         </article>
         <article>
           <span class="key">Email</span>
-          <a href="mailto:gudvitt@gmail.com">gudvitt@gmail.com</a>
+          <a [href]="emailHref">{{ contactEmail }}</a>
         </article>
         <article>
           <span class="key">Location</span>

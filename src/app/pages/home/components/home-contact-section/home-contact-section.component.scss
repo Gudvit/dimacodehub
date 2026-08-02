@@ -5,8 +5,6 @@
 .contact-section {
   position: relative;
   min-height: 100vh;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   display: flex;
   flex-direction: column;
   padding: clamp(3.6rem, 12vh, 8.4rem) clamp(2rem, 9vw, 2rem) clamp(1.8rem, 4vh, 2.8rem);

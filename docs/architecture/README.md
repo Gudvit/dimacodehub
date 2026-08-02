@@ -25,7 +25,7 @@ root and in the local `CLAUDE.md` files under `src/app/pages/home/` and
       ▼                ▼                     ▼
   HomePage         ProjectsPage        BLOG_ROUTES  (lazy chunk)
   slider of 4      placeholder         ├── BlogPage      list
-  sections,        + LoadingDirective  └── BlogPostPage  post, :slug → input()
+  sections,        + app-loader        └── BlogPostPage  post, :slug → input()
   manual scroll                               │
                                               ▼
                                         BlogService — posts as an in-code array

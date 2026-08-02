@@ -11,7 +11,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { FooterComponent } from "../../../../components/footer/footer.component";
 import { ContactFormService } from "./contact-form.service";
 
+// The only place the contact details are written down. The template binds to them; the
+// e2e specs assert what the template renders, so a change here cannot pass unnoticed.
 const CONTACT_EMAIL = "gudvitt@gmail.com";
+const CONTACT_PHONE = "+48 577 68 22 99";
 
 type SendStatus = "idle" | "sending" | "sent" | "error";
 
@@ -42,6 +45,10 @@ export class HomeContactSectionComponent {
   });
 
   readonly contactEmail = CONTACT_EMAIL;
+  readonly emailHref = `mailto:${CONTACT_EMAIL}`;
+
+  readonly contactPhone = CONTACT_PHONE;
+  readonly phoneHref = `tel:${CONTACT_PHONE.replace(/\s/g, "")}`;
 
   readonly mailtoHref =
     `mailto:${CONTACT_EMAIL}` +

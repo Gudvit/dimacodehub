@@ -34,11 +34,18 @@ What scrolls is **`.home-slider`, not `window`** (`overflow-y: auto` + `scroll-s
   the section is always visible.
 
 The sections `scrollToNextSection()` walks through are found by the `.slide-section`
-class. A new section without that class will be skipped by the "down" arrow.
+class. A new section without that class will be skipped by the "down" arrow — and will
+not snap, because that class is also what carries `scroll-snap-align`.
 
-`scroll-snap-type: y mandatory` is desktop-only: at `max-width: 768px` both snapping and
-`overscroll-behavior: contain` are turned off, otherwise sections stick on mobile and the
-page becomes impossible to scroll properly.
+Those snap rules are **global** (`src/styles.scss`), not part of
+`home-page.component.scss`. They have to be: the class sits in the section components'
+templates, and under emulated encapsulation the home page's own styles never reach it.
+Height and layout stay with each section — the experience panel sizes itself in `dvh`,
+the hero is a grid — so do not pull those into the global rule.
+
+`scroll-snap-type: y mandatory` is desktop-only: at `max-width: 768px` snapping,
+`scroll-snap-align` and `overscroll-behavior: contain` are all turned off, otherwise
+sections stick on mobile and the page becomes impossible to scroll properly.
 
 ## Fragment deep links
 

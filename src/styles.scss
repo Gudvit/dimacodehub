@@ -60,6 +60,23 @@ a {
   overflow: hidden;
 }
 
+// Marks a section of the home slider. `HomePageComponent.scrollToNextSection()` finds
+// sections by this class, and every one of them snaps the same way. It has to be global:
+// the class lives in the section components' templates, so neither the home page's own
+// styles nor the sections' would cover all of them. Height and layout stay per-section —
+// the experience panel sizes itself in `dvh`, the hero is a grid.
+.slide-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+@media (max-width: 768px) {
+  .slide-section {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
+}
+
 .route-container:not(.route-enabled) .route-enter,
 .route-container:not(.route-enabled) .route-leave {
   animation-name: none;
@@ -95,50 +112,5 @@ a {
   }
 }
 
-.loader {
-  width: 120px;
-  height: 120px;
-}
-
-.loader svg {
-  width: 100%;
-  height: 100%;
-}
-
-.loader svg {
-  animation: rotate 4s linear infinite;
-}
-
-.path {
-  fill: none;
-  stroke: url(#gradientMove);
-  stroke-width: 12;
-
-  stroke-dasharray: 3000;
-  stroke-dashoffset: 3000;
-
-  animation: draw 2.5s ease-in-out infinite;
-}
-
-.center-shape {
-  fill: #191d3f;
-  opacity: 0.8;
-}
-
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes draw {
-  0% {
-    stroke-dashoffset: 3000;
-  }
-  50% {
-    stroke-dashoffset: 0;
-  }
-  100% {
-    stroke-dashoffset: 3000;
-  }
-}
+// The spinner used to live here, split from the directive that built it. It is a
+// component now: `app/components/loader/`.

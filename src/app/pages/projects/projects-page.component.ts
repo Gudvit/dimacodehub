@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { HeaderComponent } from "../../components/header/header.component";
 import { FooterComponent } from "../../components/footer/footer.component";
-import { LoadingDirective } from "../../directives/loading.directive";
+import { LoaderComponent } from "../../components/loader/loader.component";
 
 @Component({
   selector: "app-projects-page",
   templateUrl: "./projects-page.component.html",
   styleUrl: "./projects-page.component.scss",
-  imports: [HeaderComponent, FooterComponent, LoadingDirective],
+  imports: [HeaderComponent, FooterComponent, LoaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsPageComponent {}
