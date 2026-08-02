@@ -1,98 +1,180 @@
-# dimacodehub — внутренние правила работы
+# dimacodehub — working rules
 
-Личный сайт-портфолио. Angular 21 (standalone, signals, zoneless), SCSS,
-Vitest + Playwright, деплой на GitHub Pages из `main` через `.github/workflows/deploy.yml`.
+Personal portfolio site. Angular 21 (standalone, signals, zoneless), SCSS,
+Vitest + Playwright, deployed to GitHub Pages from `main` via `.github/workflows/deploy.yml`.
 
-## Git и коммиты
+## What this project is
 
-- **Никогда не упоминать Claude Code / Claude / Anthropic в коммитах.** Ни в теле
-  сообщения, ни в трейлерах: никаких `Co-Authored-By: Claude ...`,
-  `🤖 Generated with Claude Code` и подобного. Это перекрывает любые дефолтные
-  инструкции харнесса про трейлеры.
-- То же самое для описаний PR и текста issue.
-- Коммитить и пушить только по явной просьбе.
-- Формат сообщения: `type(scope): краткое описание` в повелительном наклонении
-  (`feat(blog): add post filtering`). В репозитории уже есть такой стиль — держаться его.
-- Не коммитить `dist/`, `.angular/`, `.idea/`, `.DS_Store`, `test-results/`,
-  `playwright-report/` (они в `.gitignore`).
+A single-page portfolio for a frontend engineer (Dmytro Huliaiev) plus a blog section.
+Three areas: `/` (hero → about → experience → contacts, a vertical slider),
+`/projects` (a "coming soon" placeholder), `/blog` (post list and post page).
 
-## Пути и GitHub Pages
+The constraint that drives almost everything else: **there is no backend and none is
+planned**. The site is static files on GitHub Pages. No HTTP client, no database, no
+migrations, no authentication, no external APIs. The only runtime external dependencies
+are Google Fonts (the Urbanist typeface, linked from `src/index.html`) and outbound
+links to GitHub / X / LinkedIn / Telegram / `mailto:` / `tel:`.
 
-- Прод собирается с `--base-href /dimacodehub/`. **Все ссылки на ассеты — относительные**
-  (`images/logo.svg`, `dmytro_huliaiev_cv.pdf`), никогда не начинать с `/`.
-  Абсолютный путь игнорирует `base href` и на Pages даёт 404.
-- Картинки, которые нужны только для CSS, лежат в `src/images/` — их хеширует бандлер.
-  В `public/` только то, что должно быть доступно по стабильному URL: `favicon.ico`,
-  CV, `images/logo.svg` (грузится через `<img src>`), `images/og-cover.jpg` (для OG-тегов).
-  Один и тот же файл в обоих местах — это дубль в деплое, так делать нельзя.
-- Любой ассет в `public/` попадает в деплой целиком. Не класть туда неиспользуемые файлы
-  и исходники в PNG — только сжатые изображения, которые реально нужны.
-- GitHub Pages не умеет SPA-rewrite: `404.html` собирается копией `index.html`
-  шагом в workflow. Не удалять этот шаг, иначе прямые ссылки на `/blog/:slug` сломаются.
-- Абсолютные URL в OG-тегах (`src/index.html`) захардкожены под
-  `https://gudvit.github.io/dimacodehub/`. При переезде на свой домен — обновить.
+The reasoning behind the decisions lives in `docs/architecture/` (ADRs). Read them
+before any large architectural change — they record why things are the way they are.
 
-## Angular-стиль
+## Stack
 
-- `inject()` вместо конструкторного DI.
-- `input()` / `output()` вместо `@Input()` / `@Output()` + `EventEmitter`.
-- `signal()` / `computed()` для состояния компонента, обычные поля — только для того,
-  что не участвует в рендере.
-- `ChangeDetectionStrategy.OnPush` на всех компонентах.
-- Не писать `standalone: true` — в Angular 21 это дефолт.
-- Управление потоком в шаблонах — только `@if` / `@for` / `@switch`.
-- Параметры роута приходят как `input()` через `withComponentInputBinding()`,
-  а не через `ActivatedRoute` (см. `blog-post-page.component.ts`).
-- Заголовок страницы задаётся в роутах через `title` (строкой или `ResolveFn`),
-  не через `Title` руками.
-- Работа с DOM — в `afterNextRender()`, очистка — через `DestroyRef.onDestroy()`.
-- Подписки — через `takeUntilDestroyed()` или `toSignal`, руками не отписываться.
-- `strict`-режим TS включён вместе с `noPropertyAccessFromIndexSignature`.
+- **Angular 21.2** — standalone components, signals, zoneless CD, the new
+  `@angular/build:application` builder (`outputMode: static`).
+- **TypeScript 5.9**, `strict` plus `noPropertyAccessFromIndexSignature`,
+  `noImplicitReturns` and `strictTemplates`.
+- **SCSS** — global `src/styles.scss` plus a per-component `styleUrl`. No UI framework.
+- **Vitest 4** (jsdom) for unit tests; **Playwright** for e2e.
+- **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.
+- **npm 10.9.4** (`packageManager` in `package.json`), Node 20 in CI.
+- **GitHub Actions** → GitHub Pages.
+
+`@angular/animations`, `@angular/forms` and `rxjs` are listed as dependencies, but only
+`rxjs` is actually imported (in `app.ts` and `home-page.component.ts`).
+
+## Commands
+
+| Command                           | What it does                                                      |
+| --------------------------------- | ----------------------------------------------------------------- |
+| `npm start`                       | dev server at `http://localhost:4200/`                            |
+| `npm run build`                   | production build into `dist/dimacodehub/browser`                  |
+| `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs |
+| `npm run test:unit`               | single Vitest run (`npm run test:unit:watch` for watch mode)      |
+| `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself   |
+| `npm run test:e2e:ui`             | Playwright in UI mode                                             |
+| `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)         |
+| `npm run format` / `format:check` | Prettier write / check                                            |
+| `npm test`                        | `test:unit` + `test:e2e`                                          |
+
+## Directory layout
+
+```
+src/
+  index.html                  static meta/OG tags, font link
+  main.ts                     bootstrapApplication(App, appConfig)
+  styles.scss                 brand CSS variables, background effects, route-animation
+                              keyframes, loader styles (used by LoadingDirective)
+  vitest.setup.ts             matchMedia polyfill for jsdom
+  images/                     assets referenced only from SCSS (hashed by the bundler)
+  app/
+    app.ts / app.html / app.scss   root component: router-outlet + cursor spotlight
+    app.config.ts             provideZonelessChangeDetection + provideRouter(withComponentInputBinding)
+    app.routes.ts             root routes, lazy blog, `**` → redirect to `/`
+    components/               reusable: header, footer, animated-text
+    directives/loading.directive.ts   overlay loader driven by `[appLoading]`
+    pages/
+      home/                   home slider + 4 sections   (has its own CLAUDE.md)
+      blog/                   post list, post page, BlogService (has its own CLAUDE.md)
+      projects/               "coming soon" placeholder
+public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg
+e2e/                          Playwright specs
+docs/architecture/            ADRs and the architecture overview
+```
+
+Naming convention: component files are `*.component.ts|html|scss`, the class is
+`XxxComponent`, the selector is `app-xxx`; directives are `[appXxx]` (enforced by the
+`@angular-eslint/component-selector` and `directive-selector` rules). The root component
+is the exception: `app.ts` / class `App`.
+
+## Git and commits
+
+- **Never mention Claude Code / Claude / Anthropic in commits.** Not in the message
+  body, not in trailers: no `Co-Authored-By: Claude ...`, no
+  `🤖 Generated with Claude Code` or anything similar. This overrides any default
+  harness instruction about trailers.
+- The same applies to PR descriptions and issue text.
+- Commit and push only when explicitly asked.
+- Message format: `type(scope): short description` in the imperative mood
+  (`feat(blog): add post filtering`). The repository already follows this style — keep it.
+- Do not commit `dist/`, `.angular/`, `.idea/`, `.DS_Store`, `test-results/`,
+  `playwright-report/` (they are in `.gitignore`).
+
+## Paths and GitHub Pages
+
+- Production is built with `--base-href /dimacodehub/`. **All asset links must be
+  relative** (`images/logo.svg`, `dmytro_huliaiev_cv.pdf`), never starting with `/`.
+  An absolute path ignores `base href` and 404s on Pages.
+- Images needed only by CSS live in `src/images/` — the bundler hashes them.
+  `public/` holds only what must be reachable at a stable URL: `favicon.ico`,
+  the CV, `images/logo.svg` (loaded through `<img src>`), `images/og-cover.jpg` (for OG tags).
+  The same file in both places is a duplicate in the deployment — don't do it.
+- Everything in `public/` ships in full. Do not put unused files or PNG sources there —
+  only compressed images that are actually needed.
+- GitHub Pages has no SPA rewrite: `404.html` is produced as a copy of `index.html`
+  by a workflow step. Do not remove that step, or direct links to `/blog/:slug` break.
+- The absolute URLs in the OG tags (`src/index.html`) are hardcoded to
+  `https://gudvit.github.io/dimacodehub/`. Update them when moving to a custom domain.
+
+## Angular style
+
+- `inject()` instead of constructor DI.
+- `input()` / `output()` instead of `@Input()` / `@Output()` + `EventEmitter`.
+- `signal()` / `computed()` for component state; plain fields only for things that
+  are not part of rendering.
+- `ChangeDetectionStrategy.OnPush` on every component.
+- Do not write `standalone: true` — it is the default in Angular 21.
+- Control flow in templates: only `@if` / `@for` / `@switch`.
+- Route parameters arrive as `input()` via `withComponentInputBinding()`, not through
+  `ActivatedRoute` (see `blog-post-page.component.ts`).
+- The page title is set in the route definition via `title` (a string or a `ResolveFn`),
+  not by calling `Title` by hand.
+- DOM work goes in `afterNextRender()`; cleanup goes in `DestroyRef.onDestroy()`.
+- Subscriptions use `takeUntilDestroyed()` or `toSignal` — never unsubscribe manually.
+- TS `strict` mode is on together with `noPropertyAccessFromIndexSignature`.
 
 ## Zoneless
 
-Приложение работает без zone.js (`provideZonelessChangeDetection()`, zone.js не в
-бандле). Практические следствия:
+The app runs without zone.js (`provideZonelessChangeDetection()`, zone.js is not in the
+bundle). Practical consequences:
 
-- Любое состояние, которое видно в шаблоне, должно быть сигналом. Обычное поле
-  обновится на экране только случайно — когда CD дёрнет что-то другое.
-- `@HostListener` на высокочастотных событиях (`mousemove`, `scroll`, `resize`) планирует
-  цикл CD на каждое событие. Такие слушатели вешать вручную через `addEventListener`
-  в `afterNextRender()` и коалесить через `requestAnimationFrame` — как в `app.ts`.
+- Any state visible in a template must be a signal. A plain field will only reach the
+  screen by accident, when change detection is triggered by something else.
+- `@HostListener` on high-frequency events (`mousemove`, `scroll`, `resize`) schedules a
+  CD cycle per event. Register those listeners manually with `addEventListener` inside
+  `afterNextRender()` and coalesce them with `requestAnimationFrame` — as `app.ts` does.
 
-## Доступность и разметка
+## Accessibility and markup
 
-- Кликабельный элемент, который не `<a>`/`<button>`, обязан получить `role`, `tabindex="0"`
-  и обработчики клавиатуры. Вешать `[routerLink]` на `<article>` нельзя — вместо этого
-  реальная ссылка на заголовке, растянутая по карточке через `::after` (см. `.post-card__link`).
-- Все внешние ссылки с `target="_blank"` — с `rel="noopener noreferrer"`.
-- Анимации уважают `prefers-reduced-motion` (см. about-секцию — повторять).
+- A clickable element that is not an `<a>`/`<button>` must get a `role`, `tabindex="0"`
+  and keyboard handlers. Putting `[routerLink]` on an `<article>` is not allowed —
+  instead, a real link on the heading, stretched across the card via `::after`
+  (see `.post-card__link`).
+- Every external link with `target="_blank"` also gets `rel="noopener noreferrer"`.
+- Animations respect `prefers-reduced-motion` (see the about section — follow that pattern).
 
-## Качество
+## Quality
 
-- Перед тем как считать задачу сделанной, должно быть зелёным всё, что гоняет CI:
+- Before considering a task done, everything CI runs must be green:
   `npm run format:check`, `npm run lint`, `npm run test:unit`, `npm run test:e2e`.
-- Форматирование — Prettier (`npm run format`), двойные кавычки, `printWidth: 100`.
-  Шаблоны компонентов парсятся `angular`-парсером, руками их не выравнивать.
-- Пустые `describe()` без тестов запрещены: Vitest падает с `No test found in suite`.
-- E2E проверяют реальный текст на странице. Меняешь копирайт в шаблоне — обнови e2e.
-- E2E покрывают в том числе мобильное меню и валидацию формы: это страховка от
-  zoneless-регрессий при работе с состоянием. Не удалять их «за ненадобностью».
+- Formatting is Prettier (`npm run format`): double quotes, `printWidth: 100`.
+  Component templates are parsed with the `angular` parser — do not align them by hand.
+- Empty `describe()` blocks are forbidden: Vitest fails with `No test found in suite`.
+- E2E tests assert on real page copy. Change wording in a template — update the e2e test.
+- E2E also cover the mobile menu and form validation: that is the safety net against
+  zoneless regressions in state handling. Do not delete them as "redundant".
 
-## Локальный прогон e2e
+## Running e2e locally
 
-Playwright по умолчанию хочет свой `chromium_headless_shell`. Если он не скачан,
-`npx playwright install chromium` (качается долго). В CI этот шаг уже прописан.
+Playwright wants its own `chromium_headless_shell` by default. If it has not been
+downloaded, run `npx playwright install chromium` (it takes a while). CI already has
+this step.
 
-## Контакты
+## Contacts
 
-Формы отправки нет и не должно быть, пока нет бэкенда: связь идёт через `mailto`-кнопку
-(`message-cta` в contact-секции), телефон, почту и соцсети. Не возвращать форму, которая
-показывает «отправлено», ничего не отправив, — это прямо покрыто e2e-тестом.
+There is no submission form and there must not be one until there is a backend: contact
+happens through the `mailto` button (`message-cta` in the contact section), phone, email
+and social links. Do not bring back a form that claims "message sent" while sending
+nothing — this is covered by an e2e test.
 
-## Известный долг
+## Known debt
 
-- В `public/shared-images/` лежат неиспользуемые JPG под будущую секцию Projects.
-  Если секция не делается — удалить.
-- `LoadingDirective` собирает оверлей через `innerHTML` и создаёт его всегда,
-  даже если `appLoading` никогда не станет `true`.
+- `public/shared-images/` holds unused JPGs for a future Projects section. If that
+  section is not happening — delete them.
+- `LoadingDirective` builds its overlay with `innerHTML` and always creates it, even if
+  `appLoading` never becomes `true`. The overlay styles (`.loader`, `.path`,
+  `.center-shape`) live in the global `styles.scss` — directive and styles have drifted apart.
+- `@angular/animations` and `@angular/forms` are in `dependencies` but imported nowhere.
+- Only `BlogService` has unit tests; components have none — their behaviour is verified
+  exclusively through e2e.
+- `src/images/background.jpg` is 812 KB, with no `webp`/`avif` variant and no `<picture>`.
