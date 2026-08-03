@@ -1,0 +1,8 @@
+dist
+.angular
+node_modules
+package-lock.json
+public
+src/images
+playwright-report
+test-results

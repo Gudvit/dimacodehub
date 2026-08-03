@@ -1,4 +1,12 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, inject, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  viewChild,
+} from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActivatedRoute } from "@angular/router";
 import { HomeAboutSectionComponent } from "./components/home-about-section/home-about-section.component";
@@ -16,16 +24,21 @@ import { HomeHeroSectionComponent } from "./components/home-hero-section/home-he
     HomeExperienceSectionComponent,
     HomeContactSectionComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomePageComponent implements AfterViewInit {
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly route = inject(ActivatedRoute);
+export class HomePageComponent {
   readonly homeSliderRef = viewChild<ElementRef<HTMLElement>>("homeSlider");
 
-  ngAfterViewInit(): void {
-    this.route.fragment
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((fragment) => this.scrollToFragment(fragment, "auto"));
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+
+  constructor() {
+    // The slider must exist before a fragment can be scrolled into view.
+    afterNextRender(() => {
+      this.route.fragment
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((fragment) => this.scrollToFragment(fragment, "auto"));
+    });
   }
 
   scrollToNextSection(): void {
@@ -74,7 +87,9 @@ export class HomePageComponent implements AfterViewInit {
       return;
     }
 
-    const target = slider.querySelector<HTMLElement>(`#${fragment}`);
+    // The fragment comes from the URL: `/#2024` is not a valid selector unescaped, and the
+    // SyntaxError would kill the subscription this runs in.
+    const target = slider.querySelector<HTMLElement>(`#${CSS.escape(fragment)}`);
     if (!target) {
       return;
     }
@@ -85,8 +100,13 @@ export class HomePageComponent implements AfterViewInit {
     });
   }
 
+  /**
+   * The fixed header overlaps the top of every section. Its height is published as
+   * `--header-height` by `HeaderComponent` itself — reading the variable keeps this page
+   * out of the header's markup.
+   */
   private getHeaderOffset(): number {
-    const header = document.querySelector<HTMLElement>(".site-header");
-    return header?.offsetHeight ?? 0;
+    const raw = getComputedStyle(document.documentElement).getPropertyValue("--header-height");
+    return Number.parseFloat(raw) || 0;
   }
 }

@@ -35,7 +35,9 @@
   height: 2px;
   background: currentColor;
   border-radius: 999px;
-  transition: transform 0.25s ease, opacity 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
 }
 
 .menu-toggle.is-open span:nth-child(1) {
@@ -79,7 +81,9 @@
   color: var(--brand-ink);
   transform: translateX(-120%);
   opacity: 0;
-  transition: transform 0.35s ease, opacity 0.35s ease;
+  transition:
+    transform 0.35s ease,
+    opacity 0.35s ease;
 }
 
 .brand-name .last {

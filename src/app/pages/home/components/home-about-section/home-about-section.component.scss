@@ -11,8 +11,6 @@
   flex-direction: column;
   background: #fff;
   border-bottom: 1px solid var(--brand-outline);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 
 .about-hero__display-title {
@@ -84,7 +82,8 @@
   opacity: 0;
   transform: translateY(18px);
   filter: blur(5px);
-  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
     filter 0.75s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -136,7 +135,10 @@
   font-weight: 700;
   letter-spacing: 0.01em;
   box-shadow: 0 8px 18px -16px rgba(25, 29, 63, 0.28);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .about-hero__pills span::before {
@@ -156,7 +158,6 @@
   border-color: rgba(97, 34, 51, 0.4);
   box-shadow: 0 12px 24px -18px rgba(25, 29, 63, 0.36);
 }
-
 
 .about-hero__metrics {
   display: grid;
@@ -178,10 +179,18 @@
   animation: metric-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.about-hero__metrics article:nth-child(1) { animation-delay: 0.03s; }
-.about-hero__metrics article:nth-child(2) { animation-delay: 0.09s; }
-.about-hero__metrics article:nth-child(3) { animation-delay: 0.15s; }
-.about-hero__metrics article:nth-child(4) { animation-delay: 0.21s; }
+.about-hero__metrics article:nth-child(1) {
+  animation-delay: 0.03s;
+}
+.about-hero__metrics article:nth-child(2) {
+  animation-delay: 0.09s;
+}
+.about-hero__metrics article:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.about-hero__metrics article:nth-child(4) {
+  animation-delay: 0.21s;
+}
 
 .about-hero__metric-value {
   margin: 0;
@@ -249,11 +258,14 @@
   }
 }
 
+// The headline never gets `is-visible` here — the component leaves the animation alone and
+// the heading is shown as plain text, so this block carries what that class would have done.
 @media (prefers-reduced-motion: reduce) {
   .about-hero__headline {
     opacity: 1;
     transform: none;
     filter: none;
     transition: none;
+    color: var(--brand-wine);
   }
 }

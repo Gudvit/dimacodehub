@@ -1,15 +1,15 @@
 export interface BlogPostSection {
-  heading?: string;
-  paragraphs: string[];
-  code?: string;
+  readonly heading?: string;
+  readonly paragraphs: readonly string[];
+  readonly code?: string;
 }
 
 export interface BlogPost {
-  slug: string;
-  title: string;
-  date: string;
-  tags: string[];
-  preview: string;
-  readingTime: number;
-  sections: BlogPostSection[];
+  readonly slug: string;
+  readonly title: string;
+  readonly date: string;
+  readonly tags: readonly string[];
+  readonly preview: string;
+  readonly readingTime: number;
+  readonly sections: readonly BlogPostSection[];
 }

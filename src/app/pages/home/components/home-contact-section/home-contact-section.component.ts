@@ -1,54 +1,100 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  output,
+  signal,
+} from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { FooterComponent } from "../../../../components/footer/footer.component";
+import { ContactFormService } from "./contact-form.service";
+
+// The only place the contact details are written down. The template binds to them; the
+// e2e specs assert what the template renders, so a change here cannot pass unnoticed.
+const CONTACT_EMAIL = "gudvitt@gmail.com";
+const CONTACT_PHONE = "+48 577 68 22 99";
+
+type SendStatus = "idle" | "sending" | "sent" | "error";
 
 @Component({
   selector: "app-home-contact-section",
   templateUrl: "./home-contact-section.component.html",
   styleUrl: "./home-contact-section.component.scss",
-  imports: [ReactiveFormsModule, FooterComponent],
+  imports: [FooterComponent, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeContactSectionComponent {
-  @Output() backToTop = new EventEmitter<void>();
-  submitted = false;
-  successMessage = "";
+  readonly backToTop = output<void>();
 
-  readonly messageForm = this.fb.group({
+  private readonly contact = inject(ContactFormService);
+  private readonly fb = inject(FormBuilder);
+  private readonly inFlight = new AbortController();
+
+  readonly status = signal<SendStatus>("idle");
+  readonly sending = computed(() => this.status() === "sending");
+  readonly sent = computed(() => this.status() === "sent");
+  readonly failed = computed(() => this.status() === "error");
+
+  readonly form = this.fb.nonNullable.group({
     name: ["", [Validators.required, Validators.minLength(2)]],
     email: ["", [Validators.required, Validators.email]],
     message: ["", [Validators.required, Validators.minLength(10)]],
+    botcheck: [false],
   });
 
-  constructor(private readonly fb: FormBuilder) {}
+  readonly contactEmail = CONTACT_EMAIL;
+  readonly emailHref = `mailto:${CONTACT_EMAIL}`;
 
-  onSubmit(): void {
-    this.submitted = true;
-    this.successMessage = "";
-    this.messageForm.markAllAsTouched();
+  readonly contactPhone = CONTACT_PHONE;
+  readonly phoneHref = `tel:${CONTACT_PHONE.replace(/\s/g, "")}`;
 
-    if (this.messageForm.invalid) {
+  readonly mailtoHref =
+    `mailto:${CONTACT_EMAIL}` +
+    `?subject=${encodeURIComponent("Project inquiry")}` +
+    `&body=${encodeURIComponent("Hi Dmytro,\n\n")}`;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.inFlight.abort());
+  }
+
+  async submit(): Promise<void> {
+    if (this.sending()) {
       return;
     }
 
-    // TODO: send to API when backend is ready
-    this.successMessage = "Thanks! Your message has been sent.";
-    this.messageForm.reset();
-    this.submitted = false;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.status.set("sending");
+    this.form.disable();
+
+    try {
+      await this.contact.send(this.form.getRawValue(), this.inFlight.signal);
+      this.status.set("sent");
+      this.form.reset();
+    } catch (error) {
+      // Aborted from DestroyRef: the component is gone, there is no one left to tell.
+      if (this.inFlight.signal.aborted) {
+        return;
+      }
+
+      console.error("Contact form: send failed.", error);
+      this.status.set("error");
+    } finally {
+      this.form.enable();
+    }
   }
 
-  get name() {
-    return this.messageForm.get("name");
+  writeAnother(): void {
+    this.status.set("idle");
   }
 
-  get email() {
-    return this.messageForm.get("email");
-  }
-
-  get message() {
-    return this.messageForm.get("message");
-  }
-
-  onBackToTop(): void {
-    this.backToTop.emit();
+  showsError(control: "name" | "email" | "message"): boolean {
+    const field = this.form.controls[control];
+    return field.touched && field.invalid;
   }
 }
