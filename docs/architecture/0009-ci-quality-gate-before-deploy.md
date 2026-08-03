@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted. In effect.
+Accepted. In effect. Dependency automation superseded in part by
+[0018](0018-manual-dependency-updates.md).
 
 ## Context
 
@@ -22,7 +23,7 @@ them fails, nothing is deployed:
    dev-tool advisory must not block a deploy of code that never ships it
 3. `npm run format:check` — Prettier
 4. `npm run lint` — ESLint (`angular-eslint`, including `templateAccessibility`)
-5. `npm run test:unit` — Vitest
+5. `npm run test:unit:coverage` — Vitest with the global floor from ADR 0017
 6. `npx playwright install --with-deps chromium`
 7. `npm run test:e2e` — Playwright (the report is uploaded as an artifact only on failure,
    retained for 7 days)
@@ -63,6 +64,5 @@ Formatting and linting are pushed into config files (`.prettierrc.json`: double 
 - `public/` and `src/images` are excluded from Prettier (`.prettierignore`) — they hold
   binaries.
 - Actions are pinned by commit SHA with the version in a trailing comment, so a moved tag
-  cannot change what runs. Dependabot (`.github/dependabot.yml`) moves both those pins and
-  the npm dependencies; without it the audit step would eventually start failing on its
-  own, which is how the Angular patch level drifted in the first place.
+  cannot change what runs. Dependency and action updates are now deliberate maintenance
+  work rather than automated PRs (ADR 0018).

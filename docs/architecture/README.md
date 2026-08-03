@@ -63,6 +63,7 @@ Cross-cutting facts that explain nearly every decision below:
 | [0015](0015-contact-form-via-web3forms.md)                  | Contact                          | a real form posting to Web3Forms, `mailto` as the fallback         |
 | [0016](0016-component-tests-through-the-angular-builder.md) | Testing                          | `ng test` through the Angular builder, so components can be tested |
 | [0017](0017-unit-coverage-floor.md)                         | Coverage                         | a measured global floor enforced by CI                             |
+| [0018](0018-manual-dependency-updates.md)                   | Dependencies                     | coherent manual updates instead of Dependabot PRs                  |
 
 ## What the architecture deliberately does not solve
 
