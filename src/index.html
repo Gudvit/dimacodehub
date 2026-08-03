@@ -6,6 +6,25 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <!--
+      GitHub Pages cannot send headers, so the policy ships as a meta tag. It is the whole
+      outside world this app touches: the Web3Forms endpoint, Google Fonts, and nothing
+      else. 'unsafe-inline' for styles is unavoidable - Angular inlines component styles.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+               base-uri 'self';
+               object-src 'none';
+               form-action 'none';
+               frame-ancestors 'none';
+               img-src 'self' data:;
+               script-src 'self';
+               connect-src 'self' https://api.web3forms.com;
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+               font-src 'self' https://fonts.gstatic.com"
+    />
+
     <meta
       name="description"
       content="Senior Frontend Engineer with 10+ years of experience in Angular, frontend architecture, and performance. Based in Cracow, Poland - open to remote work."

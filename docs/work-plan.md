@@ -65,64 +65,20 @@ a desktop/mobile project pair that does not duplicate runs.
 
 ## P4 — desirable
 
-- [ ] **Restrict the Web3Forms key to the site's domain** (dashboard setting, no code).
+Landed: the CSP `<meta>` (ADR 0003), `npm audit --omit=dev` in the gate plus Dependabot for
+npm and actions, actions pinned by commit SHA, `/projects` lazy-loaded, the experience
+component split into `experience-roles.ts` + `role-gestures.ts` (311 lines down to 120),
+`readonly` blog and experience models, `--header-height` published by `HeaderComponent`
+instead of a global `.site-header` lookup, a rewritten `README.md`, `cli.analytics: false`,
+and `.nvmrc` + `engines`.
+
+- [ ] **Restrict the Web3Forms key to the site's domain** (dashboard setting, no code —
+      only the account owner can do this).
       The key is public by design and that is correct (ADR 0015), but without a domain
       allowlist anyone can post from any origin and burn the 250/month quota. The
       `botcheck` honeypot is the only other line of defence.
       _Done when:_ the allowlist contains the production origin and a send from the live
       site still succeeds.
-
-- [ ] **Add a CSP `<meta>` to `src/index.html`.**
-      GitHub Pages cannot set headers, but the meta form covers most of it: `default-src`
-      and `connect-src` on `'self'` plus `https://api.web3forms.com`, `font-src` on
-      `https://fonts.gstatic.com`, `style-src` on `'self' 'unsafe-inline'` plus
-      `https://fonts.googleapis.com`. The `'unsafe-inline'` for styles is unavoidable —
-      Angular inlines component styles.
-      _Done when:_ the site loads with no CSP violations in the console, fonts render and
-      the contact form still sends.
-
-- [ ] **Add dependency automation and an audit step.**
-      Nothing watches dependencies, which is exactly how the Angular patch level drifted.
-      _Done when:_ Dependabot (or Renovate) is configured and the workflow runs
-      `npm audit --omit=dev` as part of the gate.
-
-- [ ] **Lazy-load the projects placeholder.**
-      `app.routes.ts:3` imports `ProjectsPageComponent` statically, so a "coming soon"
-      page sits in the initial bundle. Home stays eager — it is the first screen.
-
-- [ ] **Split `HomeExperienceSectionComponent` (311 lines).**
-      Four responsibilities in one class: role data, active-role state, touch gestures,
-      wheel handling with accumulator/cooldown/edge-exit. The gesture code touches no
-      Angular API and moves cleanly into a directive or helper; `roles` belongs in a
-      constant or service, the way the blog keeps posts in `BlogService`.
-
-- [ ] **Make the content structures read-only.**
-      `BlogService.getAll()` (`blog.service.ts:162`) hands out the internal array, and
-      `roles` is a public mutable field. `ContactMessage` already uses `readonly` — apply
-      the same to `BlogPost`, `BlogPostSection` and the experience interfaces.
-
-- [ ] **Reach for the header height without a global lookup.**
-      `getHeaderOffset()` (`home-page.component.ts:101-104`) queries `.site-header`
-      through `document`, reaching into `HeaderComponent`'s markup: renaming that class
-      silently breaks every scroll offset and no test would catch it. A
-      `--header-height` CSS variable or `scroll-margin-top` on the sections keeps the
-      boundary intact.
-
-- [ ] **Refresh `README.md`.**
-      It predates the contact form: no mention of Web3Forms, of `npm run lint` /
-      `format`, or of the `npx playwright install chromium` step, while repeating
-      base-href instructions that `CLAUDE.md` covers better.
-
-- [ ] **Decide on `cli.analytics` in `angular.json:6`.**
-      A telemetry UUID that reports from every dev machine and CI run. Set it to `false`
-      unless it is wanted.
-
-- [ ] **Pin the Node version.**
-      CI fixes Node 20 and `packageManager` fixes npm, but there is no `.nvmrc` or
-      `engines` field, so local versions are free to drift.
-
-- [ ] **Pin the GitHub Actions by commit SHA** instead of the major tag
-      (`actions/checkout@v4` and friends in `.github/workflows/deploy.yml`).
 
 ---
 

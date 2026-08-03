@@ -3,7 +3,7 @@ import { BlogPost } from "../models/blog-post.model";
 
 @Injectable({ providedIn: "root" })
 export class BlogService {
-  private readonly posts: BlogPost[] = [
+  private readonly posts: readonly BlogPost[] = [
     {
       slug: "ai-frontend-engineering",
       title: "What AI Actually Changes About Frontend Engineering",
@@ -159,7 +159,7 @@ export class BlogService {
     },
   ];
 
-  getAll(): BlogPost[] {
+  getAll(): readonly BlogPost[] {
     return this.posts;
   }
 

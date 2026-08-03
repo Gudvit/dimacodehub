@@ -100,8 +100,13 @@ export class HomePageComponent {
     });
   }
 
+  /**
+   * The fixed header overlaps the top of every section. Its height is published as
+   * `--header-height` by `HeaderComponent` itself — reading the variable keeps this page
+   * out of the header's markup.
+   */
   private getHeaderOffset(): number {
-    const header = document.querySelector<HTMLElement>(".site-header");
-    return header?.offsetHeight ?? 0;
+    const raw = getComputedStyle(document.documentElement).getPropertyValue("--header-height");
+    return Number.parseFloat(raw) || 0;
   }
 }

@@ -1,5 +1,8 @@
 :root {
   color-scheme: light;
+  // Measured and kept up to date by HeaderComponent; the home slider subtracts it when
+  // scrolling to a section. The fallback matters only before the first render.
+  --header-height: 0px;
   --brand-ink: #191d3f;
   --brand-wine: #612233;
   --brand-surface: #f6f3f5;

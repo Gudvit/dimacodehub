@@ -28,7 +28,7 @@ before any large architectural change — they record why things are the way the
 - **SCSS** — global `src/styles.scss` plus a per-component `styleUrl`. No UI framework.
 - **Vitest 4** (jsdom) for unit tests; **Playwright** for e2e.
 - **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.
-- **npm 10.9.4** (`packageManager` in `package.json`), Node 20 in CI.
+- **npm 10.9.4** (`packageManager` in `package.json`), Node 20 (`.nvmrc`, `engines`).
 - **GitHub Actions** → GitHub Pages.
 
 `rxjs` is used in `app.ts` and `home-page.component.ts`; `@angular/forms` is used by the
@@ -61,7 +61,7 @@ src/
   app/
     app.ts / app.html / app.scss   root component: router-outlet + cursor spotlight
     app.config.ts             provideZonelessChangeDetection + provideRouter(withComponentInputBinding)
-    app.routes.ts             root routes, lazy blog, `**` → redirect to `/`
+    app.routes.ts             root routes, lazy blog and projects, `**` → redirect to `/`
     components/               reusable: header, footer, animated-text, loader
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)

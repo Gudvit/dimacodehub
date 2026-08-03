@@ -40,3 +40,8 @@ exist, and by default it returns a 404 instead of `index.html`.
 - Local `npm start` runs with `base href = /`, so the development environment differs
   from production exactly where paths break most often. The "cv link stays relative" e2e
   test exists precisely because of that gap.
+- No response headers of any kind, so the Content Security Policy ships as a
+  `<meta http-equiv>` in `src/index.html`. It allows `'self'`, the Web3Forms endpoint and
+  Google Fonts, and nothing else; `'unsafe-inline'` is granted to styles only, because
+  Angular inlines component styles. The build produces no inline script, so `script-src`
+  needs no exception — check that this still holds before adding anything to `index.html`.

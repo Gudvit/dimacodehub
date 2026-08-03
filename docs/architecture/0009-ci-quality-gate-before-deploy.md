@@ -18,17 +18,19 @@ and by `workflow_dispatch`. The `build` job runs these steps in strict order; if
 them fails, nothing is deployed:
 
 1. `npm ci` (Node 20, npm cache)
-2. `npm run format:check` — Prettier
-3. `npm run lint` — ESLint (`angular-eslint`, including `templateAccessibility`)
-4. `npm run test:unit` — Vitest
-5. `npx playwright install --with-deps chromium`
-6. `npm run test:e2e` — Playwright (the report is uploaded as an artifact only on failure,
+2. `npm audit --omit=dev --audit-level=moderate` — production dependencies only: a
+   dev-tool advisory must not block a deploy of code that never ships it
+3. `npm run format:check` — Prettier
+4. `npm run lint` — ESLint (`angular-eslint`, including `templateAccessibility`)
+5. `npm run test:unit` — Vitest
+6. `npx playwright install --with-deps chromium`
+7. `npm run test:e2e` — Playwright (the report is uploaded as an artifact only on failure,
    retained for 7 days)
-7. `npm run build:gh`
-8. copy `index.html` → `404.html` (SPA fallback, ADR 0003)
-9. `upload-pages-artifact`
+8. `npm run build:gh`
+9. copy `index.html` → `404.html` (SPA fallback, ADR 0003)
+10. `upload-pages-artifact`
 
-Steps 1-8 run for every branch. Step 9 and the whole `deploy` job are conditional on
+Steps 1-9 run for every branch. Step 10 and the whole `deploy` job are conditional on
 `github.ref == 'refs/heads/main'`: a feature branch gets the verdict, never the
 deployment. The workflow does not also listen to `pull_request` — a PR branch here lives
 in the same repository, so its push already triggers a run, and a second trigger would
@@ -60,3 +62,7 @@ Formatting and linting are pushed into config files (`.prettierrc.json`: double 
   repository. Not a concern for a personal project with no outside contributors.
 - `public/` and `src/images` are excluded from Prettier (`.prettierignore`) — they hold
   binaries.
+- Actions are pinned by commit SHA with the version in a trailing comment, so a moved tag
+  cannot change what runs. Dependabot (`.github/dependabot.yml`) moves both those pins and
+  the npm dependencies; without it the audit step would eventually start failing on its
+  own, which is how the Angular patch level drifted in the first place.
