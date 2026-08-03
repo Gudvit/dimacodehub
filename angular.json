@@ -78,7 +78,16 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "tsconfig.spec.json",
-            "setupFiles": ["src/vitest.setup.ts"]
+            "setupFiles": ["src/vitest.setup.ts"],
+            "coverageInclude": ["src/app/**/*.ts"],
+            "coverageExclude": ["src/**/*.spec.ts"],
+            "coverageReporters": ["text-summary"],
+            "coverageThresholds": {
+              "statements": 50,
+              "branches": 65,
+              "functions": 55,
+              "lines": 50
+            }
           }
         },
         "lint": {

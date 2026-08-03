@@ -36,8 +36,8 @@ jobs:
         run: npm run format:check
       - name: Lint
         run: npm run lint
-      - name: Unit tests
-        run: npm run test:unit
+      - name: Unit tests with coverage
+        run: npm run test:unit:coverage
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
       - name: E2E tests

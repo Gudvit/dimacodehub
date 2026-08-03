@@ -1,7 +1,7 @@
 # dimacodehub architecture
 
 A personal portfolio site: a single-page home (hero → about → experience → contacts), a
-blog section and a Projects placeholder. Angular 21, static build, GitHub Pages.
+blog section and a Projects placeholder. Angular 22, static build, GitHub Pages.
 
 This is the high-level overview and the ADR index. Day-to-day working rules (style,
 commits, the checklist before calling a task done) live in `CLAUDE.md` at the repository
@@ -62,6 +62,7 @@ Cross-cutting facts that explain nearly every decision below:
 | [0014](0014-accessibility-approach.md)                      | Accessibility                    | semantic markup + ESLint a11y + role-based locators in e2e         |
 | [0015](0015-contact-form-via-web3forms.md)                  | Contact                          | a real form posting to Web3Forms, `mailto` as the fallback         |
 | [0016](0016-component-tests-through-the-angular-builder.md) | Testing                          | `ng test` through the Angular builder, so components can be tested |
+| [0017](0017-unit-coverage-floor.md)                         | Coverage                         | a measured global floor enforced by CI                             |
 
 ## What the architecture deliberately does not solve
 

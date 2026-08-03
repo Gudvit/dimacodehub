@@ -170,6 +170,9 @@ and the only reason `@angular/forms` is a dependency.
   It rejects unless the response is `ok` **and** the body says `success: true`.
 - The Web3Forms access key is a plain constant in that file. It is public by design (it
   only allows posting to the owner's inbox) — do not move it into a "secret".
+- The account owner must restrict that key to `https://gudvit.github.io` in the
+  Web3Forms dashboard and verify a live send after changing the allowlist. This setting
+  cannot be enforced from the repository.
 - The success screen may only appear after the promise resolves. A form that claims
   "message sent" without a confirmed send is the one thing this section must never do —
   e2e asserts both the success path (against the intercepted request payload) and the
@@ -177,17 +180,10 @@ and the only reason `@angular/forms` is a dependency.
 - `mailto`, phone, Telegram and LinkedIn stay as fallbacks below the form.
 - Spam protection is the hidden `botcheck` honeypot control; Web3Forms drops filled ones.
 
-## Known debt
-
-The agreed plan for working this off — with priorities, exact locations and a
-"done when" for each item — is `docs/work-plan.md`. Read it before picking up cleanup
-work, and tick entries off there as they land.
+## Known trade-offs
 
 - `public/shared-images/` holds four unused JPGs (~200 KB) for a future Projects section.
   They ship in every deployment and are kept on purpose until that section exists.
 - Component tests exist for the header, the experience gestures and the about reveal
   (ADR 0016). The home slider and the contact form itself are still verified through e2e
   alone.
-- `src/images/background.jpg` is 217 KB (2400×1800 JPEG). No `webp`/`avif` variant: the
-  machine it was compressed on had no encoder for either. An avif at the same quality
-  would roughly halve it again.
