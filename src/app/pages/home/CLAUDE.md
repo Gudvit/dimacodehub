@@ -4,8 +4,10 @@ The most involved subsystem in the project: not a regular scrolling page but a v
 slider with hand-rolled scroll and gesture handling. The gestures of the experience
 section are covered by unit tests
 (`home-experience-section.component.spec.ts` — thresholds, cooldown, edge exit, swipe
-intent); everything that depends on real scrolling is covered by e2e only, so change
-scroll behaviour carefully.
+intent), as are the three branches of the about reveal
+(`home-about-section.component.spec.ts` — reduced motion, observer, no observer);
+everything that depends on real scrolling is covered by e2e only, so change scroll
+behaviour carefully.
 
 ## Layout
 
@@ -95,7 +97,13 @@ Role data (`roles`) is hardcoded in the component. That is deliberate — see
   will not repaint.
 - Do not attach high-frequency listeners with `@HostListener` (see the root CLAUDE.md).
 - The about-heading animation must respect `prefers-reduced-motion` — the early return is
-  already there; repeat it in any new animation.
+  already there; repeat it in any new animation. Under that preference the component does
+  **nothing**: no observer, no `is-visible`, so the heading stays plain text and
+  `app-animated-text` (an infinite `shine` plus a per-letter reveal, neither of which is
+  guarded) never renders. What makes the heading legible there is the
+  `@media (prefers-reduced-motion: reduce)` block in the section's SCSS, which carries the
+  same opacity and colour `is-visible` would have applied. Do not "fix" that by setting the
+  signal instead — the class is what starts the animation.
 - The contact section has a real form that posts to Web3Forms (`contact-form.service.ts`,
   ADR 0015). The success state may only be shown after the send is confirmed — the e2e
   test `contact form admits failure instead of claiming a message was sent` is there to

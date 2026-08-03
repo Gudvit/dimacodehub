@@ -35,8 +35,15 @@ export class HomeAboutSectionComponent {
       return;
     }
 
-    // Reveal immediately when the animation cannot or should not run.
-    if (!("IntersectionObserver" in window) || this.prefersReducedMotion()) {
+    // Under reduced motion nothing here runs: the stylesheet already shows the headline at
+    // full opacity, and `is-visible` is what swaps the plain heading for the letter-by-letter
+    // reveal — the one animation this preference is asking us not to play.
+    if (this.prefersReducedMotion()) {
+      return;
+    }
+
+    // Without an observer there is nothing to wait for, so reveal it right away.
+    if (!("IntersectionObserver" in window)) {
       this.aboutHeadlineVisible.set(true);
       return;
     }

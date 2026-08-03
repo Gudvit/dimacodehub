@@ -258,11 +258,14 @@
   }
 }
 
+// The headline never gets `is-visible` here — the component leaves the animation alone and
+// the heading is shown as plain text, so this block carries what that class would have done.
 @media (prefers-reduced-motion: reduce) {
   .about-hero__headline {
     opacity: 1;
     transform: none;
     filter: none;
     transition: none;
+    color: var(--brand-wine);
   }
 }

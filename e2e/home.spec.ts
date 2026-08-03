@@ -52,15 +52,19 @@ test("an unusable url fragment is ignored instead of throwing", async ({ page })
 });
 
 test.describe("with reduced motion", () => {
-  test.use({ reducedMotion: "reduce" });
+  test.use({ contextOptions: { reducedMotion: "reduce" } });
 
-  test("the about headline is revealed without waiting to be scrolled into view", async ({
+  test("the about headline is legible without waiting to be scrolled into view", async ({
     page,
   }) => {
     await page.goto("/");
+    const headline = page.locator(".about-hero__headline");
 
-    // No IntersectionObserver run, no letter-by-letter reveal: the heading is simply there.
-    await expect(page.locator(".about-hero__headline")).toHaveClass(/is-visible/);
+    // No IntersectionObserver run, no letter-by-letter reveal: the heading is simply there,
+    // as plain text at full opacity. Asserting the rendered result rather than the
+    // `is-visible` class keeps this honest — that class is what *starts* the animation.
+    await expect(headline).toHaveCSS("opacity", "1");
+    await expect(headline.locator("app-animated-text")).toHaveCount(0);
   });
 });
 
