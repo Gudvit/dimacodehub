@@ -28,7 +28,7 @@ before any large architectural change — they record why things are the way the
 - **SCSS** — global `src/styles.scss` plus a per-component `styleUrl`. No UI framework.
 - **Vitest 4** (jsdom) for unit tests; **Playwright** for e2e.
 - **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.
-- **npm 10.9.4** (`packageManager` in `package.json`), Node 20 (`.nvmrc`, `engines`).
+- **npm 11.13.0** (`packageManager` in `package.json`), Node 24 (`.nvmrc`, `engines`).
 - **GitHub Actions** → GitHub Pages.
 
 `rxjs` is used in `app.ts` and `home-page.component.ts`; `@angular/forms` is used by the
@@ -185,8 +185,8 @@ work, and tick entries off there as they land.
 
 - `public/shared-images/` holds four unused JPGs (~200 KB) for a future Projects section.
   They ship in every deployment and are kept on purpose until that section exists.
-- Component tests exist for the header and the experience gestures only (ADR 0016). The
-  home slider, the about reveal and the contact form itself are still verified through e2e
+- Component tests exist for the header, the experience gestures and the about reveal
+  (ADR 0016). The home slider and the contact form itself are still verified through e2e
   alone.
 - `src/images/background.jpg` is 217 KB (2400×1800 JPEG). No `webp`/`avif` variant: the
   machine it was compressed on had no encoder for either. An avif at the same quality

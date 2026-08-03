@@ -10,7 +10,7 @@ outbound links.
 
 ## Getting started
 
-Node 20 (see `.nvmrc`), npm 10.9.4.
+Node 24 (see `.nvmrc`), npm 11.13.0.
 
 ```bash
 npm install

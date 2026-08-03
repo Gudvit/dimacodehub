@@ -17,7 +17,7 @@ A single workflow, `.github/workflows/deploy.yml`, triggered by a push to **any*
 and by `workflow_dispatch`. The `build` job runs these steps in strict order; if any of
 them fails, nothing is deployed:
 
-1. `npm ci` (Node 20, npm cache)
+1. `npm ci` (Node 24, npm cache)
 2. `npm audit --omit=dev --audit-level=moderate` — production dependencies only: a
    dev-tool advisory must not block a deploy of code that never ships it
 3. `npm run format:check` — Prettier
