@@ -11,14 +11,15 @@ that makes it verifiably finished. Priorities:
 - **P3** — the test gap. The largest structural weakness of the project.
 - **P4** — desirable. Do when touching the area anyway.
 
+P1 and P3 are done; P2 has one item left. What follows is mostly P4.
+
 Nothing here is critical: the site works, CI is green, and no finding puts data or users
 at risk.
 
 **P1 is done** (correctness and security): Angular raised to 21.2.19 and both XSS
 advisories cleared, the duplicated `@for` track key fixed, the URL fragment escaped before
 it reaches `querySelector`, and an abort told apart from a real send failure in the contact
-form. Most of P2 has landed too — what is left below is what still needs a decision or a
-tool this machine does not have.
+form. The CI gate now runs on every branch instead of only on `main` (ADR 0009).
 
 ---
 
@@ -45,44 +46,20 @@ specs read.
 
 ## P3 — the test gap
 
-- [ ] **Switch the unit-test entry point to `ng test`.**
-      CI runs bare `vitest run`, which has no Angular compiler — TestBed component tests
-      cannot be written against it. The `test` target in `angular.json` already works
-      (`@angular/build:unit-test`, verified: same 9 tests pass).
-      _Done when:_ `npm run test:unit` goes through the Angular builder, the existing
-      specs still pass, and one rendering component test proves the path works.
+Done, and recorded as [ADR 0016](architecture/0016-component-tests-through-the-angular-builder.md):
+`npm run test:unit` is `ng test` through `@angular/build:unit-test` (jsdom, TestBed, no
+browser download) and `vitest.config.ts` is gone, so there is one way to run the tests.
+The gestures of the experience section have 16 unit tests, the header has a rendering
+test under zoneless change detection, and the transport covers a dropped connection, a
+non-JSON body, an abort surfacing as `AbortError` and the caller's signal reaching
+`fetch`. The e2e suite split into `home`, `blog`, `contact` and `mobile`, gained the
+projects page, slider navigation, the fragment deep link, keyboard use of the scroll hint
+and a reduced-motion case, and the config now has CI retries, `trace: on-first-retry` and
+a desktop/mobile project pair that does not duplicate runs.
 
-- [ ] **Unit-test the gesture logic of the experience section.**
-      `onFocusPanelWheel` (`home-experience-section.component.ts:234-290`) and
-      `onTouchEnd` (`:198-228`) hold the densest logic in the project — wheel
-      accumulator, cooldown, edge-exit budget, horizontal-intent detection — and nothing
-      covers them: e2e does not emulate wheel or touch. The methods are near-pure, so
-      they need no TestBed.
-      _Done when:_ there are cases for the first and last role, a reversal of scroll
-      direction, `deltaX > deltaY`, the cooldown window, and a vertical swipe that must
-      not switch roles.
-
-- [ ] **Close the edge cases in `contact-form.service.spec.ts`.**
-      Missing: `fetch` itself rejecting (connection dropped), the 15 s timeout and
-      `AbortSignal.any` composition (`contact-form.service.ts:39,44` — untested), the
-      caller's `signal` actually reaching `fetch`, and a non-JSON response body (the
-      `.catch(() => ({}))` branch at `:56`).
-      _Done when:_ each of those four has a case.
-
-- [ ] **Extend the e2e suite.**
-      Not covered today: the `/projects` page, slider navigation (`scrollToNextSection`,
-      "Contact me", back-to-top), the actual scroll on `/#contacts` (the current spec
-      visits the URL but only checks a link), keyboard operation of `.scroll-hint`
-      (`role="button"` + `tabindex="0"`), and `prefers-reduced-motion`.
-      _Done when:_ each of those has a spec. Split the file while doing it — `home.spec.ts`
-      currently holds blog, header and contact-form tests.
-
-- [ ] **Give Playwright retries and traces.**
-      `playwright.config.ts` sets no `retries`, no `trace`, and no `projects`; the CI job
-      uploads a report (`deploy.yml:40-46`) that carries little without a trace.
-      _Done when:_ `retries: process.env.CI ? 2 : 0`, `trace: "on-first-retry"`, and an
-      explicit chromium project are in place; the mobile viewport currently set by hand
-      in the menu spec becomes a project too.
+- [ ] **Measure coverage.** Nothing reports it and no threshold exists; the builder takes
+      `coverage`, `coverageThresholds` and `coverageExclude` options.
+      _Done when:_ `ng test --coverage` reports, and CI fails below an agreed floor.
 
 ---
 

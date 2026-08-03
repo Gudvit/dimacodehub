@@ -44,23 +44,24 @@ Cross-cutting facts that explain nearly every decision below:
 
 ## ADR index
 
-| #                                               | Decision                         | About                                                            |
-| ----------------------------------------------- | -------------------------------- | ---------------------------------------------------------------- |
-| [0001](0001-angular-standalone-signals.md)      | Angular 21, standalone + signals | stack and code-style choice, dropping NgModule                   |
-| [0002](0002-zoneless-change-detection.md)       | Zoneless change detection        | why there is no zone.js and what that means for the code         |
-| [0003](0003-github-pages-hosting.md)            | GitHub Pages                     | static build, `--base-href`, `index.html` copied to `404.html`   |
-| [0004](0004-routing-lazy-blog-input-binding.md) | Routing                          | lazy blog, `withComponentInputBinding()`, `title` in routes      |
-| [0005](0005-content-in-code.md)                 | Content in code                  | posts and roles as TS structures, no CMS and no markdown         |
-| [0006](0006-local-signal-state.md)              | State                            | local signals only, no NgRx                                      |
-| [0007](0007-scss-no-ui-framework.md)            | Styling                          | hand-written SCSS and CSS variables, no UI framework             |
-| [0008](0008-vitest-and-playwright.md)           | Testing                          | Vitest for logic, Playwright for behaviour; no Karma             |
-| [0009](0009-ci-quality-gate-before-deploy.md)   | CI                               | one workflow: format → lint → tests → build → deploy             |
-| [0010](0010-mailto-instead-of-contact-form.md)  | Contact (superseded)             | `mailto` instead of a form that sent nothing                     |
-| [0011](0011-asset-placement.md)                 | Assets                           | `public/` versus `src/images/`, removing build duplicates        |
-| [0012](0012-css-animations-and-dom-access.md)   | Animations and DOM               | CSS + `animate.enter/leave`, `afterNextRender`, rAF              |
-| [0013](0013-seo-metadata.md)                    | Metadata                         | static OG in `index.html`, `title` from routes, `Meta` for posts |
-| [0014](0014-accessibility-approach.md)          | Accessibility                    | semantic markup + ESLint a11y + role-based locators in e2e       |
-| [0015](0015-contact-form-via-web3forms.md)      | Contact                          | a real form posting to Web3Forms, `mailto` as the fallback       |
+| #                                                           | Decision                         | About                                                              |
+| ----------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------ |
+| [0001](0001-angular-standalone-signals.md)                  | Angular 21, standalone + signals | stack and code-style choice, dropping NgModule                     |
+| [0002](0002-zoneless-change-detection.md)                   | Zoneless change detection        | why there is no zone.js and what that means for the code           |
+| [0003](0003-github-pages-hosting.md)                        | GitHub Pages                     | static build, `--base-href`, `index.html` copied to `404.html`     |
+| [0004](0004-routing-lazy-blog-input-binding.md)             | Routing                          | lazy blog, `withComponentInputBinding()`, `title` in routes        |
+| [0005](0005-content-in-code.md)                             | Content in code                  | posts and roles as TS structures, no CMS and no markdown           |
+| [0006](0006-local-signal-state.md)                          | State                            | local signals only, no NgRx                                        |
+| [0007](0007-scss-no-ui-framework.md)                        | Styling                          | hand-written SCSS and CSS variables, no UI framework               |
+| [0008](0008-vitest-and-playwright.md)                       | Testing (superseded in part)     | Vitest for logic, Playwright for behaviour; no Karma               |
+| [0009](0009-ci-quality-gate-before-deploy.md)               | CI                               | one workflow: format → lint → tests → build → deploy               |
+| [0010](0010-mailto-instead-of-contact-form.md)              | Contact (superseded)             | `mailto` instead of a form that sent nothing                       |
+| [0011](0011-asset-placement.md)                             | Assets                           | `public/` versus `src/images/`, removing build duplicates          |
+| [0012](0012-css-animations-and-dom-access.md)               | Animations and DOM               | CSS + `animate.enter/leave`, `afterNextRender`, rAF                |
+| [0013](0013-seo-metadata.md)                                | Metadata                         | static OG in `index.html`, `title` from routes, `Meta` for posts   |
+| [0014](0014-accessibility-approach.md)                      | Accessibility                    | semantic markup + ESLint a11y + role-based locators in e2e         |
+| [0015](0015-contact-form-via-web3forms.md)                  | Contact                          | a real form posting to Web3Forms, `mailto` as the fallback         |
+| [0016](0016-component-tests-through-the-angular-builder.md) | Testing                          | `ng test` through the Angular builder, so components can be tested |
 
 ## What the architecture deliberately does not solve
 

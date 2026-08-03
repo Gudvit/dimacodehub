@@ -61,13 +61,45 @@ describe("postToWeb3Forms", () => {
     await expect(postToWeb3Forms(KEY, MESSAGE)).rejects.toBe(abort);
   });
 
-  it("passes the caller's abort signal to fetch", async () => {
-    const fetchMock = stubFetch(200, { success: true });
+  it("rejects when the connection drops instead of resolving quietly", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
+
+    await expect(postToWeb3Forms(KEY, MESSAGE)).rejects.toThrow("Failed to fetch");
+  });
+
+  it("rejects when the answer is not JSON at all", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.reject(new SyntaxError("Unexpected token < in JSON")),
+      }),
+    );
+
+    // A body that cannot be parsed says nothing about delivery, so it is a failure.
+    await expect(postToWeb3Forms(KEY, MESSAGE)).rejects.toThrow(/200/);
+  });
+
+  it("aborts the request when the caller's signal aborts", () => {
     const controller = new AbortController();
+    let sentSignal: AbortSignal | undefined;
 
-    await postToWeb3Forms(KEY, MESSAGE, controller.signal);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_url: string, init: RequestInit) => {
+        sentSignal = init.signal ?? undefined;
+        return new Promise<Response>(() => undefined);
+      }),
+    );
 
-    expect(fetchMock.mock.calls[0]![1].signal).toBeInstanceOf(AbortSignal);
+    // The signal handed to fetch also carries the 15s deadline (AbortSignal.any); the
+    // deadline itself is a native timer and cannot be simulated here.
+    void postToWeb3Forms(KEY, MESSAGE, controller.signal);
+    expect(sentSignal?.aborted).toBe(false);
+
+    controller.abort();
+    expect(sentSignal?.aborted).toBe(true);
   });
 
   it("passes the honeypot value through so the service can drop bot submissions", async () => {

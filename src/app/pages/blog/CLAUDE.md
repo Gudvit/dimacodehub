@@ -8,7 +8,7 @@ blog-page.component.*                   post list
 components/blog-post-page/              post page
 models/blog-post.model.ts               BlogPost / BlogPostSection
 services/blog.service.ts                posts as an in-code array
-services/blog.service.spec.ts           the only unit tests in the project
+services/blog.service.spec.ts           content validation, doubling as unit tests
 ```
 
 Wired in from `app.routes.ts` through `loadChildren` — the single lazy chunk in the build.

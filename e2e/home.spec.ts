@@ -13,85 +13,30 @@ test("cv link stays relative so it survives the base href", async ({ page }) => 
   expect(href).toBe("dmytro_huliaiev_cv.pdf");
 });
 
-test("header navigates to the blog and sets the page title", async ({ page }) => {
-  await page.goto("/");
-  await expect(page).toHaveTitle("Dmytro Huliaiev - Senior Frontend Engineer");
-
-  await page.getByRole("navigation").getByRole("link", { name: "Blog" }).click();
-  await expect(page).toHaveURL(/\/blog$/);
-  await expect(page).toHaveTitle("Blog - Dmytro Huliaiev");
-  await expect(
-    page.getByRole("heading", { name: "Thoughts on frontend engineering" }),
-  ).toBeVisible();
-});
-
-test("blog cards are reachable with the keyboard", async ({ page }) => {
-  await page.goto("/blog");
-  const firstPost = page.getByRole("link", {
-    name: "What AI Actually Changes About Frontend Engineering",
-  });
-  await firstPost.focus();
-  await expect(firstPost).toBeFocused();
-  await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/blog\/ai-frontend-engineering$/);
-});
-
-test("blog post deep link renders the article and its metadata", async ({ page }) => {
-  await page.goto("/blog/angular-architecture-patterns");
-  await expect(
-    page.getByRole("heading", { name: "Angular Architecture Patterns I Use in Production" }),
-  ).toBeVisible();
-  await expect(page).toHaveTitle(/^Angular Architecture Patterns I Use in Production - /);
-  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
-    "content",
-    "Angular Architecture Patterns I Use in Production",
-  );
-  await expect(page.getByRole("link", { name: "Back to blog" })).toBeVisible();
-});
-
-test("unknown blog slug shows the not-found state", async ({ page }) => {
-  await page.goto("/blog/no-such-post");
-  await expect(page.getByText("Post not found.")).toBeVisible();
-});
-
-test("mobile menu toggles open and closed", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+test("the scroll hint moves down the slider from the keyboard", async ({ page }) => {
   await page.goto("/");
 
-  const toggle = page.getByRole("button", { name: "Toggle navigation menu" });
-  const blogLink = page.getByRole("navigation").getByRole("link", { name: "Blog" });
+  const hint = page.getByRole("button", { name: "Scroll to next section" });
+  await hint.focus();
+  await hint.press("Enter");
 
-  await expect(toggle).toHaveAttribute("aria-expanded", "false");
-  await expect(blogLink).toBeHidden();
-
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  await expect(blogLink).toBeVisible();
-
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-expanded", "false");
-  await expect(blogLink).toBeHidden();
+  await expect(page.getByRole("heading", { name: "ABOUT ME" })).toBeInViewport();
 });
 
-test("contact section keeps the mailto link as a fallback", async ({ page }) => {
+test("contact me jumps to the contact section and back to top returns", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Contact me" }).click();
+  await expect(page.getByRole("heading", { name: "LET'S CONNECT" })).toBeInViewport();
+
+  await page.getByRole("button", { name: "Back to top" }).click();
+  await expect(page.getByRole("heading", { name: "Dmytro Huliaiev", level: 1 })).toBeInViewport();
+});
+
+test("a fragment deep link scrolls the slider to that section", async ({ page }) => {
   await page.goto("/#contacts");
 
-  const cta = page.getByRole("link", { name: "Write me an email" });
-  await expect(cta).toBeVisible();
-
-  const href = await cta.getAttribute("href");
-  expect(href).toContain("mailto:gudvitt@gmail.com");
-  expect(href).toContain("subject=Project%20inquiry");
-
-  // The visible details come from the same constants as the link above.
-  await expect(page.getByRole("link", { name: "gudvitt@gmail.com" })).toHaveAttribute(
-    "href",
-    "mailto:gudvitt@gmail.com",
-  );
-  await expect(page.getByRole("link", { name: "+48 577 68 22 99" })).toHaveAttribute(
-    "href",
-    "tel:+48577682299",
-  );
+  await expect(page.getByRole("heading", { name: "LET'S CONNECT" })).toBeInViewport();
 });
 
 test("an unusable url fragment is ignored instead of throwing", async ({ page }) => {
@@ -106,54 +51,23 @@ test("an unusable url fragment is ignored instead of throwing", async ({ page })
   expect(pageErrors).toEqual([]);
 });
 
-test("contact form refuses to submit an invalid message", async ({ page }) => {
-  let requests = 0;
-  await page.route("https://api.web3forms.com/**", async (route) => {
-    requests += 1;
-    await route.fulfill({ json: { success: true } });
+test.describe("with reduced motion", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("the about headline is revealed without waiting to be scrolled into view", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    // No IntersectionObserver run, no letter-by-letter reveal: the heading is simply there.
+    await expect(page.locator(".about-hero__headline")).toHaveClass(/is-visible/);
   });
-
-  await page.goto("/#contacts");
-  await page.getByRole("button", { name: "Send message" }).click();
-
-  await expect(page.getByText("Please enter your name")).toBeVisible();
-  await expect(page.getByText("Please enter a valid email address")).toBeVisible();
-  await expect(page.getByText("A couple of sentences is enough")).toBeVisible();
-  expect(requests).toBe(0);
 });
 
-test("contact form posts the message and confirms only after the service accepts it", async ({
-  page,
-}) => {
-  const payloads: Record<string, unknown>[] = [];
-  await page.route("https://api.web3forms.com/**", async (route) => {
-    payloads.push(route.request().postDataJSON());
-    await route.fulfill({ json: { success: true, message: "Email sent successfully!" } });
-  });
+test("the projects page shows the placeholder", async ({ page }) => {
+  await page.goto("/projects");
 
-  await page.goto("/#contacts");
-  await page.getByLabel("Name").fill("Ada Lovelace");
-  await page.getByLabel("Email").fill("ada@example.com");
-  await page.getByLabel("Message").fill("I would like to talk about an Angular rewrite.");
-  await page.getByRole("button", { name: "Send message" }).click();
-
-  await expect(page.getByText("Message sent.")).toBeVisible();
-  expect(payloads).toHaveLength(1);
-  expect(payloads[0]!["email"]).toBe("ada@example.com");
-  expect(payloads[0]!["message"]).toBe("I would like to talk about an Angular rewrite.");
-});
-
-test("contact form admits failure instead of claiming a message was sent", async ({ page }) => {
-  await page.route("https://api.web3forms.com/**", async (route) => {
-    await route.fulfill({ status: 500, json: { success: false, message: "Server error" } });
-  });
-
-  await page.goto("/#contacts");
-  await page.getByLabel("Name").fill("Ada Lovelace");
-  await page.getByLabel("Email").fill("ada@example.com");
-  await page.getByLabel("Message").fill("I would like to talk about an Angular rewrite.");
-  await page.getByRole("button", { name: "Send message" }).click();
-
-  await expect(page.getByText("The message could not be sent")).toBeVisible();
-  await expect(page.getByText("Message sent.")).toHaveCount(0);
+  await expect(page).toHaveTitle("Projects - Dmytro Huliaiev");
+  await expect(page.getByText("Coming soon")).toBeVisible();
+  await expect(page.locator("app-loader svg")).toBeVisible();
 });

@@ -1,8 +1,11 @@
 # pages/home — the home page
 
 The most involved subsystem in the project: not a regular scrolling page but a vertical
-slider with hand-rolled scroll and gesture handling. There are no unit tests here — e2e
-is the only safety net — so change scroll behaviour carefully.
+slider with hand-rolled scroll and gesture handling. The gestures of the experience
+section are covered by unit tests
+(`home-experience-section.component.spec.ts` — thresholds, cooldown, edge exit, swipe
+intent); everything that depends on real scrolling is covered by e2e only, so change
+scroll behaviour carefully.
 
 ## Layout
 

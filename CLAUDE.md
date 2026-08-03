@@ -41,7 +41,7 @@ contact form. Nothing else in `dependencies` is optional.
 | `npm start`                       | dev server at `http://localhost:4200/`                            |
 | `npm run build`                   | production build into `dist/dimacodehub/browser`                  |
 | `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs |
-| `npm run test:unit`               | single Vitest run (`npm run test:unit:watch` for watch mode)      |
+| `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch) |
 | `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself   |
 | `npm run test:e2e:ui`             | Playwright in UI mode                                             |
 | `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)         |
@@ -68,7 +68,7 @@ src/
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
       projects/               "coming soon" placeholder
 public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg
-e2e/                          Playwright specs
+e2e/                          Playwright specs: home, blog, contact, mobile
 docs/architecture/            ADRs and the architecture overview
 ```
 
@@ -185,8 +185,9 @@ work, and tick entries off there as they land.
 
 - `public/shared-images/` holds four unused JPGs (~200 KB) for a future Projects section.
   They ship in every deployment and are kept on purpose until that section exists.
-- Only `BlogService` and the contact-form transport have unit tests; components have none —
-  their behaviour is verified exclusively through e2e.
+- Component tests exist for the header and the experience gestures only (ADR 0016). The
+  home slider, the about reveal and the contact form itself are still verified through e2e
+  alone.
 - `src/images/background.jpg` is 217 KB (2400×1800 JPEG). No `webp`/`avif` variant: the
   machine it was compressed on had no encoder for either. An avif at the same quality
   would roughly halve it again.

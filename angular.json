@@ -75,7 +75,11 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "setupFiles": ["src/vitest.setup.ts"]
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

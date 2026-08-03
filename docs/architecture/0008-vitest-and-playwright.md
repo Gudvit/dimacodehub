@@ -2,7 +2,10 @@
 
 ## Status
 
-Accepted. In effect.
+Superseded in part by [0016](0016-component-tests-through-the-angular-builder.md). The
+two-tier split — Vitest for logic, Playwright for behaviour — still holds. What no longer
+holds is the ban on `TestBed` below: unit tests run through `ng test` now, and components
+are tested there.
 
 ## Context
 
