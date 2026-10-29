@@ -4,7 +4,7 @@ test("home hero renders the primary actions", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Dmytro Huliaiev", level: 1 })).toBeVisible();
   await expect(page.getByRole("link", { name: "Download CV" }).first()).toBeVisible();
-  await expect(page.getByRole("button", { name: "Contact me" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Discuss a project" })).toBeVisible();
 });
 
 test("cv link stays relative so it survives the base href", async ({ page }) => {
@@ -23,10 +23,10 @@ test("the scroll hint moves down the slider from the keyboard", async ({ page })
   await expect(page.getByRole("heading", { name: "ABOUT ME" })).toBeInViewport();
 });
 
-test("contact me jumps to the contact section and back to top returns", async ({ page }) => {
+test("discuss a project jumps to the contact section and back to top returns", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Contact me" }).click();
+  await page.getByRole("button", { name: "Discuss a project" }).click();
   await expect(page.getByRole("heading", { name: "LET'S CONNECT" })).toBeInViewport();
 
   await page.getByRole("button", { name: "Back to top" }).click();
