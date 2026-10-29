@@ -6,8 +6,9 @@ The only feature area with lazy loading, its own routes and its own data.
 blog.routes.ts                          BLOG_ROUTES + the post-title resolver
 blog-page.component.*                   post list
 components/blog-post-page/              post page
+blog-posts.ts                           BLOG_POSTS — the posts as an in-code array
 models/blog-post.model.ts               BlogPost / BlogPostSection
-services/blog.service.ts                posts as an in-code array
+services/blog.service.ts                getAll / getBySlug over BLOG_POSTS
 services/blog.service.spec.ts           content validation, doubling as unit tests
 ```
 
@@ -15,10 +16,11 @@ Wired in from `app.routes.ts` through `loadChildren` — the single lazy chunk i
 
 ## The content model
 
-Posts live neither in a CMS nor in markdown files: `BlogService` keeps a `BlogPost[]`
-right in TypeScript (see `docs/architecture/0005-content-in-code.md`). A post is a title,
-a `slug`, a date as a string, tags, a preview, `readingTime` and an array of `sections`;
-a section has an optional `heading`, required `paragraphs` and an optional `code` block.
+Posts live neither in a CMS nor in markdown files: `blog-posts.ts` exports a
+`BlogPost[]` right in TypeScript, which `BlogService` serves (see
+`docs/architecture/0005-content-in-code.md`). A post is a title, a `slug`, a date as a
+string, tags, a preview, `readingTime` and an array of `sections`; a section has an
+optional `heading`, required `paragraphs` and an optional `code` block.
 
 The post template renders exactly these fields and **does not interpret HTML** — text
 goes through interpolation. You cannot put markup inside a paragraph; if a new kind of
@@ -26,7 +28,7 @@ content is needed, extend `BlogPostSection` rather than smuggling in HTML.
 
 ### Adding a post
 
-1. A new object at the front of the `posts` array (array order = page order; there is no
+1. A new object at the front of `BLOG_POSTS` (array order = page order; there is no
    sorting by date).
 2. `slug` must be unique — `blog.service.spec.ts` checks this and fails on duplicates.
 3. `readingTime` is counted by hand; nothing computes it.
