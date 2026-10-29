@@ -32,6 +32,11 @@
 }
 
 @media (max-width: 600px) {
+  // One line of copyright; on a phone the home page's last slide cannot spare 4rem for it.
+  .site-footer {
+    padding: 1rem;
+  }
+
   .footer-nav {
     flex-wrap: wrap;
   }

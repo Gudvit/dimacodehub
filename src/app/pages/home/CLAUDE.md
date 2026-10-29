@@ -52,6 +52,13 @@ the hero is a grid — so do not pull those into the global rule.
 `scroll-snap-align` and `overscroll-behavior: contain` are all turned off, otherwise
 sections stick on mobile and the page becomes impossible to scroll properly.
 
+Without snapping, a phone still reads the page as slides: **every section fits one
+screen**, checked down to 390×664 (the visible height of Safari on a 390px iPhone). The
+hero pins its copy to the bottom over the darkened photo; the contact section puts the
+form first and shrinks the contact card to a strip of fallbacks. Adding content to a
+section on a phone means taking something out — measure the section heights after any
+change there.
+
 ## Fragment deep links
 
 `/#contacts` is handled in `HomePageComponent`: a subscription to `route.fragment` inside

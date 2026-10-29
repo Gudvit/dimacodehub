@@ -470,20 +470,79 @@
   }
 }
 
+/* A phone gets one screen for the whole section, so the form leads and the contact card
+   shrinks to a strip of fallbacks under it: phone, email and the icons. The copy
+   that only repeats the display title or the form's purpose is dropped. Mind the 8 kB
+   style budget (ADR 0007): this block is what it is spent on. */
 @media (max-width: 640px) {
   .contact-section {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
+    padding: var(--header-height) 1.25rem 0;
   }
 
-  .contact-form__row {
-    grid-template-columns: 1fr;
+  .contact-section__layout {
+    gap: 0.75rem;
   }
 
-  .contact-channels__cv,
+  .message-cta {
+    order: -1;
+  }
+
+  .message-cta,
+  .contact-intro {
+    gap: 0.6rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .message-cta > h3,
+  .message-cta > .message-cta__lead,
+  .message-cta__note {
+    display: none;
+  }
+
+  .contact-form {
+    gap: 0.5rem;
+  }
+
+  .contact-form__row .field,
+  .field--message {
+    padding-bottom: 1.1rem;
+  }
+
+  // `rows="4"` would win over a min-height; a phone gets three lines, still resizable.
+  .field textarea {
+    height: 4.5rem;
+    min-height: 0;
+  }
+
   .message-cta__button {
-    justify-self: stretch;
     width: 100%;
+  }
+
+  // The CV is already on the first screen; the labels are self-evident next to a number
+  // and an address. What stays: a line of text links and the row of icons.
+  .contact-intro h3,
+  .contact-intro__lead,
+  .contact-info-grid article:has(p),
+  .contact-info-grid .key,
+  .contact-channels__cv {
+    display: none;
+  }
+
+  .contact-info-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 1.25rem;
+  }
+
+  .contact-info-grid article {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .contact-channels {
+    justify-content: center;
   }
 
   .contact-section::before {
@@ -500,8 +559,10 @@
     bottom: -165px;
   }
 
+  // In the free space above the footer line: lower, it covers the copyright on a 360px
+  // screen; higher, the contact card.
   .back-to-top {
     right: 1.25rem;
-    bottom: 4.9rem;
+    bottom: 3.5rem;
   }
 }

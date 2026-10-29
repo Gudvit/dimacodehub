@@ -385,10 +385,10 @@ $scrim-tone: rgb(12 14 30);
 }
 
 @media (max-width: 640px) {
-  // A phone is portrait-shaped and the copy is long, so they stack instead of overlapping:
-  // the photo fills the top of the screen and fades into the background, the copy starts
-  // under the face and the section grows as tall as it needs. The scrim layer is sized to
-  // the photo, so the fade ends exactly where the photo does.
+  // One section, one screen. The photo fills the top and fades into the background; the
+  // copy sits at the bottom of the screen and reaches up into the dark part of the photo,
+  // below the face. The scrim layer is sized to the photo, so the fade ends exactly where
+  // the photo does. A screen too short for the copy still grows the section.
   .hero::after {
     content: none;
   }
@@ -402,22 +402,24 @@ $scrim-tone: rgb(12 14 30);
       linear-gradient(
         180deg,
         rgba($scrim-tone, 0.05) 0%,
-        rgba($scrim-tone, 0.12) 55%,
-        rgba($scrim-tone, 0.85) 82%,
-        $scrim-tone 96%
+        rgba($scrim-tone, 0.1) 45%,
+        rgba($scrim-tone, 0.8) 72%,
+        $scrim-tone 94%
       )
     );
     background-size:
-      100% calc(70svh + 2px),
-      auto 70svh;
+      100% calc(62svh + 2px),
+      auto 62svh;
     background-position:
       center top,
       62% top;
     background-repeat: no-repeat;
-    align-content: start;
+    min-height: 100svh;
+    align-content: end;
     justify-items: center;
-    padding-top: 54svh;
-    padding-bottom: 4.5rem;
+    padding-top: calc(var(--header-height) + 1rem);
+    // Room for the scroll hint under the copy; a taller screen lifts the copy further.
+    padding-bottom: max(3.6rem, 11svh);
     // The same phone gutter as the contact section; 2rem squeezed the proof row onto two lines.
     padding-inline: 1.25rem;
   }
@@ -425,6 +427,12 @@ $scrim-tone: rgb(12 14 30);
   .hero-text {
     align-items: center;
     text-align: center;
+    gap: 0.6rem;
+
+    // The numbers right below say it; on a phone the lead stays three lines.
+    .lead__more {
+      display: none;
+    }
 
     .availability {
       align-self: center;
@@ -447,28 +455,40 @@ $scrim-tone: rgb(12 14 30);
 
     .lead {
       font-size: 1rem;
-      max-width: 32ch;
+      max-width: 34ch;
     }
   }
 
-  // Stacked and equal: two side by side do not fit a 360px screen.
+  // One row: the main action as a button, the CV as a quieter link beside it — two full
+  // buttons do not fit a 360px screen side by side, and stacked they cost a screen line.
   .hero-actions {
-    flex-direction: column;
-    align-items: stretch;
-    width: min(100%, 320px);
-    margin-inline: auto;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
   }
 
   .hero-actions > * {
     text-align: center;
+    white-space: nowrap;
+  }
+
+  .hero-actions .primary:not(.primary--solid) {
+    padding-inline: 1rem;
+    border-color: transparent;
+    background: none;
+    backdrop-filter: none;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
   }
 
   .proof {
     justify-items: center;
-    gap: 0.9rem;
+    gap: 0.7rem;
     width: 100%;
-    margin-top: 1.4rem;
-    padding-top: 1.1rem;
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
   }
 
   .proof__metrics {
@@ -486,6 +506,7 @@ $scrim-tone: rgb(12 14 30);
 
   .proof__companies {
     align-items: center;
+    gap: 0.45rem;
 
     ul {
       justify-content: center;
@@ -499,7 +520,7 @@ $scrim-tone: rgb(12 14 30);
   }
 
   .scroll-hint {
-    bottom: 1.35rem;
+    bottom: max(0.9rem, 3.5svh);
   }
 }
 
