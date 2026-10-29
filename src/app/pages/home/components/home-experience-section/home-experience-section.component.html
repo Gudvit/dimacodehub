@@ -24,10 +24,9 @@
 
       <article
         class="focus-panel"
+        #focusPanel
         [style.animationName]="panelKey() % 2 === 0 ? 'panel-enter-a' : 'panel-enter-b'"
-        (wheel)="onFocusPanelWheel($event)"
         (touchstart)="onTouchStart($event)"
-        (touchmove)="onTouchMove($event)"
         (touchend)="onTouchEnd($event)"
         (touchcancel)="onTouchCancel()"
       >
