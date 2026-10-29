@@ -1,28 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  effect,
-  inject,
-  input,
-} from "@angular/core";
-import { Meta } from "@angular/platform-browser";
+import { ChangeDetectionStrategy, Component, computed, inject, input } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { DatePipe } from "@angular/common";
 import { HeaderComponent } from "../../../../components/header/header.component";
 import { FooterComponent } from "../../../../components/footer/footer.component";
+import { syncPageMeta } from "../../../../seo/page-meta";
 import { BlogService } from "../../services/blog.service";
-
-/** Every tag the effect below rewrites, as `Meta` selectors. */
-const POST_META_TAGS = [
-  'name="description"',
-  'property="og:type"',
-  'property="og:title"',
-  'property="og:description"',
-  'name="twitter:title"',
-  'name="twitter:description"',
-] as const;
 
 @Component({
   selector: "app-blog-post-page",
@@ -36,41 +18,14 @@ export class BlogPostPageComponent {
   readonly slug = input.required<string>();
 
   private readonly blogService = inject(BlogService);
-  private readonly meta = inject(Meta);
 
   readonly post = computed(() => this.blogService.getBySlug(this.slug()));
 
   constructor() {
-    // The site-wide values from index.html. Only this page rewrites them, so it puts them
-    // back on the way out — otherwise `/` would keep describing the last post opened.
-    const defaults = POST_META_TAGS.map((selector) => ({
-      selector,
-      content: this.meta.getTag(selector)?.content ?? null,
-    }));
-
     // The document title comes from the route resolver; this covers the sharing preview.
-    effect(() => {
+    syncPageMeta(() => {
       const post = this.post();
-      if (!post) {
-        return;
-      }
-
-      this.meta.updateTag({ name: "description", content: post.preview });
-      this.meta.updateTag({ property: "og:type", content: "article" });
-      this.meta.updateTag({ property: "og:title", content: post.title });
-      this.meta.updateTag({ property: "og:description", content: post.preview });
-      this.meta.updateTag({ name: "twitter:title", content: post.title });
-      this.meta.updateTag({ name: "twitter:description", content: post.preview });
-    });
-
-    inject(DestroyRef).onDestroy(() => {
-      for (const { selector, content } of defaults) {
-        if (content === null) {
-          this.meta.removeTag(selector);
-        } else {
-          this.meta.updateTag({ content }, selector);
-        }
-      }
+      return post && { title: post.title, description: post.preview };
     });
   }
 }

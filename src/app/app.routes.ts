@@ -8,12 +8,10 @@ export const routes: Routes = [
     title: "Dmytro Huliaiev - Senior Frontend Engineer",
   },
   {
-    // Home stays eager - it is the first screen. A placeholder does not belong in that
-    // bundle, so it loads on demand like the blog.
+    // Home stays eager - it is the first screen. Projects and case studies load on demand
+    // like the blog.
     path: "projects",
-    loadComponent: () =>
-      import("./pages/projects/projects-page.component").then((m) => m.ProjectsPageComponent),
-    title: "Projects - Dmytro Huliaiev",
+    loadChildren: () => import("./pages/projects/projects.routes").then((m) => m.PROJECTS_ROUTES),
   },
   {
     path: "blog",

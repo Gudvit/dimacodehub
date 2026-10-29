@@ -7,7 +7,8 @@ Vitest + Playwright, deployed to GitHub Pages from `main` via `.github/workflows
 
 A single-page portfolio for a frontend engineer (Dmytro Huliaiev) plus a blog section.
 Three areas: `/` (hero → about → experience → contacts, a vertical slider),
-`/projects` (a "coming soon" placeholder), `/blog` (post list and post page).
+`/projects` (a "coming soon" placeholder, case studies at `/projects/:slug`), `/blog`
+(post list and post page).
 
 The constraint that drives almost everything else: **there is no backend and none is
 planned**. The site is static files on GitHub Pages. No `HttpClient`, no database, no
@@ -71,9 +72,11 @@ src/
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
-      projects/               "coming soon" placeholder
+      projects/               "coming soon" list placeholder, case study page
+                              (`/projects/:slug`), CaseStudyService
+    seo/                      syncPageMeta(): per-page description/OG tags
 public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg
-e2e/                          Playwright specs: home, blog, contact, mobile
+e2e/                          Playwright specs: home, blog, projects, contact, mobile
 docs/architecture/            ADRs and the architecture overview
 ```
 

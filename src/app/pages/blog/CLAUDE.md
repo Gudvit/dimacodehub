@@ -1,6 +1,7 @@
 # pages/blog — the blog
 
-The only feature area with lazy loading, its own routes and its own data.
+A lazy feature area with its own routes and its own data (`pages/projects/` follows the
+same shape for case studies).
 
 ```
 blog.routes.ts                          BLOG_ROUTES + the post-title resolver
@@ -44,10 +45,11 @@ test, fix the content, not the test.
   `withComponentInputBinding()` in `app.config.ts` — `ActivatedRoute` is not needed here.
 - The `<title>` is set by the `postTitle` `ResolveFn` in `blog.routes.ts` (which also
   holds the "Post not found" fallback), not by the component.
-- OG/description tags are set by an `effect()` in `BlogPostPageComponent` through `Meta`.
-  The component snapshots the site-wide values from `index.html` on creation and puts
-  them back in `DestroyRef.onDestroy()`, so `/` does not keep describing the last post.
-  A new tag written by the effect must also be listed in `POST_META_TAGS`, or it leaks.
+- OG/description tags are set by `syncPageMeta()` (`src/app/seo/page-meta.ts`), called
+  from the `BlogPostPageComponent` constructor. It snapshots the site-wide values from
+  `index.html` and puts them back when the page is destroyed, so `/` does not keep
+  describing the last post. A new tag it writes must also be listed in `PAGE_META_TAGS`,
+  or it leaks. Case studies use the same helper.
 - An unknown slug does not redirect: `post()` returns `undefined` and the template shows
   the "Post not found." state — there is an e2e test for it.
 - A direct link to `/blog/:slug` only survives on GitHub Pages because of the

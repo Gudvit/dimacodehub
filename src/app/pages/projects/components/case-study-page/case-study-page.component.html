@@ -1,0 +1,122 @@
+<div class="route-shell" animate.enter="route-enter" animate.leave="route-leave">
+  <app-header></app-header>
+
+  @if (study(); as study) {
+    <main class="case">
+      <div class="case__inner">
+        <a class="case-back" routerLink="/projects">
+          <span class="case-back__arrow" aria-hidden="true">←</span>
+          All projects
+        </a>
+
+        @if (study.draft) {
+          <p class="case-draft" role="note">
+            Draft — visible on the dev server only, never published.
+          </p>
+        }
+
+        <header class="case-header">
+          <p class="case-header__eyebrow">{{ study.company }} · {{ study.period }}</p>
+          <h1 class="case-header__title">{{ study.title }}</h1>
+          <p class="case-header__summary">{{ study.summary }}</p>
+
+          <dl class="case-facts">
+            <div>
+              <dt>Role</dt>
+              <dd>{{ study.role }}</dd>
+            </div>
+            <div>
+              <dt>Stack</dt>
+              <dd>
+                <ul class="case-facts__stack">
+                  @for (item of study.stack; track item) {
+                    <li>{{ item }}</li>
+                  }
+                </ul>
+              </dd>
+            </div>
+          </dl>
+        </header>
+
+        <dl class="case-outcomes" aria-label="Outcomes">
+          @for (outcome of study.outcomes; track outcome.label) {
+            <div class="case-outcomes__item">
+              <dt>{{ outcome.label }}</dt>
+              <dd>{{ outcome.value }}</dd>
+            </div>
+          }
+        </dl>
+
+        <section class="case-section" aria-labelledby="case-context">
+          <h2 class="case-section__heading" id="case-context">
+            <span class="case-section__index" aria-hidden="true">01</span> Context
+          </h2>
+          @for (paragraph of study.context; track $index) {
+            <p class="case-section__para">{{ paragraph }}</p>
+          }
+        </section>
+
+        <section class="case-section" aria-labelledby="case-constraints">
+          <h2 class="case-section__heading" id="case-constraints">
+            <span class="case-section__index" aria-hidden="true">02</span> Constraints
+          </h2>
+          <ul class="case-section__list">
+            @for (constraint of study.constraints; track $index) {
+              <li>{{ constraint }}</li>
+            }
+          </ul>
+        </section>
+
+        <section class="case-section" aria-labelledby="case-decisions">
+          <h2 class="case-section__heading" id="case-decisions">
+            <span class="case-section__index" aria-hidden="true">03</span> Key decisions
+          </h2>
+          <ol class="case-decisions">
+            @for (decision of study.decisions; track $index) {
+              <li class="case-decision">
+                <h3 class="case-decision__title">{{ decision.title }}</h3>
+                <p class="case-decision__choice">{{ decision.choice }}</p>
+                <p class="case-decision__tradeoff">
+                  <span class="case-decision__label">Trade-off</span>
+                  {{ decision.tradeoff }}
+                </p>
+              </li>
+            }
+          </ol>
+        </section>
+
+        <section class="case-section" aria-labelledby="case-results">
+          <h2 class="case-section__heading" id="case-results">
+            <span class="case-section__index" aria-hidden="true">04</span> Results
+          </h2>
+          @for (paragraph of study.results; track $index) {
+            <p class="case-section__para">{{ paragraph }}</p>
+          }
+        </section>
+
+        @if (study.lessons?.length) {
+          <section class="case-section" aria-labelledby="case-lessons">
+            <h2 class="case-section__heading" id="case-lessons">
+              <span class="case-section__index" aria-hidden="true">05</span> What I'd do differently
+            </h2>
+            @for (paragraph of study.lessons; track $index) {
+              <p class="case-section__para">{{ paragraph }}</p>
+            }
+          </section>
+        }
+
+        <aside class="case-cta">
+          <p class="case-cta__text">Facing something similar?</p>
+          <a class="case-cta__button" routerLink="/" fragment="contacts">Discuss a project</a>
+        </aside>
+      </div>
+    </main>
+  } @else {
+    <main class="case-not-found">
+      <p>Project not found.</p>
+      <a routerLink="/projects">← All projects</a>
+    </main>
+  }
+
+  <app-footer></app-footer>
+</div>

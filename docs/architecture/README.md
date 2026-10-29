@@ -23,12 +23,14 @@ root and in the local `CLAUDE.md` files under `src/app/pages/home/` and
                        │
       ┌────────────────┼─────────────────────┐
       ▼                ▼                     ▼
-  HomePage         ProjectsPage        BLOG_ROUTES  (lazy chunk)
-  slider of 4      placeholder         ├── BlogPage      list
-  sections,        + app-loader        └── BlogPostPage  post, :slug → input()
-  manual scroll                               │
-                                              ▼
-                                        BlogService — posts as an in-code array
+  HomePage         PROJECTS_ROUTES       BLOG_ROUTES  (lazy chunk)
+  slider of 4      (lazy chunk)          ├── BlogPage      list
+  sections,        ├── ProjectsPage      └── BlogPostPage  post, :slug → input()
+  manual scroll    └── CaseStudyPage            │
+                       :slug → input()          ▼
+                         │               BlogService — posts as an in-code array
+                         ▼
+                   CaseStudyService — case studies as an in-code array
 ```
 
 Cross-cutting facts that explain nearly every decision below:
