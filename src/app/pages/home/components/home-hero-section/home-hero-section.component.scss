@@ -1,9 +1,8 @@
 @use "brand";
 
-// The scrim keeps the copy legible without dimming the portrait: it is dense only where
-// the text sits and clears before the face. The plain `url()` line is the fallback for
-// browsers without `image-set()`.
-@mixin portrait($scrim) {
+// The portrait. The plain `url()` line is the fallback for browsers without `image-set()`.
+// `$scrim` is layered over it when the photo is the element's own background (mobile).
+@mixin portrait($scrim: null) {
   background-image: $scrim, url("../../../../../images/background.jpg");
   background-image:
     $scrim,
@@ -14,7 +13,6 @@
 }
 
 $scrim-tone: rgb(12 14 30);
-
 :host {
   display: block;
 }
@@ -27,37 +25,42 @@ $scrim-tone: rgb(12 14 30);
   justify-items: start;
   gap: 1.5rem;
   padding: clamp(3.6rem, 12vh, 8.4rem) 2rem;
-  @include portrait(
-    linear-gradient(
-      90deg,
-      rgba($scrim-tone, 0.9) 0%,
-      rgba($scrim-tone, 0.72) 32%,
-      rgba($scrim-tone, 0.22) 56%,
-      rgba($scrim-tone, 0.06) 76%,
-      rgba($scrim-tone, 0.18) 100%
-    )
-  );
-  background-position: right 20%;
-  background-size: cover;
-  background-repeat: no-repeat;
+  background-color: $scrim-tone;
   border-bottom: 1px solid var(--brand-outline);
   position: relative;
   overflow: hidden;
+}
+
+// On wide screens the photo is not stretched to cover: that zoomed the near-square
+// portrait until the face filled the screen, more so the wider the monitor. It keeps its
+// own proportions at the height below the header, sits on the right and fades into the
+// background on the left, where the copy is.
+.hero::after {
+  content: "";
+  position: absolute;
+  top: var(--header-height);
+  right: 0;
+  bottom: 0;
+  aspect-ratio: 2200 / 1800; // the photo's own proportions
+  max-width: 80%;
+  @include portrait;
+  background-size: cover;
+  background-position: 62% top;
+  background-repeat: no-repeat;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 32%);
+  pointer-events: none;
 }
 
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  // Top edge under the header and the bottom one behind the scroll hint; the middle,
-  // where the face is, stays clear.
-  background: linear-gradient(
-    180deg,
-    rgba($scrim-tone, 0.32) 0%,
-    rgba($scrim-tone, 0) 22%,
-    rgba($scrim-tone, 0) 68%,
-    rgba($scrim-tone, 0.5) 100%
-  );
+  z-index: 1;
+  // Bottom edge behind the scroll hint, and the left side under the copy; the face
+  // stays clear.
+  background:
+    linear-gradient(180deg, rgba($scrim-tone, 0) 70%, rgba($scrim-tone, 0.5) 100%),
+    linear-gradient(90deg, rgba($scrim-tone, 0.55) 0%, rgba($scrim-tone, 0) 55%);
   pointer-events: none;
 }
 
@@ -248,8 +251,19 @@ $scrim-tone: rgb(12 14 30);
 }
 
 @media (max-width: 640px) {
-  // The copy is stacked under the face here, so the scrim runs top to bottom instead.
+  // A phone is portrait-shaped, so here the photo covers the whole section again, and the
+  // copy is stacked under the face: the scrim runs top to bottom instead.
+  .hero::after {
+    content: none;
+  }
+
+  .hero::before {
+    background: linear-gradient(180deg, rgba($scrim-tone, 0) 70%, rgba($scrim-tone, 0.5) 100%);
+  }
+
   .hero {
+    background-size: cover;
+    background-repeat: no-repeat;
     @include portrait(
       linear-gradient(
         180deg,
