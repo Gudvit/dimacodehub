@@ -1,5 +1,20 @@
 @use "brand";
 
+// The scrim keeps the copy legible without dimming the portrait: it is dense only where
+// the text sits and clears before the face. The plain `url()` line is the fallback for
+// browsers without `image-set()`.
+@mixin portrait($scrim) {
+  background-image: $scrim, url("../../../../../images/background.jpg");
+  background-image:
+    $scrim,
+    image-set(
+      url("../../../../../images/background.avif") type("image/avif"),
+      url("../../../../../images/background.jpg") type("image/jpeg")
+    );
+}
+
+$scrim-tone: rgb(12 14 30);
+
 :host {
   display: block;
 }
@@ -11,27 +26,18 @@
   align-items: flex-start;
   justify-items: start;
   gap: 1.5rem;
-  padding: clamp(3.6rem, 12vh, 8.4rem) clamp(2rem, 9vw, 2rem);
-  background-image:
+  padding: clamp(3.6rem, 12vh, 8.4rem) 2rem;
+  @include portrait(
     linear-gradient(
       90deg,
-      rgba(10, 12, 24, 0.78) 0%,
-      rgba(10, 12, 24, 0.62) 45%,
-      rgba(10, 12, 24, 0.48) 100%
-    ),
-    url("../../../../../images/background.jpg");
-  background-image:
-    linear-gradient(
-      90deg,
-      rgba(10, 12, 24, 0.78) 0%,
-      rgba(10, 12, 24, 0.62) 45%,
-      rgba(10, 12, 24, 0.48) 100%
-    ),
-    image-set(
-      url("../../../../../images/background.avif") type("image/avif"),
-      url("../../../../../images/background.jpg") type("image/jpeg")
-    );
-  background-position: right center;
+      rgba($scrim-tone, 0.9) 0%,
+      rgba($scrim-tone, 0.72) 32%,
+      rgba($scrim-tone, 0.22) 56%,
+      rgba($scrim-tone, 0.06) 76%,
+      rgba($scrim-tone, 0.18) 100%
+    )
+  );
+  background-position: right 20%;
   background-size: cover;
   background-repeat: no-repeat;
   border-bottom: 1px solid var(--brand-outline);
@@ -43,11 +49,14 @@
   content: "";
   position: absolute;
   inset: 0;
+  // Top edge under the header and the bottom one behind the scroll hint; the middle,
+  // where the face is, stays clear.
   background: linear-gradient(
     180deg,
-    rgba(8, 10, 20, 0.38) 0%,
-    rgba(8, 10, 20, 0.2) 40%,
-    rgba(8, 10, 20, 0.52) 100%
+    rgba($scrim-tone, 0.32) 0%,
+    rgba($scrim-tone, 0) 22%,
+    rgba($scrim-tone, 0) 68%,
+    rgba($scrim-tone, 0.5) 100%
   );
   pointer-events: none;
 }
@@ -239,8 +248,18 @@
 }
 
 @media (max-width: 640px) {
+  // The copy is stacked under the face here, so the scrim runs top to bottom instead.
   .hero {
-    background-position: 72% center;
+    @include portrait(
+      linear-gradient(
+        180deg,
+        rgba($scrim-tone, 0.05) 0%,
+        rgba($scrim-tone, 0.08) 38%,
+        rgba($scrim-tone, 0.72) 60%,
+        rgba($scrim-tone, 0.9) 100%
+      )
+    );
+    background-position: 62% top;
     align-items: center;
     justify-items: center;
     padding-top: 6.2rem;
