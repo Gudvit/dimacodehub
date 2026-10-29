@@ -31,9 +31,9 @@ What scrolls is **`.home-slider`, not `window`** (`overflow-y: auto` + `scroll-s
 - `window.scrollTo` / document-level `scrollIntoView` do not work here — you need
   `slider.scrollTo({ top })`.
 - The offset is computed by hand: `target.offsetTop - getHeaderOffset()`, where
-  `getHeaderOffset()` measures the real height of `.site-header` from the DOM. The header
-  is `position: fixed` above the slider, so without subtracting it the section heading
-  ends up underneath.
+  `getHeaderOffset()` reads `--header-height` — a variable `HeaderComponent` publishes
+  and keeps current with a `ResizeObserver`. The header is `position: fixed` above the
+  slider, so without subtracting it the section heading ends up underneath.
 - The `IntersectionObserver` in the about section is given `root: .home-slider`. With
   `root: null` (the viewport) it would never fire — as far as the document is concerned,
   the section is always visible.
@@ -62,20 +62,27 @@ Angular's `withInMemoryScrolling`/`anchorScrolling` is useless here for the same
 
 ## The experience section
 
-One component implements three ways to switch the active role. All thresholds are private
-constants at the top of the class — change those rather than hardcoding numbers inline:
+One component implements three ways to switch the active role. The gesture arithmetic
+lives in `role-gestures.ts` (`WheelNavigator`, `SwipeTracker`), framework-free; its
+thresholds are the constants at the top of that file — change those rather than
+hardcoding numbers inline:
 
 - **Click** on a timeline item (desktop) or on a dot in `experience-mobile-nav` (mobile)
   → `setActive(i)`. This is the only keyboard-reachable entry point: both are real
   `<button>` elements.
 - **Touch swipe**: horizontal intent is decided by `|dx| > |dy|`, with a
-  `swipeThresholdPx = 40` threshold. Without that check vertical page scrolling would
+  `SWIPE_THRESHOLD_PX = 40` threshold. Without that check vertical page scrolling would
   switch roles.
-- **Wheel (desktop only, `> 980px`)**: a `wheelThresholdPx = 84` accumulator plus a
-  `wheelCooldownMs = 360` cooldown, with `preventDefault()` on every event inside the
-  section. On the first and last role an "exit budget" of `edgeExitThresholdPx = 170`
+- **Wheel (desktop only, `> 980px`)**: a `WHEEL_THRESHOLD_PX = 84` accumulator plus a
+  `WHEEL_COOLDOWN_MS = 360` cooldown, with `preventDefault()` on every event inside the
+  section. On the first and last role an "exit budget" of `EDGE_EXIT_THRESHOLD_PX = 170`
   applies: until it is spent, the wheel is not handed over to the outer scroll. Without
   it, one trackpad flick would skip past the whole section.
+
+`wheel` and `touchmove` are registered with `addEventListener` in `afterNextRender()`, not
+bound in the template: they fire dozens of times per gesture and a template listener
+would schedule change detection for each. `wheel` is `passive: false` on purpose.
+`touchstart`/`touchend` fire once per gesture and stay in the template.
 
 `prevRole()` / `nextRole()` (which wrap around) are not bound in the template — only the
 swipe handlers call them.
@@ -88,7 +95,7 @@ node. Collapse it to one name and the role-change animation stops working.
 `setActive()` also pulls the active timeline item into view
 (`scrollIntoView({ block: "nearest" })`) — on desktop only.
 
-Role data (`roles`) is hardcoded in the component. That is deliberate — see
+Role data lives in `experience-roles.ts` (`EXPERIENCE_ROLES`). Content in code is deliberate — see
 `docs/architecture/0005-content-in-code.md`.
 
 ## Things to keep in mind when editing
