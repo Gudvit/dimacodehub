@@ -93,6 +93,16 @@ a {
   animation: route-leave 380ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
+// A full-width slide with blur on every navigation is exactly what this preference opts
+// out of. The class stays, so `animate.leave` still finds no animation and removes the
+// old page at once.
+@media (prefers-reduced-motion: reduce) {
+  .route-enter,
+  .route-leave {
+    animation-name: none;
+  }
+}
+
 @keyframes route-enter {
   from {
     transform: translateX(100%);
@@ -114,6 +124,3 @@ a {
     filter: blur(3px);
   }
 }
-
-// The spinner used to live here, split from the directive that built it. It is a
-// component now: `app/components/loader/`.

@@ -9,13 +9,10 @@
       <button class="primary" type="button" (click)="scrollToContacts.emit()">Contact me</button>
     </div>
   </div>
-  <div
+  <button
     class="scroll-hint"
-    role="button"
-    tabindex="0"
+    type="button"
     aria-label="Scroll to next section"
     (click)="scrollNext.emit()"
-    (keydown.enter)="scrollNext.emit()"
-    (keydown.space)="scrollNext.emit()"
-  ></div>
+  ></button>
 </section>
