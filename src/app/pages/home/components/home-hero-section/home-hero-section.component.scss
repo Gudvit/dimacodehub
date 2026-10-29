@@ -226,6 +226,86 @@ $scrim-tone: rgb(12 14 30);
   appearance: none;
 }
 
+// The proof strip: the agreed numbers and where they come from, read in the first seconds.
+.proof {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 560px;
+  margin-top: clamp(1.4rem, 4vh, 2.6rem);
+  padding-top: 1.3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.proof__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem clamp(1.5rem, 3vw, 2.75rem);
+  margin: 0;
+}
+
+// `dt` comes first for screen readers ("years in frontend: 10+"); the number reads first
+// on screen.
+.proof__metric {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.2rem;
+
+  dd {
+    margin: 0;
+    font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  dt {
+    font-size: 0.82rem;
+    color: rgba(235, 241, 250, 0.7);
+  }
+}
+
+.proof__companies {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 1.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  // Logos are recoloured to the wordmarks' white, so a mixed set still reads as one row.
+  img {
+    display: block;
+    width: auto;
+    height: 18px;
+    filter: brightness(0) invert(1);
+    opacity: 0.82;
+  }
+}
+
+.proof__caption {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(235, 241, 250, 0.55);
+}
+
 // The main action: solid, so it reads first next to the outlined CV link.
 .hero-actions .primary--solid {
   background: #fff;
@@ -305,35 +385,41 @@ $scrim-tone: rgb(12 14 30);
 }
 
 @media (max-width: 640px) {
-  // A phone is portrait-shaped, so here the photo covers the whole section again, and the
-  // copy is stacked under the face: the scrim runs top to bottom instead.
+  // A phone is portrait-shaped and the copy is long, so they stack instead of overlapping:
+  // the photo fills the top of the screen and fades into the background, the copy starts
+  // under the face and the section grows as tall as it needs. The scrim layer is sized to
+  // the photo, so the fade ends exactly where the photo does.
   .hero::after {
     content: none;
   }
 
   .hero::before {
-    background: linear-gradient(180deg, rgba($scrim-tone, 0) 70%, rgba($scrim-tone, 0.5) 100%);
+    content: none;
   }
 
   .hero {
-    background-size: cover;
-    background-repeat: no-repeat;
     @include portrait(
       linear-gradient(
         180deg,
         rgba($scrim-tone, 0.05) 0%,
-        rgba($scrim-tone, 0.08) 38%,
-        rgba($scrim-tone, 0.72) 60%,
-        rgba($scrim-tone, 0.9) 100%
+        rgba($scrim-tone, 0.12) 55%,
+        rgba($scrim-tone, 0.85) 82%,
+        $scrim-tone 96%
       )
     );
-    background-position: 62% top;
-    // The copy sits at the bottom, under the face, clear of the scroll hint.
-    align-content: end;
-    align-items: end;
+    background-size:
+      100% calc(70svh + 2px),
+      auto 70svh;
+    background-position:
+      center top,
+      62% top;
+    background-repeat: no-repeat;
+    align-content: start;
     justify-items: center;
-    padding-top: 6.2rem;
+    padding-top: 54svh;
     padding-bottom: 4.5rem;
+    // The same phone gutter as the contact section; 2rem squeezed the proof row onto two lines.
+    padding-inline: 1.25rem;
   }
 
   .hero-text {
@@ -375,6 +461,41 @@ $scrim-tone: rgb(12 14 30);
 
   .hero-actions > * {
     text-align: center;
+  }
+
+  .proof {
+    justify-items: center;
+    gap: 0.9rem;
+    width: 100%;
+    margin-top: 1.4rem;
+    padding-top: 1.1rem;
+  }
+
+  .proof__metrics {
+    justify-content: center;
+    gap: 1.2rem;
+  }
+
+  .proof__metric dd {
+    font-size: 1.5rem;
+  }
+
+  .proof__metric dt {
+    font-size: 0.75rem;
+  }
+
+  .proof__companies {
+    align-items: center;
+
+    ul {
+      justify-content: center;
+      gap: 0.4rem 1rem;
+    }
+
+    // All three fit one row inside the 326px a 390px phone leaves.
+    img {
+      height: 14px;
+    }
   }
 
   .scroll-hint {

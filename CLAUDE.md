@@ -102,7 +102,8 @@ is the exception: `app.ts` / class `App`.
   An absolute path ignores `base href` and 404s on Pages.
 - Images needed only by CSS live in `src/images/` — the bundler hashes them.
   `public/` holds only what must be reachable at a stable URL: `favicon.ico`,
-  the CV, `images/logo.svg` (loaded through `<img src>`), `images/og-cover.jpg` (for OG tags).
+  the CV, `images/logo.svg` and `images/companies/*.svg` (loaded through `<img src>`),
+  `images/og-cover.jpg` (for OG tags).
   The same file in both places is a duplicate in the deployment — don't do it.
 - Everything in `public/` ships in full. Do not put unused files or PNG sources there —
   only compressed images that are actually needed.

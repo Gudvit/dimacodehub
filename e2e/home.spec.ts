@@ -5,6 +5,9 @@ test("home hero renders the primary actions", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Dmytro Huliaiev", level: 1 })).toBeVisible();
   await expect(page.getByRole("link", { name: "Download CV" }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "Discuss a project" })).toBeVisible();
+  // The proof strip: the agreed numbers and the company logos, named for screen readers.
+  await expect(page.getByText("100K+", { exact: true })).toBeVisible();
+  await expect(page.getByRole("img", { name: "IdeaSoft" })).toBeVisible();
 });
 
 test("cv link stays relative so it survives the base href", async ({ page }) => {
