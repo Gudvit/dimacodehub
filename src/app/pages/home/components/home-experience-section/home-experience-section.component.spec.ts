@@ -50,6 +50,16 @@ describe("HomeExperienceSectionComponent gestures", () => {
   });
 
   describe("wheel", () => {
+    it("listens on the panel itself, not through a template binding", () => {
+      const panel = fixture.nativeElement.querySelector(".focus-panel") as HTMLElement;
+      const event = new WheelEvent("wheel", { deltaY: 100, cancelable: true });
+
+      panel.dispatchEvent(event);
+
+      expect(component.activeIndex()).toBe(1);
+      expect(event.defaultPrevented).toBe(true);
+    });
+
     it("waits for the full budget before switching roles", () => {
       wheel(50);
       expect(component.activeIndex()).toBe(0);

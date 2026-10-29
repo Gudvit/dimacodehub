@@ -36,6 +36,9 @@
             "outputPath": "dist/dimacodehub",
             "security": {
               "allowedHosts": []
+            },
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/styles"]
             }
           },
           "configurations": {

@@ -1,6 +1,6 @@
 # dimacodehub — working rules
 
-Personal portfolio site. Angular 21 (standalone, signals, zoneless), SCSS,
+Personal portfolio site. Angular 22 (standalone, signals, zoneless), SCSS,
 Vitest + Playwright, deployed to GitHub Pages from `main` via `.github/workflows/deploy.yml`.
 
 ## What this project is
@@ -21,11 +21,15 @@ before any large architectural change — they record why things are the way the
 
 ## Stack
 
-- **Angular 21.2** — standalone components, signals, zoneless CD, the new
+- **Angular 22.1** — standalone components, signals, zoneless CD, the new
   `@angular/build:application` builder (`outputMode: static`).
-- **TypeScript 5.9**, `strict` plus `noPropertyAccessFromIndexSignature`,
+- **TypeScript 6.0**, `strict` plus `noPropertyAccessFromIndexSignature`,
   `noImplicitReturns` and `strictTemplates`.
 - **SCSS** — global `src/styles.scss` plus a per-component `styleUrl`. No UI framework.
+  The palette lives once in `src/styles/_brand.scss` (`@use "brand"`, resolved through
+  `stylePreprocessorOptions.includePaths`): `var(--brand-*)` for opaque colours,
+  `brand.ink($alpha)` / `brand.wine($alpha)` for translucent ones — no raw `rgba()` of
+  brand colours in component styles.
 - **Vitest 4** (jsdom) for unit tests; **Playwright** for e2e.
 - **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.
 - **npm 11.13.0** (`packageManager` in `package.json`), Node 24 (`.nvmrc`, `engines`).
@@ -54,6 +58,7 @@ contact form. Nothing else in `dependencies` is optional.
 src/
   index.html                  static meta/OG tags, font link
   main.ts                     bootstrapApplication(App, appConfig)
+  styles/_brand.scss          the brand palette: SCSS variables + ink()/wine() helpers
   styles.scss                 brand CSS variables, background effects, route-animation
                               keyframes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
@@ -113,7 +118,7 @@ is the exception: `app.ts` / class `App`.
 - `signal()` / `computed()` for component state; plain fields only for things that
   are not part of rendering.
 - `ChangeDetectionStrategy.OnPush` on every component.
-- Do not write `standalone: true` — it is the default in Angular 21.
+- Do not write `standalone: true` — it is the default since Angular 19.
 - Control flow in templates: only `@if` / `@for` / `@switch`.
 - Route parameters arrive as `input()` via `withComponentInputBinding()`, not through
   `ActivatedRoute` (see `blog-post-page.component.ts`).

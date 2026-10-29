@@ -1,3 +1,5 @@
+@use "brand";
+
 .blog-page {
   min-height: calc(100vh - 82px);
 }
@@ -76,8 +78,8 @@
   &:hover,
   &:has(.post-card__link:focus-visible) {
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(25, 29, 63, 0.08);
-    border-color: rgba(97, 34, 51, 0.25);
+    box-shadow: 0 12px 32px brand.ink(0.08);
+    border-color: brand.wine(0.25);
   }
 
   // The title anchor carries the whole card so the card stays clickable
@@ -113,7 +115,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--brand-wine);
-    background: rgba(97, 34, 51, 0.07);
+    background: brand.wine(0.07);
     padding: 0.25rem 0.6rem;
     border-radius: 4px;
   }

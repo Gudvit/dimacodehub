@@ -1,3 +1,5 @@
+@use "brand";
+
 .post-page {
   padding: calc(82px + clamp(1.5rem, 3vw, 2.5rem)) 1.5rem clamp(3rem, 8vw, 6rem);
 
@@ -48,7 +50,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--brand-wine);
-    background: rgba(97, 34, 51, 0.07);
+    background: brand.wine(0.07);
     padding: 0.25rem 0.6rem;
     border-radius: 4px;
   }
@@ -99,7 +101,7 @@
   }
 
   &__code {
-    background: rgba(25, 29, 63, 0.04);
+    background: brand.ink(0.04);
     border: 1px solid var(--brand-outline);
     border-radius: 8px;
     padding: 1.25rem 1.5rem;

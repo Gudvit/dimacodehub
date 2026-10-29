@@ -33,6 +33,24 @@ test("contact me jumps to the contact section and back to top returns", async ({
   await expect(page.getByRole("heading", { name: "Dmytro Huliaiev", level: 1 })).toBeInViewport();
 });
 
+test("the published header height matches the whole header", async ({ page }) => {
+  await page.goto("/");
+
+  // Every scroll offset on the slider and the hero portrait's top edge read this variable.
+  // It once held the content box alone (32px of an 81px header), and jsdom cannot see it.
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const published = getComputedStyle(document.documentElement).getPropertyValue(
+          "--header-height",
+        );
+        const header = document.querySelector<HTMLElement>(".site-header");
+        return Number.parseFloat(published) - (header?.offsetHeight ?? -1);
+      }),
+    )
+    .toBe(0);
+});
+
 test("a fragment deep link scrolls the slider to that section", async ({ page }) => {
   await page.goto("/#contacts");
 

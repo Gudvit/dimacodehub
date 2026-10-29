@@ -36,6 +36,20 @@ test("blog post deep link renders the article and its metadata", async ({ page }
   await expect(page.getByRole("link", { name: "Back to blog" })).toBeVisible();
 });
 
+test("leaving a post restores the site-wide metadata", async ({ page }) => {
+  await page.goto("/blog/angular-architecture-patterns");
+  const ogTitle = page.locator('meta[property="og:title"]');
+  await expect(ogTitle).toHaveAttribute(
+    "content",
+    "Angular Architecture Patterns I Use in Production",
+  );
+
+  await page.getByRole("link", { name: "Back to blog" }).click();
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(ogTitle).toHaveAttribute("content", "Dmytro Huliaiev - Senior Frontend Engineer");
+  await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "website");
+});
+
 test("unknown blog slug shows the not-found state", async ({ page }) => {
   await page.goto("/blog/no-such-post");
   await expect(page.getByText("Post not found.")).toBeVisible();

@@ -1,0 +1,16 @@
+// The brand palette, defined once. `styles.scss` turns it into the `--brand-*` custom
+// properties used for opaque colours; component styles use the functions below for the
+// translucent shades, which compile to plain `rgba()` and cost nothing at runtime.
+// Reached as `@use "brand"` through `stylePreprocessorOptions.includePaths`.
+$ink: #191d3f;
+$wine: #612233;
+$surface: #f6f3f5;
+$muted: #6a6d7a;
+
+@function ink($alpha) {
+  @return rgba($ink, $alpha);
+}
+
+@function wine($alpha) {
+  @return rgba($wine, $alpha);
+}

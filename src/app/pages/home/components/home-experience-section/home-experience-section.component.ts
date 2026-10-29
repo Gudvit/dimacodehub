@@ -1,8 +1,11 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
+  inject,
   signal,
   viewChild,
 } from "@angular/core";
@@ -26,8 +29,14 @@ export class HomeExperienceSectionComponent {
   readonly panelKey = signal(0);
 
   private readonly timelineRef = viewChild<ElementRef<HTMLElement>>("timeline");
+  private readonly focusPanelRef = viewChild<ElementRef<HTMLElement>>("focusPanel");
+  private readonly destroyRef = inject(DestroyRef);
   private readonly wheel = new WheelNavigator();
   private readonly swipe = new SwipeTracker();
+
+  constructor() {
+    afterNextRender(() => this.listenToPanelGestures());
+  }
 
   setActive(index: number): void {
     if (index === this.activeIndex()) {
@@ -108,6 +117,30 @@ export class HomeExperienceSectionComponent {
     } else if (decision === "previous") {
       this.setActive(Math.max(0, this.activeIndex() - 1));
     }
+  }
+
+  /**
+   * `wheel` and `touchmove` fire dozens of times per gesture. A template binding would
+   * schedule a change detection pass for each one, so they are registered by hand — the
+   * handlers only touch signals when a role actually changes. `wheel` must not be passive:
+   * swallowing the page scroll inside the section is the point of it.
+   */
+  private listenToPanelGestures(): void {
+    const panel = this.focusPanelRef()?.nativeElement;
+    if (!panel) {
+      return;
+    }
+
+    const onWheel = (event: WheelEvent) => this.onFocusPanelWheel(event);
+    const onTouchMove = (event: TouchEvent) => this.onTouchMove(event);
+
+    panel.addEventListener("wheel", onWheel, { passive: false });
+    panel.addEventListener("touchmove", onTouchMove, { passive: true });
+
+    this.destroyRef.onDestroy(() => {
+      panel.removeEventListener("wheel", onWheel);
+      panel.removeEventListener("touchmove", onTouchMove);
+    });
   }
 
   private isDesktopViewport(): boolean {

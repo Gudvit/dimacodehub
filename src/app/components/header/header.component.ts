@@ -30,7 +30,7 @@ export class HeaderComponent {
     // Read and write are separate phases, so the value is in place before the home page's
     // own `afterNextRender` scrolls to a fragment.
     afterNextRender({
-      earlyRead: () => this.headerElement()?.clientHeight ?? 0,
+      earlyRead: () => this.headerElement()?.offsetHeight ?? 0,
       write: (height) => this.publishHeight(height),
     });
   }
@@ -56,7 +56,9 @@ export class HeaderComponent {
     }
 
     // The height moves with the viewport: padding and logo size are breakpoint-bound.
-    const observer = new ResizeObserver(([entry]) => this.writeHeight(entry?.contentRect.height));
+    // `contentRect` would be the content box alone; what overlaps the page is the whole
+    // header, padding and border included, so this reads the same box as the first render.
+    const observer = new ResizeObserver(() => this.writeHeight(header.offsetHeight));
     observer.observe(header);
     this.destroyRef.onDestroy(() => observer.disconnect());
   }

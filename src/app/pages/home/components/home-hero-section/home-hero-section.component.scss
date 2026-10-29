@@ -1,3 +1,18 @@
+@use "brand";
+
+// The portrait. The plain `url()` line is the fallback for browsers without `image-set()`.
+// `$scrim` is layered over it when the photo is the element's own background (mobile).
+@mixin portrait($scrim: null) {
+  background-image: $scrim, url("../../../../../images/background.jpg");
+  background-image:
+    $scrim,
+    image-set(
+      url("../../../../../images/background.avif") type("image/avif"),
+      url("../../../../../images/background.jpg") type("image/jpeg")
+    );
+}
+
+$scrim-tone: rgb(12 14 30);
 :host {
   display: block;
 }
@@ -9,44 +24,43 @@
   align-items: flex-start;
   justify-items: start;
   gap: 1.5rem;
-  padding: clamp(3.6rem, 12vh, 8.4rem) clamp(2rem, 9vw, 2rem);
-  background-image:
-    linear-gradient(
-      90deg,
-      rgba(10, 12, 24, 0.78) 0%,
-      rgba(10, 12, 24, 0.62) 45%,
-      rgba(10, 12, 24, 0.48) 100%
-    ),
-    url("../../../../../images/background.jpg");
-  background-image:
-    linear-gradient(
-      90deg,
-      rgba(10, 12, 24, 0.78) 0%,
-      rgba(10, 12, 24, 0.62) 45%,
-      rgba(10, 12, 24, 0.48) 100%
-    ),
-    image-set(
-      url("../../../../../images/background.avif") type("image/avif"),
-      url("../../../../../images/background.jpg") type("image/jpeg")
-    );
-  background-position: right center;
-  background-size: cover;
-  background-repeat: no-repeat;
+  padding: clamp(3.6rem, 12vh, 8.4rem) 2rem;
+  background-color: $scrim-tone;
   border-bottom: 1px solid var(--brand-outline);
   position: relative;
   overflow: hidden;
+}
+
+// On wide screens the photo is not stretched to cover: that zoomed the near-square
+// portrait until the face filled the screen, more so the wider the monitor. It keeps its
+// own proportions at the height below the header, sits on the right and fades into the
+// background on the left, where the copy is.
+.hero::after {
+  content: "";
+  position: absolute;
+  top: var(--header-height);
+  right: 0;
+  bottom: 0;
+  aspect-ratio: 2200 / 1800; // the photo's own proportions
+  max-width: 80%;
+  @include portrait;
+  background-size: cover;
+  background-position: 62% top;
+  background-repeat: no-repeat;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 32%);
+  pointer-events: none;
 }
 
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(8, 10, 20, 0.38) 0%,
-    rgba(8, 10, 20, 0.2) 40%,
-    rgba(8, 10, 20, 0.52) 100%
-  );
+  z-index: 1;
+  // Bottom edge behind the scroll hint, and the left side under the copy; the face
+  // stays clear.
+  background:
+    linear-gradient(180deg, rgba($scrim-tone, 0) 70%, rgba($scrim-tone, 0.5) 100%),
+    linear-gradient(90deg, rgba($scrim-tone, 0.55) 0%, rgba($scrim-tone, 0) 55%);
   pointer-events: none;
 }
 
@@ -141,7 +155,7 @@
 
 .hero-actions a:hover,
 .hero-actions button:hover {
-  box-shadow: 0 12px 24px rgba(25, 29, 63, 0.18);
+  box-shadow: 0 12px 24px brand.ink(0.18);
 }
 
 .hero-actions .primary {
@@ -185,6 +199,9 @@
   bottom: 7rem;
   width: 28px;
   height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
   transform: translateX(-50%);
   cursor: pointer;
   z-index: 1;
@@ -234,8 +251,29 @@
 }
 
 @media (max-width: 640px) {
+  // A phone is portrait-shaped, so here the photo covers the whole section again, and the
+  // copy is stacked under the face: the scrim runs top to bottom instead.
+  .hero::after {
+    content: none;
+  }
+
+  .hero::before {
+    background: linear-gradient(180deg, rgba($scrim-tone, 0) 70%, rgba($scrim-tone, 0.5) 100%);
+  }
+
   .hero {
-    background-position: 72% center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    @include portrait(
+      linear-gradient(
+        180deg,
+        rgba($scrim-tone, 0.05) 0%,
+        rgba($scrim-tone, 0.08) 38%,
+        rgba($scrim-tone, 0.72) 60%,
+        rgba($scrim-tone, 0.9) 100%
+      )
+    );
+    background-position: 62% top;
     align-items: center;
     justify-items: center;
     padding-top: 6.2rem;
