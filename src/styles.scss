@@ -1,13 +1,15 @@
+@use "brand";
+
 :root {
   color-scheme: light;
   // Measured and kept up to date by HeaderComponent; the home slider subtracts it when
   // scrolling to a section. The fallback matters only before the first render.
   --header-height: 0px;
-  --brand-ink: #191d3f;
-  --brand-wine: #612233;
-  --brand-surface: #f6f3f5;
-  --brand-muted: #6a6d7a;
-  --brand-outline: rgba(25, 29, 63, 0.12);
+  --brand-ink: #{brand.$ink};
+  --brand-wine: #{brand.$wine};
+  --brand-surface: #{brand.$surface};
+  --brand-muted: #{brand.$muted};
+  --brand-outline: #{brand.ink(0.12)};
 }
 
 * {
@@ -33,7 +35,7 @@ body::before {
   pointer-events: none;
   background: radial-gradient(
     600px circle at var(--cursor-x, 50%) var(--cursor-y, 40%),
-    rgba(97, 34, 51, 0.12),
+    brand.wine(0.12),
     transparent 60%
   );
   opacity: 0.8;

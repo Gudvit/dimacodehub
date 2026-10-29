@@ -1,3 +1,6 @@
+@use "brand";
+@use "../../display-title";
+
 :host {
   display: block;
 }
@@ -7,9 +10,9 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: clamp(3.6rem, 12vh, 8.4rem) clamp(2rem, 9vw, 2rem) clamp(1.8rem, 4vh, 2.8rem);
+  padding: clamp(3.6rem, 12vh, 8.4rem) 2rem clamp(1.8rem, 4vh, 2.8rem);
   border-bottom: 1px solid var(--brand-outline);
-  background: linear-gradient(180deg, #ffffff 0%, #f7f3f6 100%);
+  background: linear-gradient(180deg, #fff 0%, #f7f3f6 100%);
   overflow: hidden;
 }
 
@@ -27,7 +30,7 @@
   height: 460px;
   top: -190px;
   right: -170px;
-  background: radial-gradient(circle at 30% 30%, rgba(97, 34, 51, 0.72), transparent 62%);
+  background: radial-gradient(circle at 30% 30%, brand.wine(0.72), transparent 62%);
 }
 
 .contact-section::after {
@@ -35,21 +38,13 @@
   height: 520px;
   left: -240px;
   bottom: -250px;
-  background: radial-gradient(circle at 45% 45%, rgba(25, 29, 63, 0.5), transparent 62%);
+  background: radial-gradient(circle at 45% 45%, brand.ink(0.5), transparent 62%);
 }
 
 .contact-section__display-title {
-  position: relative;
+  @include display-title.display-title(clamp(20px, 10vw, 150px));
   z-index: 1;
-  margin: 0 0 clamp(1.2rem, 3vw, 2rem);
-  text-align: center;
-  font-size: clamp(20px, 10vw, 150px);
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  line-height: 0.84;
-  color: rgba(25, 29, 63, 0.1);
-  pointer-events: none;
+  margin-bottom: clamp(1.2rem, 3vw, 2rem);
 }
 
 .contact-section__layout {
@@ -75,13 +70,13 @@
   margin: 0;
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(25, 29, 63, 0.16);
+  border: 1px solid brand.ink(0.16);
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.92);
-  color: rgba(25, 29, 63, 0.74);
+  color: brand.ink(0.74);
   padding: 0;
   cursor: pointer;
-  box-shadow: 0 10px 20px -14px rgba(25, 29, 63, 0.45);
+  box-shadow: 0 10px 20px -14px brand.ink(0.45);
   transition:
     transform 0.2s ease,
     color 0.2s ease,
@@ -95,8 +90,8 @@
   transform: translateY(-1px);
   color: var(--brand-ink);
   background: #fff;
-  border-color: rgba(25, 29, 63, 0.28);
-  box-shadow: 0 14px 26px -14px rgba(25, 29, 63, 0.5);
+  border-color: brand.ink(0.28);
+  box-shadow: 0 14px 26px -14px brand.ink(0.5);
 }
 
 .back-to-top::before {
@@ -112,7 +107,7 @@
 }
 
 .back-to-top:focus-visible {
-  outline: 2px solid rgba(97, 34, 51, 0.42);
+  outline: 2px solid brand.wine(0.42);
   outline-offset: 2px;
 }
 
@@ -120,14 +115,15 @@
 .message-cta {
   height: 100%;
   border-radius: 18px;
-  border: 1px solid rgba(25, 29, 63, 0.1);
+  border: 1px solid brand.ink(0.1);
   background: rgba(255, 255, 255, 0.9);
   box-shadow:
-    0 18px 36px rgba(25, 29, 63, 0.1),
+    0 18px 36px brand.ink(0.1),
     0 1px 0 rgba(255, 255, 255, 0.8) inset;
 }
 
-.contact-intro {
+.contact-intro,
+.message-cta {
   padding: clamp(1.1rem, 2.2vw, 1.7rem);
   display: grid;
   gap: 1.1rem;
@@ -143,7 +139,7 @@
 
 .contact-intro__lead {
   margin: 0;
-  color: rgba(25, 29, 63, 0.72);
+  color: brand.ink(0.72);
   line-height: 1.6;
 }
 
@@ -155,7 +151,7 @@
 
 .contact-info-grid article {
   border-radius: 12px;
-  border: 1px solid rgba(25, 29, 63, 0.08);
+  border: 1px solid brand.ink(0.08);
   background: rgba(255, 255, 255, 0.86);
   padding: 0.72rem 0.85rem;
 }
@@ -166,7 +162,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(25, 29, 63, 0.52);
+  color: brand.ink(0.52);
 }
 
 .contact-info-grid a,
@@ -183,16 +179,18 @@
   align-items: center;
 }
 
-.contact-channels a {
+// The round icon links. The CV download sits in the same row but is a button-shaped link,
+// styled together with the submit button below.
+.contact-channels a:not(.contact-channels__cv) {
   display: inline-grid;
   align-items: center;
   justify-content: center;
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  border: 1px solid rgba(25, 29, 63, 0.14);
+  border: 1px solid brand.ink(0.14);
   background: #fff;
-  color: rgba(25, 29, 63, 0.85);
+  color: brand.ink(0.85);
   padding: 0;
   transition:
     border-color 0.2s ease,
@@ -207,76 +205,19 @@
   fill: currentColor;
 }
 
-.contact-channels a:hover {
-  border-color: rgba(25, 29, 63, 0.28);
-  background: rgba(25, 29, 63, 0.04);
+.contact-channels a:not(.contact-channels__cv):hover {
+  border-color: brand.ink(0.28);
+  background: brand.ink(0.04);
   color: var(--brand-ink);
   transform: translateY(-1px);
 }
 
 .contact-channels a:focus-visible {
-  outline: 2px solid rgba(97, 34, 51, 0.42);
+  outline: 2px solid brand.wine(0.42);
   outline-offset: 2px;
 }
 
-.contact-channels__cv {
-  width: auto !important;
-  height: 50px;
-  min-height: 50px;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  border-radius: 12px !important;
-  padding: 0.95rem 2.2rem !important;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  border: 1px solid rgba(25, 29, 63, 0.14);
-  background: transparent !important;
-  color: #111 !important;
-  position: relative;
-  overflow: hidden;
-  transition:
-    box-shadow 0.25s ease,
-    background 0.25s ease,
-    border-color 0.25s ease,
-    transform 0.25s ease !important;
-
-  @media (max-width: 640px) {
-    width: 100% !important;
-  }
-}
-
-.contact-channels__cv::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    rgba(0, 0, 0, 0) 28%,
-    rgba(0, 0, 0, 0.22) 50%,
-    rgba(0, 0, 0, 0) 72%
-  );
-  transform: translateX(-140%);
-  transition: transform 0.7s ease;
-  pointer-events: none;
-}
-
-.contact-channels__cv:hover {
-  background: transparent !important;
-  border-color: rgba(0, 0, 0, 0.48) !important;
-  box-shadow: 0 10px 20px rgba(25, 29, 63, 0.14);
-}
-
-.contact-channels__cv:hover::before {
-  transform: translateX(140%);
-}
-
 .message-cta {
-  padding: clamp(1.1rem, 2.2vw, 1.7rem);
-  display: grid;
-  gap: 1.1rem;
   align-content: start;
 }
 
@@ -316,7 +257,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(25, 29, 63, 0.52);
+  color: brand.ink(0.52);
 }
 
 .field input,
@@ -325,7 +266,7 @@
   font: inherit;
   color: var(--brand-ink);
   border-radius: 12px;
-  border: 1px solid rgba(25, 29, 63, 0.14);
+  border: 1px solid brand.ink(0.14);
   background: rgba(255, 255, 255, 0.86);
   padding: 0.7rem 0.85rem;
   transition:
@@ -342,20 +283,20 @@
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: rgba(25, 29, 63, 0.36);
+  color: brand.ink(0.36);
 }
 
 .field input:hover,
 .field textarea:hover {
-  border-color: rgba(25, 29, 63, 0.28);
+  border-color: brand.ink(0.28);
 }
 
 .field input:focus,
 .field textarea:focus {
   outline: none;
   background: #fff;
-  border-color: rgba(97, 34, 51, 0.55);
-  box-shadow: 0 0 0 3px rgba(97, 34, 51, 0.14);
+  border-color: brand.wine(0.55);
+  box-shadow: 0 0 0 3px brand.wine(0.14);
 }
 
 .field input:disabled,
@@ -418,8 +359,11 @@
   font-weight: 600;
 }
 
+// Outlined button with a shine sweep on hover: the submit button and the CV download.
+.contact-channels__cv,
 .message-cta__button {
-  justify-self: start;
+  position: relative;
+  overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.35);
   border-radius: 12px;
   background: transparent;
@@ -429,17 +373,29 @@
   font-size: 1rem;
   letter-spacing: 0.01em;
   padding: 0.95rem 2.2rem;
-  min-width: 180px;
   text-align: center;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
   transition:
     box-shadow 0.25s ease,
     border-color 0.25s ease,
     transform 0.25s ease;
 }
 
+.message-cta__button {
+  justify-self: start;
+  min-width: 180px;
+  cursor: pointer;
+}
+
+// Sits in the icon row, so it matches their 50px height and their softer border.
+.contact-channels__cv {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  border-color: brand.ink(0.14);
+}
+
+.contact-channels__cv::before,
 .message-cta__button::before {
   content: "";
   position: absolute;
@@ -455,11 +411,17 @@
   pointer-events: none;
 }
 
+.contact-channels__cv:hover,
 .message-cta__button:hover {
   border-color: rgba(0, 0, 0, 0.48);
-  box-shadow: 0 10px 20px rgba(25, 29, 63, 0.14);
+  box-shadow: 0 10px 20px brand.ink(0.14);
 }
 
+.contact-channels__cv:hover {
+  transform: translateY(-1px);
+}
+
+.contact-channels__cv:hover::before,
 .message-cta__button:hover::before {
   transform: translateX(140%);
 }
@@ -503,10 +465,6 @@
 }
 
 @media (max-width: 980px) {
-  .contact-section {
-    min-height: 100vh;
-  }
-
   .contact-section__layout {
     grid-template-columns: 1fr;
   }
@@ -522,6 +480,7 @@
     grid-template-columns: 1fr;
   }
 
+  .contact-channels__cv,
   .message-cta__button {
     justify-self: stretch;
     width: 100%;

@@ -26,6 +26,10 @@ before any large architectural change — they record why things are the way the
 - **TypeScript 5.9**, `strict` plus `noPropertyAccessFromIndexSignature`,
   `noImplicitReturns` and `strictTemplates`.
 - **SCSS** — global `src/styles.scss` plus a per-component `styleUrl`. No UI framework.
+  The palette lives once in `src/styles/_brand.scss` (`@use "brand"`, resolved through
+  `stylePreprocessorOptions.includePaths`): `var(--brand-*)` for opaque colours,
+  `brand.ink($alpha)` / `brand.wine($alpha)` for translucent ones — no raw `rgba()` of
+  brand colours in component styles.
 - **Vitest 4** (jsdom) for unit tests; **Playwright** for e2e.
 - **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.
 - **npm 11.13.0** (`packageManager` in `package.json`), Node 24 (`.nvmrc`, `engines`).
@@ -54,6 +58,7 @@ contact form. Nothing else in `dependencies` is optional.
 src/
   index.html                  static meta/OG tags, font link
   main.ts                     bootstrapApplication(App, appConfig)
+  styles/_brand.scss          the brand palette: SCSS variables + ink()/wine() helpers
   styles.scss                 brand CSS variables, background effects, route-animation
                               keyframes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
