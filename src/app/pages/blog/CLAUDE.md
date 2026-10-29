@@ -43,9 +43,9 @@ test, fix the content, not the test.
 - The `<title>` is set by the `postTitle` `ResolveFn` in `blog.routes.ts` (which also
   holds the "Post not found" fallback), not by the component.
 - OG/description tags are set by an `effect()` in `BlogPostPageComponent` through `Meta`.
-  The tags are **not reverted** when you navigate away — they keep the last opened post's
-  values until a reload. That does not matter for social previews (crawlers see the static
-  `index.html`); for in-app navigation it is a known compromise.
+  The component snapshots the site-wide values from `index.html` on creation and puts
+  them back in `DestroyRef.onDestroy()`, so `/` does not keep describing the last post.
+  A new tag written by the effect must also be listed in `POST_META_TAGS`, or it leaks.
 - An unknown slug does not redirect: `post()` returns `undefined` and the template shows
   the "Post not found." state — there is an e2e test for it.
 - A direct link to `/blog/:slug` only survives on GitHub Pages because of the
