@@ -4,10 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && npm run build:feeds && npm run build:og",
-    "build:gh": "ng build --base-href /dimacodehub/ && npm run build:feeds && npm run build:og",
+    "build": "ng build && npm run build:feeds && npm run build:og && npm run build:stats",
+    "build:gh": "ng build --base-href /dimacodehub/ && npm run build:feeds && npm run build:og && npm run build:stats",
     "build:feeds": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-feeds.ts dist/dimacodehub/browser",
     "build:og": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-og-images.ts dist/dimacodehub/browser",
+    "build:stats": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-stats.ts dist/dimacodehub/browser",
     "watch": "ng build --watch --configuration development",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "ng test",

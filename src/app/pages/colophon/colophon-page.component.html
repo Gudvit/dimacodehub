@@ -1,0 +1,106 @@
+<app-header></app-header>
+
+<main class="colophon">
+  <header class="colophon-hero">
+    <p class="colophon-hero__label">Colophon</p>
+    <h1 class="colophon-hero__title">How this site is built</h1>
+    <p class="colophon-hero__lead">
+      A personal site held to the standards of a production codebase: every decision written down,
+      every change through the same gates, and the weight measured on every build.
+    </p>
+  </header>
+
+  <section class="colophon-section" aria-labelledby="colophon-numbers">
+    <h2 class="colophon-section__title" id="colophon-numbers">By the numbers</h2>
+    @if (figures(); as figures) {
+      <dl class="figures">
+        @for (figure of figures; track figure.label) {
+          <div class="figures__item">
+            <dt>{{ figure.label }}</dt>
+            <dd>{{ figure.value }}</dd>
+          </div>
+        }
+      </dl>
+      @if (stats(); as stats) {
+        <p class="colophon-section__note">
+          Measured by the build that produced this page, {{ stats.builtAt | date: "MMMM d, y" }}
+          @if (commitUrl(); as commitUrl) {
+            ·
+            <a [href]="commitUrl" target="_blank" rel="noopener noreferrer"
+              >commit {{ stats.commit?.slice(0, 7) }}</a
+            >
+          }
+        </p>
+      }
+    } @else if (stats() === null) {
+      <p class="colophon-section__note">
+        The production build measures these; the dev server has no numbers to show.
+      </p>
+    } @else {
+      <p class="colophon-section__note">Loading the numbers of this build…</p>
+    }
+  </section>
+
+  <section class="colophon-section" aria-labelledby="colophon-stack">
+    <h2 class="colophon-section__title" id="colophon-stack">Stack</h2>
+    <ul class="stack">
+      @for (item of stack; track item.name) {
+        <li class="stack__item">
+          <h3>{{ item.name }}</h3>
+          <p>{{ item.detail }}</p>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="colophon-section" aria-labelledby="colophon-decisions">
+    <h2 class="colophon-section__title" id="colophon-decisions">Architecture decisions</h2>
+    <p class="colophon-section__lead">
+      Every choice that shaped the code is an architecture decision record in the repository — the
+      context, the decision and what it costs. {{ adrs.length }} so far:
+    </p>
+    <ol class="adrs">
+      @for (adr of adrs; track adr.number) {
+        <li>
+          <a [href]="adrUrl(adr.file)" target="_blank" rel="noopener noreferrer">
+            <span class="adrs__number">{{ adr.number }}</span>
+            {{ adr.title }}
+          </a>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="colophon-section" aria-labelledby="colophon-pipeline">
+    <h2 class="colophon-section__title" id="colophon-pipeline">Quality gates</h2>
+    <p class="colophon-section__lead">
+      One GitHub Actions workflow runs on every push. A deployment is what is left when every step
+      has passed.
+    </p>
+    <ol class="pipeline">
+      @for (item of pipeline; track item.step) {
+        <li class="pipeline__step">
+          <h3>{{ item.step }}</h3>
+          <p>{{ item.detail }}</p>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="colophon-section" aria-labelledby="colophon-performance">
+    <h2 class="colophon-section__title" id="colophon-performance">Performance by construction</h2>
+    <ul class="facts">
+      @for (fact of performance; track $index) {
+        <li>{{ fact }}</li>
+      }
+    </ul>
+  </section>
+
+  <p class="colophon-source">
+    <a [href]="repositoryUrl" target="_blank" rel="noopener noreferrer"
+      >Read the source on GitHub <span aria-hidden="true">→</span></a
+    >
+  </p>
+</main>
+
+<app-footer></app-footer>

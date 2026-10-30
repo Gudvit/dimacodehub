@@ -39,6 +39,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
   {
+    path: "colophon",
+    renderMode: RenderMode.Prerender,
+  },
+  {
     // Anything else is the client's business: the build emits an empty shell
     // (`index.csr.html`), which the deploy copies to `404.html`.
     path: "**",

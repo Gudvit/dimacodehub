@@ -31,6 +31,7 @@ const pages: { readonly loc: string; readonly lastmod?: string }[] = [
   { loc: pageUrl(""), lastmod: posts[0]?.date },
   { loc: pageUrl("blog"), lastmod: posts[0]?.date },
   { loc: pageUrl("projects") },
+  { loc: pageUrl("colophon") },
   ...posts.map((post) => ({ loc: pageUrl(`blog/${post.slug}`), lastmod: post.date })),
   ...studies.map((study) => ({ loc: pageUrl(`projects/${study.slug}`) })),
 ];

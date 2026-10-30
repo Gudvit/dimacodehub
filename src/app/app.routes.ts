@@ -18,6 +18,12 @@ export const routes: Routes = [
     loadChildren: () => import("./pages/blog/blog.routes").then((m) => m.BLOG_ROUTES),
   },
   {
+    path: "colophon",
+    loadComponent: () =>
+      import("./pages/colophon/colophon-page.component").then((m) => m.ColophonPageComponent),
+    title: "How this site is built - Dmytro Huliaiev",
+  },
+  {
     path: "**",
     redirectTo: "",
     pathMatch: "full",

@@ -8,7 +8,7 @@ Vitest + Playwright, deployed to GitHub Pages from `main` via `.github/workflows
 A single-page portfolio for a frontend engineer (Dmytro Huliaiev) plus a blog section.
 Three areas: `/` (hero → about → experience → writing → contacts, a vertical slider),
 `/projects` (a "coming soon" placeholder, case studies at `/projects/:slug`), `/blog`
-(post list and post page).
+(post list and post page). Plus `/colophon`, "How this site is built", linked from the footer.
 
 The constraint that drives almost everything else: **there is no backend and none is
 planned**. The site is static files on GitHub Pages. No `HttpClient`, no database, no
@@ -53,6 +53,7 @@ contact form. Nothing else in `dependencies` is optional.
 | `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs              |
 | `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)       |
 | `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
+| `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page               |
 | `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)              |
 | `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself                |
 | `npm run test:e2e:ui`             | Playwright in UI mode                                                          |
@@ -73,6 +74,7 @@ src/
   vitest.setup.ts             matchMedia polyfill for jsdom
 scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
 scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Playwright
+scripts/build-stats.ts        bundle sizes, page and test counts → build-stats.json
   images/                     assets referenced only from SCSS (hashed by the bundler)
   app/
     app.ts / app.html / app.scss   root component: router-outlet + cursor spotlight
@@ -84,6 +86,7 @@ scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Pl
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
+      colophon/               "How this site is built" (`/colophon`): stack, ADRs, CI, numbers
       projects/               "coming soon" list placeholder, case study page
                               (`/projects/:slug`), CaseStudyService
     site.ts                   SITE_URL, pageUrl(), profiles — no runtime imports (scripts/ uses it)
@@ -185,6 +188,9 @@ bundle). Practical consequences:
 
 - Before considering a task done, everything CI runs must be green:
   `npm run format:check`, `npm run lint`, `npm run test:unit`, `npm run test:e2e`.
+- The colophon page describes the repository, and `colophon.spec.ts` holds it to it: adding
+  or renaming an ADR, renaming a CI step or moving the coverage floor fails the unit tests
+  until `src/app/pages/colophon/colophon.ts` says the same.
 - Formatting is Prettier (`npm run format`): double quotes, `printWidth: 100`.
   Component templates are parsed with the `angular` parser — do not align them by hand.
 - Empty `describe()` blocks are forbidden: Vitest fails with `No test found in suite`.
