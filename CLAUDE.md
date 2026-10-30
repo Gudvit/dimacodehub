@@ -36,7 +36,7 @@ before any large architectural change — they record why things are the way the
 - **npm 11.13.0** (`packageManager` in `package.json`), Node 24 (`.nvmrc`, `engines`).
 - **GitHub Actions** → GitHub Pages.
 
-`rxjs` is used in `app.ts` and `home-page.component.ts`; `@angular/forms` is used by the
+`rxjs` is used in `seo/page-url.ts`; `@angular/forms` is used by the
 contact form. Nothing else in `dependencies` is optional.
 
 ## Commands
@@ -63,8 +63,8 @@ src/
   main.ts                     bootstrapApplication(App, appConfig)
   main.server.ts              the same bootstrap for prerendering (build time only)
   styles/_brand.scss          the brand palette: SCSS variables + ink()/wine() helpers
-  styles.scss                 brand CSS variables, background effects, route-animation
-                              keyframes, `.slide-section` snap rules
+  styles.scss                 brand CSS variables, background effects, view-transition
+                              rules for route changes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
 scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
 scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Playwright

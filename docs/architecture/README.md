@@ -60,7 +60,7 @@ Cross-cutting facts that explain nearly every decision below:
 | [0009](0009-ci-quality-gate-before-deploy.md)               | CI                               | one workflow: format → lint → tests → build → deploy               |
 | [0010](0010-mailto-instead-of-contact-form.md)              | Contact (superseded)             | `mailto` instead of a form that sent nothing                       |
 | [0011](0011-asset-placement.md)                             | Assets                           | `public/` versus `src/images/`, removing build duplicates          |
-| [0012](0012-css-animations-and-dom-access.md)               | Animations and DOM               | CSS + `animate.enter/leave`, `afterNextRender`, rAF                |
+| [0012](0012-css-animations-and-dom-access.md)               | Animations and DOM               | CSS, View Transitions for routes, `afterNextRender`, rAF           |
 | [0013](0013-seo-metadata.md)                                | Metadata                         | static OG in `index.html`, `title` from routes, `Meta` for posts   |
 | [0014](0014-accessibility-approach.md)                      | Accessibility                    | semantic markup + ESLint a11y + role-based locators in e2e         |
 | [0015](0015-contact-form-via-web3forms.md)                  | Contact                          | a real form posting to Web3Forms, `mailto` as the fallback         |

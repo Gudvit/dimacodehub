@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Locator, test } from "@playwright/test";
 
 test("header navigates to the blog and sets the page title", async ({ page }) => {
   await page.goto("/");
@@ -97,4 +97,24 @@ test("a post describes itself to search engines and leaves nothing behind", asyn
     "href",
     "https://gudvit.github.io/dimacodehub/blog/",
   );
+});
+
+test("a post card and the post heading share one view-transition name", async ({ page }) => {
+  const transitionName = (heading: Locator) =>
+    heading.evaluate((element) => getComputedStyle(element).viewTransitionName);
+
+  await page.goto("/blog");
+  const card = page.getByRole("heading", {
+    name: "What AI Actually Changes About Frontend Engineering",
+  });
+  expect(await transitionName(card)).toBe("post-ai-frontend-engineering");
+
+  await card.getByRole("link").click();
+  await expect(page).toHaveURL(/\/blog\/ai-frontend-engineering$/);
+  const title = page.getByRole("heading", {
+    level: 1,
+    name: "What AI Actually Changes About Frontend Engineering",
+  });
+  await expect(title).toBeVisible();
+  expect(await transitionName(title)).toBe("post-ai-frontend-engineering");
 });

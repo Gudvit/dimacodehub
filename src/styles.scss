@@ -60,11 +60,6 @@ a {
   text-decoration: none;
 }
 
-.route-shell {
-  position: relative;
-  overflow: hidden;
-}
-
 // Marks a section of the home slider. `HomePageComponent.scrollToNextSection()` finds
 // sections by this class, and every one of them snaps the same way. It has to be global:
 // the class lives in the section components' templates, so neither the home page's own
@@ -82,47 +77,42 @@ a {
   }
 }
 
-.route-container:not(.route-enabled) .route-enter,
-.route-container:not(.route-enabled) .route-leave {
-  animation-name: none;
+// Route changes animate through the View Transitions API (`withViewTransitions()` in
+// `app.config.ts`): the browser snapshots the old page, Angular renders the new one, and the
+// two snapshots cross-fade with a short lift. Elements with their own `view-transition-name`
+// (the header, a post title) are animated apart from the page.
+::view-transition-old(root) {
+  animation: route-out 200ms cubic-bezier(0.4, 0, 1, 1) both;
 }
 
-.route-enter {
-  animation: route-enter 380ms cubic-bezier(0.4, 0, 0.2, 1) both;
+::view-transition-new(root) {
+  animation: route-in 320ms cubic-bezier(0, 0, 0.2, 1) 80ms both;
 }
 
-.route-leave {
-  animation: route-leave 380ms cubic-bezier(0.4, 0, 0.2, 1) both;
+::view-transition-group(*) {
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-// A full-width slide with blur on every navigation is exactly what this preference opts
-// out of. The class stays, so `animate.leave` still finds no animation and removes the
-// old page at once.
+// No motion at all for this preference: the new page simply replaces the old one.
 @media (prefers-reduced-motion: reduce) {
-  .route-enter,
-  .route-leave {
-    animation-name: none;
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 
-@keyframes route-enter {
-  from {
-    transform: translateX(100%);
-    filter: blur(3px);
-  }
+@keyframes route-out {
   to {
-    transform: translateX(0);
-    filter: blur(0);
+    opacity: 0;
+    transform: translateY(-12px);
   }
 }
 
-@keyframes route-leave {
+@keyframes route-in {
   from {
-    transform: translateX(0);
-    filter: blur(0);
-  }
-  to {
-    transform: translateX(-100%);
-    filter: blur(3px);
+    opacity: 0;
+    transform: translateY(16px);
   }
 }

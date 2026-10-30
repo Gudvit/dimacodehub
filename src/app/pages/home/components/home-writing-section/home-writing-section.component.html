@@ -15,7 +15,7 @@
               <time [attr.datetime]="post.date">{{ post.date | date: "MMM d, y" }}</time>
               · {{ post.readingTime }} min read
             </p>
-            <h4 class="writing-card__title">
+            <h4 class="writing-card__title" [style.view-transition-name]="'post-' + post.slug">
               <a class="writing-card__link" [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
             </h4>
             <p class="writing-card__preview">{{ post.preview }}</p>

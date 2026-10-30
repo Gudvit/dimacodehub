@@ -4,11 +4,8 @@ import {
   Component,
   DestroyRef,
   inject,
-  signal,
 } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
-import { filter } from "rxjs";
+import { RouterOutlet } from "@angular/router";
 import { syncPageUrl } from "./seo/page-url";
 
 @Component({
@@ -19,30 +16,11 @@ import { syncPageUrl } from "./seo/page-url";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  readonly routeAnimationsEnabled = signal(false);
-
-  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
-  private hasNavigated = false;
   private pendingCursorFrame = 0;
 
   constructor() {
     syncPageUrl();
-
-    this.router.events
-      .pipe(
-        filter((event) => event instanceof NavigationEnd),
-        takeUntilDestroyed(),
-      )
-      .subscribe(() => {
-        // Skip the first navigation so the initial page does not animate in.
-        if (!this.hasNavigated) {
-          this.hasNavigated = true;
-          return;
-        }
-        this.routeAnimationsEnabled.set(true);
-      });
-
     afterNextRender(() => this.trackCursor());
   }
 

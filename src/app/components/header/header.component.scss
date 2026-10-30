@@ -6,6 +6,9 @@
   left: 0;
   right: 0;
   z-index: 1000;
+  // Identical on every page, so a route change leaves it in place instead of fading it with
+  // the page (see the view-transition rules in `styles.scss`).
+  view-transition-name: site-header;
   display: flex;
   align-items: center;
   justify-content: space-between;
