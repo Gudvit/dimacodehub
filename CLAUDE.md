@@ -29,8 +29,13 @@ before any large architectural change — they record why things are the way the
 - **SCSS** — global `src/styles.scss` plus a per-component `styleUrl`. No UI framework.
   The palette lives once in `src/styles/_brand.scss` (`@use "brand"`, resolved through
   `stylePreprocessorOptions.includePaths`): `var(--brand-*)` for opaque colours,
-  `brand.ink($alpha)` / `brand.wine($alpha)` for translucent ones — no raw `rgba()` of
-  brand colours in component styles.
+  `brand.ink($alpha)` / `brand.wine($alpha)` / `brand.paper($alpha)` /
+  `brand.surface($alpha)` / `brand.shadow($alpha)` for translucent ones — no raw `rgba()`,
+  `#fff` or other literal colours in component styles. There is a light and a dark theme
+  (ADR 0020): every `--brand-*` property has a value per theme, and the helpers mix the
+  property, so a component that sticks to them works in both without knowing which is on.
+  `--brand-paper` is the layer above the page (white in light). The hero is the exception:
+  it sits on a photo in both themes and keeps its literal whites and `brand.fixed-ink()`.
 - **Vitest 4** (jsdom) for unit tests; **Playwright** for e2e.
 - **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.
 - **npm 11.13.0** (`packageManager` in `package.json`), Node 24 (`.nvmrc`, `engines`).
@@ -62,8 +67,8 @@ src/
   index.html                  static meta/OG tags, font link
   main.ts                     bootstrapApplication(App, appConfig)
   main.server.ts              the same bootstrap for prerendering (build time only)
-  styles/_brand.scss          the brand palette: SCSS variables + ink()/wine() helpers
-  styles.scss                 brand CSS variables, background effects, view-transition
+  styles/_brand.scss          the palette for both themes + ink()/wine()/paper()/… helpers
+  styles.scss                 the theme custom properties, background effects, view-transition
                               rules for route changes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
 scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
@@ -75,7 +80,7 @@ scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Pl
     app.routes.ts             root routes, lazy blog and projects, `**` → redirect to `/`
     app.routes.server.ts      which routes are prerendered, and the slugs for each
     app.config.server.ts      appConfig + server rendering
-    components/               reusable: header, footer, animated-text, loader
+    components/               reusable: header, footer, theme-toggle, animated-text, loader
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
@@ -85,7 +90,8 @@ scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Pl
     seo/                      syncPageMeta(): per-page description/OG tags;
                               syncPageUrl(): og:url + canonical follow the route;
                               syncJsonLd(): schema.org data for the page
-public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg
+public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg,
+                              theme-init.js (applies the stored theme before the first paint)
 e2e/                          Playwright specs: home, blog, projects, contact, mobile
 docs/architecture/            ADRs and the architecture overview
 ```
@@ -116,7 +122,8 @@ is the exception: `app.ts` / class `App`.
 - Images needed only by CSS live in `src/images/` — the bundler hashes them.
   `public/` holds only what must be reachable at a stable URL: `favicon.ico`,
   the CV, `images/logo.svg` and `images/companies/*.svg` (loaded through `<img src>`),
-  `images/og-cover.jpg` (for OG tags).
+  `images/og-cover.jpg` (for OG tags), and `theme-init.js` (a classic script linked from
+  `index.html` — it must run before the first paint, which the bundled code cannot).
   The same file in both places is a duplicate in the deployment — don't do it.
 - Everything in `public/` ships in full. Do not put unused files or PNG sources there —
   only compressed images that are actually needed.

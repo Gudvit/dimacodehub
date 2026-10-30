@@ -59,7 +59,7 @@
   padding: 2rem 2.25rem;
   border: 1px solid var(--brand-outline);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.6);
+  background: brand.paper(0.6);
   cursor: pointer;
   text-decoration: none;
   color: inherit;
@@ -78,7 +78,7 @@
   &:hover,
   &:has(.post-card__link:focus-visible) {
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px brand.ink(0.08);
+    box-shadow: 0 12px 32px brand.shadow(0.08);
     border-color: brand.wine(0.25);
   }
 

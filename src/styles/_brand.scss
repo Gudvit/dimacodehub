@@ -1,16 +1,58 @@
+@use "sass:math";
+
 // The brand palette, defined once. `styles.scss` turns it into the `--brand-*` custom
-// properties used for opaque colours; component styles use the functions below for the
-// translucent shades, which compile to plain `rgba()` and cost nothing at runtime.
+// properties, one set per theme. Component styles use `var(--brand-*)` for opaque colours
+// and the functions below for translucent ones; both follow the active theme, because the
+// functions mix the custom property rather than the SCSS value.
 // Reached as `@use "brand"` through `stylePreprocessorOptions.includePaths`.
+
+// Light theme.
 $ink: #191d3f;
 $wine: #612233;
 $surface: #f6f3f5;
 $muted: #6a6d7a;
+// Cards, panels and the header — the layer above the page.
+$paper: #fff;
+$danger: #9e2a2b;
 
+// Dark theme: the same roles, so a component never asks which theme is on.
+$ink-dark: #e8e6f0;
+$wine-dark: #e597ab;
+$surface-dark: #11131f;
+$muted-dark: #9da0b3;
+$paper-dark: #1a1d2e;
+$danger-dark: #f19a9b;
+
+@function -mix($property, $alpha) {
+  @return color-mix(in srgb, var($property) math.percentage($alpha), transparent);
+}
+
+// Foreground tints: borders, hover fills, focus rings.
 @function ink($alpha) {
-  @return rgba($ink, $alpha);
+  @return -mix(--brand-ink, $alpha);
 }
 
 @function wine($alpha) {
-  @return rgba($wine, $alpha);
+  @return -mix(--brand-wine, $alpha);
+}
+
+// Translucent panels over the page.
+@function paper($alpha) {
+  @return -mix(--brand-paper, $alpha);
+}
+
+// The page colour, for gradients that fade a panel into the page.
+@function surface($alpha) {
+  @return -mix(--brand-surface, $alpha);
+}
+
+// Box shadows: ink on the light page, black on the dark one, where a light glow would read
+// as a border.
+@function shadow($alpha) {
+  @return -mix(--brand-shadow, $alpha);
+}
+
+// The hero sits on a photo in both themes, so its white button keeps the light ink.
+@function fixed-ink($alpha) {
+  @return rgba($ink, $alpha);
 }

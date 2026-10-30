@@ -1,15 +1,57 @@
 @use "brand";
 
 :root {
-  color-scheme: light;
   // Measured and kept up to date by HeaderComponent; the home slider subtracts it when
   // scrolling to a section. The fallback matters only before the first render.
   --header-height: 0px;
+}
+
+// The theme. Light by default; dark when the system asks for it, unless the visitor picked
+// light with the header toggle. The pick is `data-theme` on `<html>`, set before the first
+// paint by `public/theme-init.js` and afterwards by `ThemeToggleComponent`.
+@mixin light-theme {
+  color-scheme: light;
   --brand-ink: #{brand.$ink};
   --brand-wine: #{brand.$wine};
   --brand-surface: #{brand.$surface};
   --brand-muted: #{brand.$muted};
+  --brand-paper: #{brand.$paper};
+  --brand-danger: #{brand.$danger};
+  --brand-shadow: #{brand.$ink};
   --brand-outline: #{brand.ink(0.12)};
+  --spotlight-blend: multiply;
+  --logo-filter: none;
+}
+
+@mixin dark-theme {
+  color-scheme: dark;
+  --brand-ink: #{brand.$ink-dark};
+  --brand-wine: #{brand.$wine-dark};
+  --brand-surface: #{brand.$surface-dark};
+  --brand-muted: #{brand.$muted-dark};
+  --brand-paper: #{brand.$paper-dark};
+  --brand-danger: #{brand.$danger-dark};
+  --brand-shadow: #000;
+  --brand-outline: #{brand.ink(0.14)};
+  // Multiplying a tint into a dark page leaves nothing; screen lightens it instead.
+  --spotlight-blend: screen;
+  // The logo is a dark gradient drawn for a light page. Inverting it and turning the hue
+  // back keeps its two brand colours recognisable.
+  --logo-filter: invert(1) hue-rotate(180deg) brightness(1.1);
+}
+
+:root {
+  @include light-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include dark-theme;
+  }
+}
+
+:root[data-theme="dark"] {
+  @include dark-theme;
 }
 
 * {
@@ -39,7 +81,7 @@ body::before {
     transparent 60%
   );
   opacity: 0.8;
-  mix-blend-mode: multiply;
+  mix-blend-mode: var(--spotlight-blend);
   transition: opacity 0.4s ease;
   z-index: 0;
 }

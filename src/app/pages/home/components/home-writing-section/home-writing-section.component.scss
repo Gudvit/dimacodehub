@@ -14,7 +14,7 @@
   flex-direction: column;
   padding: clamp(3.6rem, 12vh, 8.4rem) 2rem clamp(1.8rem, 4vh, 2.8rem);
   border-bottom: 1px solid var(--brand-outline);
-  background: #fff;
+  background: var(--brand-paper);
 }
 
 .writing__display-title {
@@ -88,7 +88,7 @@
   &:hover,
   &:has(.writing-card__link:focus-visible) {
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px brand.ink(0.08);
+    box-shadow: 0 12px 32px brand.shadow(0.08);
     border-color: brand.wine(0.25);
   }
 }
