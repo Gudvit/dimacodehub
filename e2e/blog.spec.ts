@@ -44,9 +44,19 @@ test("leaving a post restores the site-wide metadata", async ({ page }) => {
     "Angular Architecture Patterns I Use in Production",
   );
 
+  const ogImage = page.locator('meta[property="og:image"]');
+  await expect(ogImage).toHaveAttribute(
+    "content",
+    "https://gudvit.github.io/dimacodehub/og/blog/angular-architecture-patterns.jpg",
+  );
+
   await page.getByRole("link", { name: "Back to blog" }).click();
   await expect(page).toHaveURL(/\/blog$/);
   await expect(ogTitle).toHaveAttribute("content", "Dmytro Huliaiev - Senior Frontend Engineer");
+  await expect(ogImage).toHaveAttribute(
+    "content",
+    "https://gudvit.github.io/dimacodehub/images/og-cover.jpg",
+  );
   await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "website");
 });
 

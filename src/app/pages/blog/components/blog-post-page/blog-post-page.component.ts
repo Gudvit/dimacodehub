@@ -5,7 +5,7 @@ import { HeaderComponent } from "../../../../components/header/header.component"
 import { FooterComponent } from "../../../../components/footer/footer.component";
 import { PERSON, syncJsonLd } from "../../../../seo/json-ld";
 import { syncPageMeta } from "../../../../seo/page-meta";
-import { pageUrl } from "../../../../site";
+import { SITE_URL, ogImagePath, pageUrl } from "../../../../site";
 import { BlogService } from "../../services/blog.service";
 
 @Component({
@@ -27,7 +27,13 @@ export class BlogPostPageComponent {
     // The document title comes from the route resolver; this covers the sharing preview.
     syncPageMeta(() => {
       const post = this.post();
-      return post && { title: post.title, description: post.preview };
+      return (
+        post && {
+          title: post.title,
+          description: post.preview,
+          image: SITE_URL + ogImagePath(`blog/${post.slug}`),
+        }
+      );
     });
 
     syncJsonLd(() => {
@@ -40,6 +46,7 @@ export class BlogPostPageComponent {
           datePublished: post.date,
           keywords: post.tags.join(", "),
           url: pageUrl(`blog/${post.slug}`),
+          image: SITE_URL + ogImagePath(`blog/${post.slug}`),
           author: PERSON,
         }
       );

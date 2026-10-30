@@ -37,7 +37,9 @@ content is needed, extend `BlogPostSection` rather than smuggling in HTML.
    otherwise the "keeps every post renderable by the post page" spec fails.
 
 A new post also lands in `sitemap.xml` and `feed.xml` on the next build
-(`scripts/build-feeds.ts`), and its page gets `BlogPosting` JSON-LD — nothing to do by hand.
+(`scripts/build-feeds.ts`), gets its own sharing image (`scripts/build-og-images.ts`, from
+the title, tags, date and reading time) and `BlogPosting` JSON-LD — nothing to do by hand.
+Check the image once: a very long title is clamped to three lines.
 
 The `BlogService` specs are effectively content validation. If adding a post breaks a
 test, fix the content, not the test.

@@ -41,18 +41,19 @@ contact form. Nothing else in `dependencies` is optional.
 
 ## Commands
 
-| Command                           | What it does                                                             |
-| --------------------------------- | ------------------------------------------------------------------------ |
-| `npm start`                       | dev server at `http://localhost:4200/`                                   |
-| `npm run build`                   | production build into `dist/dimacodehub/browser`                         |
-| `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs        |
-| `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds) |
-| `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)        |
-| `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself          |
-| `npm run test:e2e:ui`             | Playwright in UI mode                                                    |
-| `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)                |
-| `npm run format` / `format:check` | Prettier write / check                                                   |
-| `npm test`                        | `test:unit` + `test:e2e`                                                 |
+| Command                           | What it does                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| `npm start`                       | dev server at `http://localhost:4200/`                                         |
+| `npm run build`                   | production build into `dist/dimacodehub/browser`                               |
+| `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs              |
+| `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)       |
+| `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
+| `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)              |
+| `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself                |
+| `npm run test:e2e:ui`             | Playwright in UI mode                                                          |
+| `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)                      |
+| `npm run format` / `format:check` | Prettier write / check                                                         |
+| `npm test`                        | `test:unit` + `test:e2e`                                                       |
 
 ## Directory layout
 
@@ -66,6 +67,7 @@ src/
                               keyframes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
 scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
+scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Playwright
   images/                     assets referenced only from SCSS (hashed by the bundler)
   app/
     app.ts / app.html / app.scss   root component: router-outlet + cursor spotlight

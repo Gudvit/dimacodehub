@@ -17,6 +17,15 @@ export function pageUrl(path: string): string {
   return trimmed ? `${SITE_URL}${trimmed}/` : SITE_URL;
 }
 
+/**
+ * The sharing image of a route (`"blog/x"` → `og/blog/x.jpg`), relative to the build output.
+ * `scripts/build-og-images.ts` writes the file there; pages point `og:image` at
+ * `SITE_URL` + this path.
+ */
+export function ogImagePath(route: string): string {
+  return `og/${route.replace(/^\/+|\/+$/g, "")}.jpg`;
+}
+
 export const SITE_AUTHOR = "Dmytro Huliaiev";
 
 export interface Profile {

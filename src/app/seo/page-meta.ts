@@ -4,9 +4,12 @@ import { Meta } from "@angular/platform-browser";
 export interface PageMeta {
   readonly title: string;
   readonly description: string;
+  /** Absolute URL of the sharing image; the site-wide cover when absent. */
+  readonly image?: string;
 }
 
 const SITE_TITLE = "Dmytro Huliaiev - Senior Frontend Engineer";
+const SITE_IMAGE = "https://gudvit.github.io/dimacodehub/images/og-cover.jpg";
 const SITE_SUMMARY =
   "Senior Frontend Engineer with 10+ years of experience in Angular, frontend architecture, and performance.";
 
@@ -27,6 +30,8 @@ export const SITE_META_TAGS: readonly { readonly selector: string; readonly cont
   { selector: 'property="og:description"', content: SITE_SUMMARY },
   { selector: 'name="twitter:title"', content: SITE_TITLE },
   { selector: 'name="twitter:description"', content: SITE_SUMMARY },
+  { selector: 'property="og:image"', content: SITE_IMAGE },
+  { selector: 'name="twitter:image"', content: SITE_IMAGE },
 ];
 
 /**
@@ -55,6 +60,8 @@ export function syncPageMeta(source: () => PageMeta | undefined): void {
     meta.updateTag({ property: "og:description", content: page.description });
     meta.updateTag({ name: "twitter:title", content: page.title });
     meta.updateTag({ name: "twitter:description", content: page.description });
+    meta.updateTag({ property: "og:image", content: page.image ?? SITE_IMAGE });
+    meta.updateTag({ name: "twitter:image", content: page.image ?? SITE_IMAGE });
   });
 
   inject(DestroyRef).onDestroy(() => {

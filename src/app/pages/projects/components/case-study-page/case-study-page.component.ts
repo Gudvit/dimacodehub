@@ -4,6 +4,7 @@ import { HeaderComponent } from "../../../../components/header/header.component"
 import { FooterComponent } from "../../../../components/footer/footer.component";
 import { syncPageMeta } from "../../../../seo/page-meta";
 import { CaseStudyService } from "../../services/case-study.service";
+import { SITE_URL, ogImagePath } from "../../../../site";
 
 @Component({
   selector: "app-case-study-page",
@@ -23,7 +24,13 @@ export class CaseStudyPageComponent {
   constructor() {
     syncPageMeta(() => {
       const study = this.study();
-      return study && { title: study.title, description: study.summary };
+      return (
+        study && {
+          title: study.title,
+          description: study.summary,
+          image: SITE_URL + ogImagePath(`projects/${study.slug}`),
+        }
+      );
     });
   }
 }
