@@ -46,14 +46,16 @@ test, fix the content, not the test.
 - The `<title>` is set by the `postTitle` `ResolveFn` in `blog.routes.ts` (which also
   holds the "Post not found" fallback), not by the component.
 - OG/description tags are set by `syncPageMeta()` (`src/app/seo/page-meta.ts`), called
-  from the `BlogPostPageComponent` constructor. It snapshots the site-wide values from
-  `index.html` and puts them back when the page is destroyed, so `/` does not keep
+  from the `BlogPostPageComponent` constructor. It puts the site-wide values
+  (`SITE_META_TAGS`, kept equal to `index.html` by a unit test) back when the page is
+  destroyed, so `/` does not keep
   describing the last post. A new tag it writes must also be listed in `PAGE_META_TAGS`,
   or it leaks. Case studies use the same helper.
 - An unknown slug does not redirect: `post()` returns `undefined` and the template shows
   the "Post not found." state — there is an e2e test for it.
 - A direct link to `/blog/:slug` only survives on GitHub Pages because of the
-  "Add SPA fallback" workflow step (a copy of `index.html` as `404.html`).
+  build-time prerender (ADR 0019): each post is written to `blog/<slug>/index.html` with
+  its own title and OG tags, which is what link previews read.
 
 ## Card accessibility
 

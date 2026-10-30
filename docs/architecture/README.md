@@ -1,6 +1,6 @@
 # dimacodehub architecture
 
-A personal portfolio site: a single-page home (hero → about → experience → contacts), a
+A personal portfolio site: a single-page home (hero → about → experience → writing → contacts), a
 blog section and a Projects placeholder. Angular 22, static build, GitHub Pages.
 
 This is the high-level overview and the ADR index. Day-to-day working rules (style,
@@ -14,10 +14,10 @@ root and in the local `CLAUDE.md` files under `src/app/pages/home/` and
                     browser
                        │
         ┌──────────────┴───────────────┐
-        │  index.html (static meta /   │  ← the same content also ships as 404.html:
-        │  OG tags, base href)         │    the SPA fallback for GitHub Pages
+        │  <route>/index.html           │  ← prerendered per route at build time
+        │  (its own meta / OG tags)    │    (ADR 0019); 404.html is the empty shell
         └──────────────┬───────────────┘
-                       │ bootstrapApplication(App, appConfig)
+                       │ bootstrapApplication(App, appConfig) + hydration
                        ▼
             App  ─ router-outlet ─ cursor spotlight (CSS variables)
                        │
@@ -42,6 +42,7 @@ Cross-cutting facts that explain nearly every decision below:
   The rest are outbound links (`mailto:`, `tel:`, GitHub, X, LinkedIn, Telegram) and
   the CV file.
 - **The build is static**, deployed into the `/dimacodehub/` subdirectory on GitHub Pages.
+  Every route is prerendered into its own HTML at build time; nothing renders on a server.
 - **The app is zoneless**, so state is signals and animations are CSS.
 
 ## ADR index
@@ -66,13 +67,13 @@ Cross-cutting facts that explain nearly every decision below:
 | [0016](0016-component-tests-through-the-angular-builder.md) | Testing                          | `ng test` through the Angular builder, so components can be tested |
 | [0017](0017-unit-coverage-floor.md)                         | Coverage                         | a measured global floor enforced by CI                             |
 | [0018](0018-manual-dependency-updates.md)                   | Dependencies                     | coherent manual updates instead of Dependabot PRs                  |
+| [0019](0019-build-time-prerender.md)                        | Prerender                        | every route written to HTML at build time, hydrated in the browser |
 
 ## What the architecture deliberately does not solve
 
 These are not debt but consequences of the decisions above. They only become problems if
 the requirements change:
 
-- Social previews for an **individual post** (needs prerender/SSR — ADR 0013, 0003).
 - Preserving state across navigations (ADR 0006).
 - A dark theme (ADR 0007).
 - Localisation: i18n is not wired in, all copy is English literals in templates.

@@ -59,6 +59,7 @@ contact form. Nothing else in `dependencies` is optional.
 src/
   index.html                  static meta/OG tags, font link
   main.ts                     bootstrapApplication(App, appConfig)
+  main.server.ts              the same bootstrap for prerendering (build time only)
   styles/_brand.scss          the brand palette: SCSS variables + ink()/wine() helpers
   styles.scss                 brand CSS variables, background effects, route-animation
                               keyframes, `.slide-section` snap rules
@@ -68,13 +69,16 @@ src/
     app.ts / app.html / app.scss   root component: router-outlet + cursor spotlight
     app.config.ts             provideZonelessChangeDetection + provideRouter(withComponentInputBinding)
     app.routes.ts             root routes, lazy blog and projects, `**` → redirect to `/`
+    app.routes.server.ts      which routes are prerendered, and the slugs for each
+    app.config.server.ts      appConfig + server rendering
     components/               reusable: header, footer, animated-text, loader
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
       projects/               "coming soon" list placeholder, case study page
                               (`/projects/:slug`), CaseStudyService
-    seo/                      syncPageMeta(): per-page description/OG tags
+    seo/                      syncPageMeta(): per-page description/OG tags;
+                              syncPageUrl(): og:url follows the route
 public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg
 e2e/                          Playwright specs: home, blog, projects, contact, mobile
 docs/architecture/            ADRs and the architecture overview
@@ -110,8 +114,16 @@ is the exception: `app.ts` / class `App`.
   The same file in both places is a duplicate in the deployment — don't do it.
 - Everything in `public/` ships in full. Do not put unused files or PNG sources there —
   only compressed images that are actually needed.
-- GitHub Pages has no SPA rewrite: `404.html` is produced as a copy of `index.html`
-  by a workflow step. Do not remove that step, or direct links to `/blog/:slug` break.
+- Every route is prerendered at build time (ADR 0019): `/`, `/blog`, `/projects` and each
+  post and case study get their own `index.html` with their own meta tags. The list lives
+  in `src/app/app.routes.server.ts`; slugs come from the services, so a new post needs no
+  extra step. Anything else falls through to `404.html`, a workflow-made copy of
+  `index.csr.html` (the empty client shell). Never copy `index.html` there — it is the
+  prerendered home page now.
+- Code runs in Node during the build. Browser globals (`window`, `document`, observers)
+  belong in `afterNextRender()`, which the server skips.
+- The CSP forbids inline scripts, so incremental hydration and critical-CSS inlining stay
+  off. Check the built HTML for a bare `<script>` after touching hydration or the build.
 - The absolute URLs in the OG tags (`src/index.html`) are hardcoded to
   `https://gudvit.github.io/dimacodehub/`. Update them when moving to a custom domain.
 

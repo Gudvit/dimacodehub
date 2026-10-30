@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted. In effect.
+Accepted. The per-post preview limitation below is lifted by
+[0019](0019-build-time-prerender.md): every post is prerendered with its own tags.
 
 ## Context
 

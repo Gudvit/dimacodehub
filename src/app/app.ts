@@ -9,6 +9,7 @@ import {
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
 import { filter } from "rxjs";
+import { syncPageUrl } from "./seo/page-url";
 
 @Component({
   selector: "app-root",
@@ -26,6 +27,8 @@ export class App {
   private pendingCursorFrame = 0;
 
   constructor() {
+    syncPageUrl();
+
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),

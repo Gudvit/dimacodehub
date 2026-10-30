@@ -50,8 +50,9 @@ E2E assert on real page copy: change the wording in a template and update the sp
 
 `.github/workflows/deploy.yml` runs on a push to any branch: audit → format → lint → unit →
 e2e → build. A branch gets the verdict; only `main` continues to the deploy job, which
-publishes to GitHub Pages. Pages has no SPA rewrite, so the workflow copies `index.html` to
-`404.html` — without it, a direct link to `/blog/:slug` 404s.
+publishes to GitHub Pages. Every route is prerendered at build time (ADR 0019), so each post
+is its own HTML file with its own preview tags. Pages has no SPA rewrite, so the workflow
+copies the client shell `index.csr.html` to `404.html` for any other URL.
 
 The Web3Forms account owner must keep the production origin
 `https://gudvit.github.io` in the access key's domain allowlist. This is a dashboard-only
