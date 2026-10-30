@@ -4,7 +4,7 @@ test("header navigates to the blog and sets the page title", async ({ page }) =>
   await page.goto("/");
   await expect(page).toHaveTitle("Dmytro Huliaiev - Senior Frontend Engineer");
 
-  await page.getByRole("navigation").getByRole("link", { name: "Blog" }).click();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Blog" }).click();
   await expect(page).toHaveURL(/\/blog$/);
   await expect(page).toHaveTitle("Blog - Dmytro Huliaiev");
   await expect(
@@ -53,4 +53,16 @@ test("leaving a post restores the site-wide metadata", async ({ page }) => {
 test("unknown blog slug shows the not-found state", async ({ page }) => {
   await page.goto("/blog/no-such-post");
   await expect(page.getByText("Post not found.")).toBeVisible();
+});
+
+test("the footer contact link leads from the blog to the contact form", async ({ page }) => {
+  await page.goto("/blog");
+
+  await page
+    .getByRole("navigation", { name: "Footer" })
+    .getByRole("link", { name: "Contact" })
+    .click();
+
+  await expect(page).toHaveURL(/\/#contacts$/);
+  await expect(page.getByRole("heading", { name: "LET'S CONNECT" })).toBeInViewport();
 });

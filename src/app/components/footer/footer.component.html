@@ -1,3 +1,21 @@
 <footer class="site-footer">
-  <div class="footer-meta">© 2026 Dmytro Huliaiev. All rights reserved.</div>
+  <nav class="footer-links" aria-label="Footer">
+    <a routerLink="/projects">Projects</a>
+    <a routerLink="/blog">Blog</a>
+    <a routerLink="/" fragment="contacts">Contact</a>
+    <a href="dmytro_huliaiev_cv.pdf" download>CV</a>
+    @for (profile of profiles; track profile.href) {
+      <a
+        class="footer-links__external"
+        [href]="profile.href"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ profile.label }}</a
+      >
+    }
+  </nav>
+  <p class="footer-meta">
+    © {{ year }} Dmytro Huliaiev ·
+    <a [href]="sourceHref" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+  </p>
 </footer>

@@ -6,7 +6,9 @@ test("mobile menu toggles open and closed", async ({ page }) => {
   await page.goto("/");
 
   const toggle = page.getByRole("button", { name: "Toggle navigation menu" });
-  const blogLink = page.getByRole("navigation").getByRole("link", { name: "Blog" });
+  const blogLink = page
+    .getByRole("navigation", { name: "Main" })
+    .getByRole("link", { name: "Blog" });
 
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await expect(blogLink).toBeHidden();
@@ -25,7 +27,7 @@ test("following a link from the mobile menu closes it", async ({ page }) => {
 
   const toggle = page.getByRole("button", { name: "Toggle navigation menu" });
   await toggle.click();
-  await page.getByRole("navigation").getByRole("link", { name: "Blog" }).click();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Blog" }).click();
 
   await expect(page).toHaveURL(/\/blog$/);
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
