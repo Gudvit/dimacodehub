@@ -18,6 +18,14 @@ describe("BlogService", () => {
     expect(service.getBySlug(first!.slug)).toBe(first);
   });
 
+  it("lists the latest posts newest first", () => {
+    const latest = service.getLatest(2);
+    expect(latest.length).toBe(Math.min(2, service.getAll().length));
+    const newest = Math.max(...service.getAll().map((post) => Date.parse(post.date)));
+    expect(Date.parse(latest[0]!.date)).toBe(newest);
+    expect(Date.parse(latest[0]!.date)).toBeGreaterThanOrEqual(Date.parse(latest[1]!.date));
+  });
+
   it("returns undefined for an unknown slug", () => {
     expect(service.getBySlug("does-not-exist")).toBeUndefined();
   });

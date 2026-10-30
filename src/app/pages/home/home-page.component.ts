@@ -13,6 +13,7 @@ import { HomeAboutSectionComponent } from "./components/home-about-section/home-
 import { HomeContactSectionComponent } from "./components/home-contact-section/home-contact-section.component";
 import { HomeExperienceSectionComponent } from "./components/home-experience-section/home-experience-section.component";
 import { HomeHeroSectionComponent } from "./components/home-hero-section/home-hero-section.component";
+import { HomeWritingSectionComponent } from "./components/home-writing-section/home-writing-section.component";
 
 @Component({
   selector: "app-home-page",
@@ -22,6 +23,7 @@ import { HomeHeroSectionComponent } from "./components/home-hero-section/home-he
     HomeHeroSectionComponent,
     HomeAboutSectionComponent,
     HomeExperienceSectionComponent,
+    HomeWritingSectionComponent,
     HomeContactSectionComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

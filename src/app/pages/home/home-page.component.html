@@ -9,6 +9,13 @@
 
     <app-home-experience-section></app-home-experience-section>
 
+    <!-- Deferred so the posts stay out of the initial bundle; see the local CLAUDE.md. -->
+    @defer (on viewport; prefetch on idle) {
+      <app-home-writing-section></app-home-writing-section>
+    } @placeholder {
+      <div class="writing-placeholder slide-section" aria-hidden="true"></div>
+    }
+
     <app-home-contact-section (backToTop)="scrollToTop()"></app-home-contact-section>
   </div>
 </div>

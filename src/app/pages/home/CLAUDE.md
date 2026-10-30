@@ -16,6 +16,7 @@ home-page.component.*                     slider container, owns #homeSlider
 components/home-hero-section/             first screen, header lives inside it
 components/home-about-section/            "about", revealed by IntersectionObserver
 components/home-experience-section/       role timeline: clicks, swipes, wheel
+components/home-writing-section/          the latest blog posts, loaded through @defer
 components/home-contact-section/          contacts + working message form + footer
 ```
 
@@ -58,6 +59,19 @@ hero pins its copy to the bottom over the darkened photo; the contact section pu
 form first and shrinks the contact card to a strip of fallbacks. Adding content to a
 section on a phone means taking something out — measure the section heights after any
 change there.
+
+## The writing section
+
+It reads `BlogService.getLatest()` — the newest posts by `date`, not by array position —
+so it imports from `pages/blog/`. That pulls the posts into whatever chunk holds the
+section, which is why `home-page.component.html` wraps it in
+`@defer (on viewport; prefetch on idle)`: the posts stay out of the initial bundle.
+
+The placeholder (`.writing-placeholder`) carries `.slide-section` and the same
+`min-height` as the section. Keep the two equal: `/#contacts` scrolls past a section that
+has not loaded yet, and a placeholder of another height would move the contacts out from
+under the scroll when the posts arrive. For the same reason `#writing` is not a usable deep
+link — the element does not exist until the section loads.
 
 ## Fragment deep links
 

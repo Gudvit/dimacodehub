@@ -6,7 +6,7 @@ Vitest + Playwright, deployed to GitHub Pages from `main` via `.github/workflows
 ## What this project is
 
 A single-page portfolio for a frontend engineer (Dmytro Huliaiev) plus a blog section.
-Three areas: `/` (hero → about → experience → contacts, a vertical slider),
+Three areas: `/` (hero → about → experience → writing → contacts, a vertical slider),
 `/projects` (a "coming soon" placeholder, case studies at `/projects/:slug`), `/blog`
 (post list and post page).
 

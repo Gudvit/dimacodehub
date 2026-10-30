@@ -96,3 +96,25 @@ test("the projects page shows the placeholder", async ({ page }) => {
   await expect(page.getByText("Coming soon")).toBeVisible();
   await expect(page.locator("app-loader svg")).toBeVisible();
 });
+
+test("the writing section lists the latest posts and links to the blog", async ({ page }) => {
+  await page.goto("/");
+
+  // Deferred until it nears the viewport: the placeholder holds its place until then.
+  await page.locator(".writing-placeholder").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading", { name: "WRITING" })).toBeVisible();
+
+  const cards = page.locator(".writing-card");
+  await expect(cards).toHaveCount(3);
+  await expect(cards.first()).toContainText("What AI Actually Changes About Frontend Engineering");
+
+  await page
+    .getByRole("link", { name: "What AI Actually Changes About Frontend Engineering" })
+    .click();
+  await expect(page).toHaveURL(/\/blog\/ai-frontend-engineering$/);
+
+  await page.goto("/");
+  await page.locator(".writing-placeholder").scrollIntoViewIfNeeded();
+  await page.getByRole("link", { name: "All posts" }).click();
+  await expect(page).toHaveURL(/\/blog$/);
+});

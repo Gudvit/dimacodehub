@@ -1,0 +1,175 @@
+@use "brand";
+@use "../../display-title";
+
+:host {
+  display: block;
+}
+
+// `min-height` must match the `@defer` placeholder in `home-page.component.scss`, so the
+// sections below do not move when this one loads.
+.writing {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(3.6rem, 12vh, 8.4rem) 2rem clamp(1.8rem, 4vh, 2.8rem);
+  border-bottom: 1px solid var(--brand-outline);
+  background: #fff;
+}
+
+.writing__display-title {
+  @include display-title.display-title(clamp(18px, 12vw, 220px));
+  margin-bottom: clamp(1.1rem, 3vw, 2rem);
+}
+
+.writing__inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  gap: clamp(1.2rem, 3vh, 2rem);
+}
+
+.writing__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+.writing__headline {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--brand-ink);
+}
+
+.writing__all {
+  font-weight: 700;
+  color: var(--brand-wine);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.writing__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// The same pattern as the blog list: one real link on the title, stretched across the card.
+.writing-card {
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.5rem;
+  border: 1px solid var(--brand-outline);
+  border-radius: 16px;
+  background: brand.ink(0.015);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+
+  &:hover,
+  &:has(.writing-card__link:focus-visible) {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px brand.ink(0.08);
+    border-color: brand.wine(0.25);
+  }
+}
+
+.writing-card__meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--brand-muted);
+}
+
+.writing-card__title {
+  margin: 0;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.3;
+  color: var(--brand-ink);
+}
+
+.writing-card__link {
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  &:focus-visible::after {
+    outline: 2px solid var(--brand-wine);
+    outline-offset: 3px;
+  }
+}
+
+.writing-card__preview {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--brand-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .writing__list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .writing-card__preview {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .writing {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .writing-card {
+    padding: 1rem 1.1rem;
+    gap: 0.4rem;
+  }
+
+  .writing-card__preview {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .writing-card {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}

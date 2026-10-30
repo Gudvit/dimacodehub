@@ -10,6 +10,11 @@ export class BlogService {
     return this.posts;
   }
 
+  /** The newest posts first, by `date` — not by array position. */
+  getLatest(count: number): readonly BlogPost[] {
+    return [...this.posts].sort((a, b) => Date.parse(b.date) - Date.parse(a.date)).slice(0, count);
+  }
+
   getBySlug(slug: string): BlogPost | undefined {
     return this.posts.find((p) => p.slug === slug);
   }

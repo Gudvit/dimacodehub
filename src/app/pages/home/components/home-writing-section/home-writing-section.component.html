@@ -1,0 +1,27 @@
+<section class="writing slide-section" id="writing">
+  <h2 class="writing__display-title">WRITING</h2>
+
+  <div class="writing__inner">
+    <header class="writing__head">
+      <h3 class="writing__headline">Notes from building frontends in production</h3>
+      <a class="writing__all" routerLink="/blog">All posts <span aria-hidden="true">→</span></a>
+    </header>
+
+    <ul class="writing__list">
+      @for (post of posts; track post.slug) {
+        <li>
+          <article class="writing-card">
+            <p class="writing-card__meta">
+              <time [attr.datetime]="post.date">{{ post.date | date: "MMM d, y" }}</time>
+              · {{ post.readingTime }} min read
+            </p>
+            <h4 class="writing-card__title">
+              <a class="writing-card__link" [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+            </h4>
+            <p class="writing-card__preview">{{ post.preview }}</p>
+          </article>
+        </li>
+      }
+    </ul>
+  </div>
+</section>
