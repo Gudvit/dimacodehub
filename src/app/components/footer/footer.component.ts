@@ -1,17 +1,6 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { RouterLink } from "@angular/router";
-
-interface ExternalLink {
-  readonly label: string;
-  readonly href: string;
-}
-
-const PROFILES: readonly ExternalLink[] = [
-  { label: "GitHub", href: "https://github.com/Gudvit" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/dmytro-huliaiev-1320aba7/" },
-  { label: "Telegram", href: "https://t.me/gudvit" },
-  { label: "X", href: "https://x.com/dimasss4889" },
-];
+import { PROFILES } from "../../site";
 
 @Component({
   selector: "app-footer",

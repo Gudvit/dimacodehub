@@ -19,17 +19,18 @@ npm start          # http://localhost:4200/
 
 ## Commands
 
-| Command                           | What it does                                                     |
-| --------------------------------- | ---------------------------------------------------------------- |
-| `npm start`                       | dev server                                                       |
-| `npm run build`                   | production build into `dist/dimacodehub/browser`                 |
-| `npm run build:gh`                | the same with `--base-href /dimacodehub/` — what CI deploys      |
-| `npm run test:unit`               | `ng test`: Vitest + jsdom + TestBed (`test:unit:watch` to watch) |
-| `npm run test:unit:coverage`      | unit tests plus the CI coverage floor                            |
-| `npm run test:e2e`                | Playwright; it starts the dev server itself                      |
-| `npm run lint`                    | ESLint over `src/**/*.ts` and `src/**/*.html`                    |
-| `npm run format` / `format:check` | Prettier write / check                                           |
-| `npm test`                        | unit + e2e                                                       |
+| Command                           | What it does                                                             |
+| --------------------------------- | ------------------------------------------------------------------------ |
+| `npm start`                       | dev server                                                               |
+| `npm run build`                   | production build into `dist/dimacodehub/browser`                         |
+| `npm run build:gh`                | the same with `--base-href /dimacodehub/` — what CI deploys              |
+| `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds) |
+| `npm run test:unit`               | `ng test`: Vitest + jsdom + TestBed (`test:unit:watch` to watch)         |
+| `npm run test:unit:coverage`      | unit tests plus the CI coverage floor                                    |
+| `npm run test:e2e`                | Playwright; it starts the dev server itself                              |
+| `npm run lint`                    | ESLint over `src/**/*.ts` and `src/**/*.html`                            |
+| `npm run format` / `format:check` | Prettier write / check                                                   |
+| `npm test`                        | unit + e2e                                                               |
 
 Playwright needs its browser once: `npx playwright install chromium`.
 

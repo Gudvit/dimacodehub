@@ -118,3 +118,14 @@ test("the writing section lists the latest posts and links to the blog", async (
   await page.getByRole("link", { name: "All posts" }).click();
   await expect(page).toHaveURL(/\/blog$/);
 });
+
+test("the home page names its author for search engines", async ({ page }) => {
+  await page.goto("/");
+
+  const data = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
+  );
+  expect(data["@type"]).toBe("Person");
+  expect(data.name).toBe("Dmytro Huliaiev");
+  expect(data.sameAs).toContain("https://github.com/Gudvit");
+});

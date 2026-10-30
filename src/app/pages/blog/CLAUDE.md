@@ -36,6 +36,9 @@ content is needed, extend `BlogPostSection` rather than smuggling in HTML.
 4. `date` must be a string `Date.parse` understands (the project uses `YYYY-MM-DD`),
    otherwise the "keeps every post renderable by the post page" spec fails.
 
+A new post also lands in `sitemap.xml` and `feed.xml` on the next build
+(`scripts/build-feeds.ts`), and its page gets `BlogPosting` JSON-LD — nothing to do by hand.
+
 The `BlogService` specs are effectively content validation. If adding a post breaks a
 test, fix the content, not the test.
 

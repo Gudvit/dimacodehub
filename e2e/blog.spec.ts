@@ -66,3 +66,25 @@ test("the footer contact link leads from the blog to the contact form", async ({
   await expect(page).toHaveURL(/\/#contacts$/);
   await expect(page.getByRole("heading", { name: "LET'S CONNECT" })).toBeInViewport();
 });
+
+test("a post describes itself to search engines and leaves nothing behind", async ({ page }) => {
+  await page.goto("/blog/angular-architecture-patterns");
+
+  const jsonLd = page.locator('script[type="application/ld+json"]');
+  const data = JSON.parse((await jsonLd.textContent()) ?? "{}");
+  expect(data["@type"]).toBe("BlogPosting");
+  expect(data.headline).toBe("Angular Architecture Patterns I Use in Production");
+  expect(data.author.name).toBe("Dmytro Huliaiev");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://gudvit.github.io/dimacodehub/blog/angular-architecture-patterns/",
+  );
+
+  await page.getByRole("link", { name: "Back to blog" }).click();
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(jsonLd).toHaveCount(0);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://gudvit.github.io/dimacodehub/blog/",
+  );
+});

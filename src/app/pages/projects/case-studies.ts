@@ -1,4 +1,4 @@
-import { CaseStudy } from "./models/case-study.model";
+import type { CaseStudy } from "./models/case-study.model";
 
 /**
  * Content lives in code — see docs/architecture/0005-content-in-code.md. Array order is page

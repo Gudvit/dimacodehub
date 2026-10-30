@@ -41,17 +41,18 @@ contact form. Nothing else in `dependencies` is optional.
 
 ## Commands
 
-| Command                           | What it does                                                      |
-| --------------------------------- | ----------------------------------------------------------------- |
-| `npm start`                       | dev server at `http://localhost:4200/`                            |
-| `npm run build`                   | production build into `dist/dimacodehub/browser`                  |
-| `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs |
-| `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch) |
-| `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself   |
-| `npm run test:e2e:ui`             | Playwright in UI mode                                             |
-| `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)         |
-| `npm run format` / `format:check` | Prettier write / check                                            |
-| `npm test`                        | `test:unit` + `test:e2e`                                          |
+| Command                           | What it does                                                             |
+| --------------------------------- | ------------------------------------------------------------------------ |
+| `npm start`                       | dev server at `http://localhost:4200/`                                   |
+| `npm run build`                   | production build into `dist/dimacodehub/browser`                         |
+| `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs        |
+| `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds) |
+| `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)        |
+| `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself          |
+| `npm run test:e2e:ui`             | Playwright in UI mode                                                    |
+| `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)                |
+| `npm run format` / `format:check` | Prettier write / check                                                   |
+| `npm test`                        | `test:unit` + `test:e2e`                                                 |
 
 ## Directory layout
 
@@ -64,6 +65,7 @@ src/
   styles.scss                 brand CSS variables, background effects, route-animation
                               keyframes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
+scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
   images/                     assets referenced only from SCSS (hashed by the bundler)
   app/
     app.ts / app.html / app.scss   root component: router-outlet + cursor spotlight
@@ -77,8 +79,10 @@ src/
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
       projects/               "coming soon" list placeholder, case study page
                               (`/projects/:slug`), CaseStudyService
+    site.ts                   SITE_URL, pageUrl(), profiles — no runtime imports (scripts/ uses it)
     seo/                      syncPageMeta(): per-page description/OG tags;
-                              syncPageUrl(): og:url follows the route
+                              syncPageUrl(): og:url + canonical follow the route;
+                              syncJsonLd(): schema.org data for the page
 public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg
 e2e/                          Playwright specs: home, blog, projects, contact, mobile
 docs/architecture/            ADRs and the architecture overview
@@ -126,6 +130,10 @@ is the exception: `app.ts` / class `App`.
   off. Check the built HTML for a bare `<script>` after touching hydration or the build.
 - The absolute URLs in the OG tags (`src/index.html`) are hardcoded to
   `https://gudvit.github.io/dimacodehub/`. Update them when moving to a custom domain.
+
+- The content files (`blog-posts.ts`, `case-studies.ts`) and `site.ts` are imported by
+  `scripts/build-feeds.ts` straight into Node, which only strips types. Keep their imports
+  `import type` — a value import there breaks the build.
 
 ## Angular style
 

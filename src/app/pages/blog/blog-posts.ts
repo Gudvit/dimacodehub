@@ -1,4 +1,4 @@
-import { BlogPost } from "./models/blog-post.model";
+import type { BlogPost } from "./models/blog-post.model";
 
 /**
  * Content lives in code — see docs/architecture/0005-content-in-code.md. Array order is

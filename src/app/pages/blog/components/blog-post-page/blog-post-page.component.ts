@@ -3,7 +3,9 @@ import { RouterLink } from "@angular/router";
 import { DatePipe } from "@angular/common";
 import { HeaderComponent } from "../../../../components/header/header.component";
 import { FooterComponent } from "../../../../components/footer/footer.component";
+import { PERSON, syncJsonLd } from "../../../../seo/json-ld";
 import { syncPageMeta } from "../../../../seo/page-meta";
+import { pageUrl } from "../../../../site";
 import { BlogService } from "../../services/blog.service";
 
 @Component({
@@ -26,6 +28,21 @@ export class BlogPostPageComponent {
     syncPageMeta(() => {
       const post = this.post();
       return post && { title: post.title, description: post.preview };
+    });
+
+    syncJsonLd(() => {
+      const post = this.post();
+      return (
+        post && {
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.preview,
+          datePublished: post.date,
+          keywords: post.tags.join(", "),
+          url: pageUrl(`blog/${post.slug}`),
+          author: PERSON,
+        }
+      );
     });
   }
 }

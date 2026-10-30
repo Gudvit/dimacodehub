@@ -51,7 +51,9 @@
 
 - [x] **2.1 Prerender (SSG) всех маршрутов** — у каждого поста свой HTML с правильными
       OG-тегами; сейчас краулеры видят только общий `index.html`.
-- [ ] **2.2 SEO-база** — JSON-LD `Person` / `Article`, `sitemap.xml`, `robots.txt`, RSS.
+- [x] **2.2 SEO-база** — JSON-LD `Person` / `Article`, `sitemap.xml`, `robots.txt`, RSS.
+      `robots.txt` сознательно не делаем: на `/dimacodehub/` его никто не читает (ADR 0013).
+      Sitemap добавить в Google Search Console руками 📥
 - [ ] **2.3 OG-картинки для постов и кейсов.**
 - [ ] **2.4 View Transitions** (`withViewTransitions()`) вместо самописной анимации маршрутов,
       с переходом «карточка → заголовок».

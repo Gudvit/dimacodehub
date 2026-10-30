@@ -4,8 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "build:gh": "ng build --base-href /dimacodehub/",
+    "build": "ng build && npm run build:feeds",
+    "build:gh": "ng build --base-href /dimacodehub/ && npm run build:feeds",
+    "build:feeds": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-feeds.ts dist/dimacodehub/browser",
     "watch": "ng build --watch --configuration development",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "ng test",
