@@ -3,8 +3,97 @@ import type { BlogPost } from "./models/blog-post.model";
 /**
  * Content lives in code — see docs/architecture/0005-content-in-code.md. Array order is
  * page order: a new post goes first. `blog.service.spec.ts` validates every entry.
+ *
+ * Drafts are visible on the dev server only. Placeholders in a draft are written as
+ * `[TODO: …]` so they are easy to find and impossible to miss on the page.
  */
 export const BLOG_POSTS: readonly BlogPost[] = [
+  {
+    // docs/blog-plan.md, post 1. Sources: ADR 0021, commit 37fcffa. [TODO] marks what only
+    // the author can write; the code is real.
+    slug: "lighthouse-blamed-my-animations",
+    title: "Lighthouse Said My Animations Were Slow. They Weren't.",
+    date: "2026-10-31",
+    tags: ["Frontend", "Performance", "Lighthouse"],
+    preview:
+      "[TODO: one or two sentences — a 4.4 s LCP, a hero animation that looked guilty, and the uncompressed test server that was actually to blame.]",
+    readingTime: 6,
+    draft: true,
+    sections: [
+      {
+        paragraphs: [
+          "[TODO: the hook. Lighthouse in CI, the home page under the performance budget, LCP around 4.4 s, and the obvious suspect: the hero's entrance animation.]",
+          "[TODO: what this post is about — the number was real, the page it measured was not.]",
+        ],
+      },
+      {
+        heading: "The number that blamed the animation",
+        paragraphs: [
+          "[TODO: the scores you saw (performance in the 70s–80s on /, LCP ≈ 4.4 s) and why the animation looked guilty: the LCP element was the hero copy, and it fades in.]",
+          "[TODO: the fix you almost shipped — starting the hero visible — and what it would have cost the design.]",
+        ],
+      },
+      {
+        heading: "How Lighthouse guesses a page load",
+        paragraphs: [
+          "[TODO: simulated throttling (Lantern) in plain words: Lighthouse loads the page fast, records the network and CPU graph, then estimates how long it would take on a slow phone and network.]",
+          "[TODO: the consequence — on that simulated network, bytes on the wire dominate. A JavaScript bundle that is four times bigger delays everything that waits for it, LCP included.]",
+        ],
+      },
+      {
+        heading: "The experiment",
+        paragraphs: [
+          "[TODO: animation removed → still slow. That ruled it out.]",
+          "[TODO: the difference between the test stand and production: a small Node server sending the build raw, GitHub Pages sending text gzipped. Gzip on → 95–98 with the original code.]",
+        ],
+      },
+      {
+        heading: "Serving the build the way Pages does",
+        paragraphs: [
+          "[TODO: the fix lives in the audit script, not in the site: the local server now compresses what Pages compresses — text, not images or PDFs, which are compressed already.]",
+        ],
+        code: {
+          language: "typescript",
+          source: `/** What GitHub Pages compresses: text. Images and PDFs are compressed already. */
+const COMPRESSED = new Set([".html", ".js", ".css", ".json", ".svg", ".xml"]);
+
+const server = createServer((request, response) => {
+  // … resolve the file under <base href>, fall back to 404.html …
+  const gzip =
+    COMPRESSED.has(extname(served)) && /\\bgzip\\b/.test(request.headers["accept-encoding"] ?? "");
+  response.writeHead(found ? 200 : 404, {
+    "content-type": TYPES[extname(served)] ?? "application/octet-stream",
+    ...(gzip && { "content-encoding": "gzip" }),
+  });
+  response.end(gzip ? gzipSync(body) : body);
+});`,
+        },
+      },
+      {
+        heading: "Budgets that mean something",
+        paragraphs: [
+          "[TODO: why accessibility, best practices and SEO must be 100 — those audits are deterministic, anything less is a defect — while performance gets a floor of 90 with room for a slower CI runner.]",
+          "[TODO: the rule in the comment — raise a budget as the site improves, never lower one to get a red build through. And the scores are published on the colophon page.]",
+        ],
+        code: {
+          language: "typescript",
+          source: `const BUDGETS: LighthouseScores = {
+  performance: 90,
+  accessibility: 100,
+  bestPractices: 100,
+  seo: 100,
+};`,
+        },
+      },
+      {
+        heading: "What I check first now",
+        paragraphs: [
+          "[TODO: the takeaway — before trusting a performance number, make the test stand behave like production: compression, base path, 404 handling, the same build.]",
+          "[TODO: a closing line.]",
+        ],
+      },
+    ],
+  },
   {
     slug: "ai-frontend-engineering",
     title: "What AI Actually Changes About Frontend Engineering",

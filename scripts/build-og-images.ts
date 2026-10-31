@@ -32,7 +32,7 @@ const dateFormat = new Intl.DateTimeFormat("en", {
 });
 
 const cards: Card[] = [
-  ...BLOG_POSTS.map((post) => ({
+  ...BLOG_POSTS.filter((post) => !post.draft).map((post) => ({
     route: `blog/${post.slug}`,
     kind: "Blog",
     title: post.title,

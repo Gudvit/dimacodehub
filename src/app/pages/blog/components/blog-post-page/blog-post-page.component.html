@@ -11,6 +11,12 @@
         Back to blog
       </a>
 
+      @if (post.draft) {
+        <p class="post-draft" role="note">
+          Draft — visible on the dev server only, never published.
+        </p>
+      }
+
       <header class="post-header">
         <ul class="post-header__tags" aria-label="Tags">
           @for (tag of post.tags; track tag) {

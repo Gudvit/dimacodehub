@@ -51,6 +51,12 @@ A new post also lands in `sitemap.xml` and `feed.xml` on the next build
 the title, tags, date and reading time) and `BlogPosting` JSON-LD — nothing to do by hand.
 Check the image once: a very long title is clamped to three lines.
 
+A post with `draft: true` shows on the dev server only, under a "Draft" note. A production
+build leaves it out of the list, the prerender, the feed, the sitemap and the sharing images,
+and the home page's latest posts skip it even in development. Its text still ships inside
+the blog chunk, as case-study drafts do, so keep nothing private in a draft. Placeholders
+are `[TODO: …]`; a spec fails if one is left in a published post.
+
 The `BlogService` specs are effectively content validation. If adding a post breaks a
 test, fix the content, not the test.
 

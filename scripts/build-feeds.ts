@@ -23,7 +23,9 @@ const escapeXml = (text: string) =>
   );
 
 // Newest first, whatever the array order (BlogService.getLatest sorts the same way).
-const posts = [...BLOG_POSTS].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+const posts = BLOG_POSTS.filter((post) => !post.draft).sort(
+  (a, b) => Date.parse(b.date) - Date.parse(a.date),
+);
 // The service hides drafts outside dev mode; this is a production artefact, so always.
 const studies = CASE_STUDIES.filter((study) => !study.draft);
 

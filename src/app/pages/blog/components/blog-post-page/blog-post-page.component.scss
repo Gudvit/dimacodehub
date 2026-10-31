@@ -68,6 +68,17 @@
   }
 }
 
+.post-draft {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--brand-wine);
+  background: brand.wine(0.07);
+  border: 1px dashed brand.wine(0.4);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0 0 2rem;
+}
+
 .post-header {
   margin-bottom: 2rem;
 

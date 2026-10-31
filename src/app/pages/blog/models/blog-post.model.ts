@@ -19,4 +19,6 @@ export interface BlogPost {
   readonly preview: string;
   readonly readingTime: number;
   readonly sections: readonly BlogPostSection[];
+  /** Shown on the dev server only; a production build never sees it. */
+  readonly draft?: boolean;
 }
