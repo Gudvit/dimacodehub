@@ -1,7 +1,7 @@
 import { provideZonelessChangeDetection } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideRouter } from "@angular/router";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BlogService } from "../../services/blog.service";
 import { tableOfContents } from "../../table-of-contents";
 import { BlogPostPageComponent } from "./blog-post-page.component";
@@ -20,6 +20,8 @@ describe("BlogPostPageComponent", () => {
     fixture.componentRef.setInput("slug", post.slug);
     await fixture.whenStable();
   });
+
+  afterEach(() => vi.restoreAllMocks());
 
   const headings = (): HTMLElement[] => [
     ...fixture.nativeElement.querySelectorAll(".post-content__heading"),
@@ -62,6 +64,25 @@ describe("BlogPostPageComponent", () => {
     expect(
       fixture.nativeElement.querySelector('.post-toc__link[aria-current="location"]').textContent,
     ).toContain(second!.textContent?.trim());
+  });
+
+  it("marks the last heading on screen once the page is scrolled to the end", async () => {
+    // A short last section: its heading stays in the lower half when the page can go no further.
+    const tops = [-1200, -700, -200, 300, 560];
+    headings().forEach((heading, index) =>
+      vi
+        .spyOn(heading, "getBoundingClientRect")
+        .mockReturnValue({ top: tops[index] ?? 2000 } as DOMRect),
+    );
+    vi.spyOn(document.documentElement, "scrollHeight", "get").mockReturnValue(3000);
+    vi.spyOn(window, "scrollY", "get").mockReturnValue(3000 - window.innerHeight);
+
+    window.dispatchEvent(new Event("scroll"));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    await fixture.whenStable();
+
+    const onScreen = headings().filter((_, index) => (tops[index] ?? 2000) < window.innerHeight);
+    expect(fixture.componentInstance.activeId()).toBe(onScreen.at(-1)!.id);
   });
 
   it("links each tag to the list filtered by it", () => {

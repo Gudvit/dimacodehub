@@ -187,3 +187,14 @@ test("a post opened from far down the list starts at its top", async ({ page }) 
   await expect(page.getByRole("link", { name: "Back to blog" })).toBeInViewport();
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });
+
+test("the contents list marks the last section at the end of a post", async ({ page }) => {
+  await page.goto("/blog/angular-architecture-patterns");
+  const contents = page.getByRole("navigation", { name: "On this page" });
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expect(contents.getByRole("link", { name: "What I would do differently" })).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+});

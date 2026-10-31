@@ -20,8 +20,11 @@ import { BlogService } from "../../services/blog.service";
 import { tableOfContents, TOC_MIN_ENTRIES } from "../../table-of-contents";
 import { CodeBlockComponent } from "../code-block/code-block.component";
 
-/** How far below the header a heading may be and still count as the one being read. */
-const ACTIVE_HEADING_SLACK_PX = 96;
+/**
+ * A heading counts as the one being read once it is in the top third of the screen, below
+ * the header: by then the reader's eyes are in its section.
+ */
+const ACTIVE_HEADING_LINE = 1 / 3;
 
 @Component({
   selector: "app-blog-post-page",
@@ -121,9 +124,18 @@ export class BlogPostPageComponent {
       const header = parseFloat(
         getComputedStyle(document.documentElement).getPropertyValue("--header-height"),
       );
-      const line = (header || 0) + ACTIVE_HEADING_SLACK_PX;
-      const passed = this.headings().filter((h) => h.getBoundingClientRect().top <= line);
-      this.activeId.set(passed.at(-1)?.id ?? null);
+      const line = (header || 0) + window.innerHeight * ACTIVE_HEADING_LINE;
+      const headings = this.headings();
+      // The last sections are often too short to bring their heading up to the line before
+      // the page ends; at the bottom, the last heading on screen is the one being read.
+      const root = document.documentElement;
+      const atBottom =
+        root.scrollHeight > window.innerHeight &&
+        window.scrollY + window.innerHeight >= root.scrollHeight - 2;
+      const reached = atBottom
+        ? headings.filter((h) => h.getBoundingClientRect().top < window.innerHeight)
+        : headings.filter((h) => h.getBoundingClientRect().top <= line);
+      this.activeId.set(reached.at(-1)?.id ?? null);
     };
     const onScroll = () => {
       frame ||= requestAnimationFrame(update);
