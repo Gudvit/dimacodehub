@@ -154,7 +154,7 @@
 }
 
 .timeline__company {
-  font-size: 1.2rem;
+  font-size: clamp(1.2rem, 1.3vw, 1.5rem);
   font-weight: 700;
   color: brand.ink(0.78);
   line-height: 1.2;
@@ -211,10 +211,11 @@
     0 24px 48px brand.shadow(0.14),
     inset 0 1px 0 brand.paper(0.8);
   backdrop-filter: blur(8px);
-  padding: clamp(1rem, 2vw, 1.35rem);
+  // The type grows with the window, so a wide screen is not one small paragraph in a big box.
+  padding: clamp(1rem, 2.2vw, 2.4rem);
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: 0.9rem;
+  gap: clamp(0.9rem, 2vh, 1.6rem);
   animation-duration: 0.42s;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   animation-fill-mode: both;
@@ -249,15 +250,16 @@
 
 .focus-panel__header h3 {
   margin: 0;
-  font-size: clamp(1.2rem, 2vw, 1.55rem);
-  line-height: 1.25;
+  font-size: clamp(1.2rem, 2.1vw, 2.4rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   color: var(--brand-ink);
 }
 
 .meta {
   margin: 0.4rem 0 0;
   color: brand.ink(0.6);
-  font-size: 0.92rem;
+  font-size: clamp(0.92rem, 1vw, 1.15rem);
 }
 
 .focus-panel__bullets {
@@ -265,7 +267,7 @@
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 0.44rem;
+  gap: clamp(0.44rem, 1.2vh, 0.9rem);
   align-content: start;
   min-height: 0;
   overflow-y: auto;
@@ -275,8 +277,10 @@
 
 .focus-panel__bullets li {
   border-left: 2px solid brand.wine(0.28);
-  padding: 0.34rem 0 0.34rem 0.72rem;
+  max-width: 70ch;
+  padding: 0.34rem 0 0.34rem clamp(0.72rem, 1vw, 1.1rem);
   color: var(--brand-muted);
+  font-size: clamp(1rem, 1.15vw, 1.3rem);
   line-height: 1.52;
   animation: bullet-enter 0.45s ease both;
 }
@@ -300,7 +304,7 @@
 
 .focus-panel__impact article {
   border-radius: 12px;
-  padding: 0.62rem 0.65rem;
+  padding: clamp(0.62rem, 0.9vw, 0.95rem) clamp(0.65rem, 1vw, 1.1rem);
   background: brand.paper(0.72);
   border: 1px solid brand.ink(0.08);
 }
@@ -308,20 +312,46 @@
 .focus-panel__impact .value {
   margin: 0;
   color: var(--brand-wine);
-  font-size: 1.02rem;
-  font-weight: 700;
+  font-size: clamp(1.02rem, 1.25vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 .focus-panel__impact .label {
   margin: 0.2rem 0 0;
   color: brand.ink(0.56);
-  font-size: 0.78rem;
+  font-size: clamp(0.78rem, 0.8vw, 0.9rem);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .experience-mobile-nav {
   display: none;
+}
+
+// On a desktop the role sits in the middle of the panel and the numbers stay at its foot.
+// The two 1fr rows share the space left over; when there is none, the bullets (0 to auto)
+// give way and scroll.
+@media (min-width: 981px) {
+  .focus-panel {
+    grid-template-rows: minmax(0, 1fr) auto minmax(0, auto) minmax(0, 1fr) auto;
+    row-gap: 0;
+  }
+
+  .focus-panel__header {
+    grid-row: 2;
+    margin-bottom: clamp(0.9rem, 2vh, 1.6rem);
+  }
+
+  .focus-panel__bullets {
+    grid-row: 3;
+  }
+
+  .focus-panel__impact {
+    grid-row: 5;
+    margin-top: clamp(0.9rem, 2vh, 1.6rem);
+  }
 }
 
 @media (max-width: 980px) {
