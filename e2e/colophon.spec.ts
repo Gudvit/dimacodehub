@@ -64,3 +64,15 @@ test("the numbers come from the build that produced the page", async ({ page }) 
     "https://github.com/Gudvit/dimacodehub/commit/4a66f68c0ffee",
   );
 });
+
+test("the signals demo shows what a change reruns", async ({ page }) => {
+  await page.goto("/colophon");
+  const demo = page.locator("app-signals-demo");
+  await demo.scrollIntoViewIfNeeded();
+
+  await demo.getByRole("button", { name: "USD" }).click();
+  await expect(page.locator(".demo-summary")).toHaveText(
+    "Ran again: display. Skipped: subtotal, isBulk, discount, total. 1 value rewritten on screen.",
+  );
+  await expect(demo.locator('[data-binding="display"]')).toHaveText("$38.00");
+});

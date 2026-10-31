@@ -60,6 +60,16 @@
     </ul>
   </section>
 
+  <section class="colophon-section" aria-labelledby="colophon-signals">
+    <h2 class="colophon-section__title" id="colophon-signals">Signals, live</h2>
+    <p class="colophon-section__lead">
+      With no zone.js, nothing re-renders "just in case": a change reaches only what reads it. Below
+      is a small checkout built from real <code>signal()</code> and <code>computed()</code> values.
+      The counters show how many times each value has actually been computed.
+    </p>
+    <app-signals-demo />
+  </section>
+
   <section class="colophon-section" aria-labelledby="colophon-decisions">
     <h2 class="colophon-section__title" id="colophon-decisions">Architecture decisions</h2>
     <p class="colophon-section__lead">

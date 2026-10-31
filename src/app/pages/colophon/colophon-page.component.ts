@@ -11,12 +11,13 @@ import { FooterComponent } from "../../components/footer/footer.component";
 import { syncPageMeta } from "../../seo/page-meta";
 import { BUILD_STATS_FILE, type BuildStats, formatKilobytes } from "./build-stats";
 import { ADRS, PERFORMANCE, PIPELINE, REPOSITORY_URL, STACK } from "./colophon";
+import { SignalsDemoComponent } from "./signals-demo/signals-demo.component";
 
 @Component({
   selector: "app-colophon-page",
   templateUrl: "./colophon-page.component.html",
   styleUrl: "./colophon-page.component.scss",
-  imports: [HeaderComponent, FooterComponent, DatePipe],
+  imports: [HeaderComponent, FooterComponent, DatePipe, SignalsDemoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ColophonPageComponent {

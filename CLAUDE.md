@@ -91,7 +91,8 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
-      colophon/               "How this site is built" (`/colophon`): stack, ADRs, CI, numbers
+      colophon/               "How this site is built" (`/colophon`): stack, ADRs, CI, numbers,
+                              and signals-demo/ — a live signal graph with real run counters
       projects/               "coming soon" list placeholder, case study page
                               (`/projects/:slug`), CaseStudyService
     site.ts                   SITE_URL, pageUrl(), profiles, contact email, CV path — no runtime
