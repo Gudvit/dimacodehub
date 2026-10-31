@@ -6,15 +6,16 @@ Vitest + Playwright, deployed to GitHub Pages from `main` via `.github/workflows
 ## What this project is
 
 A single-page portfolio for a frontend engineer (Dmytro Huliaiev) plus a blog section.
-Three areas: `/` (hero → about → experience → contacts, a vertical slider),
-`/projects` (a "coming soon" placeholder), `/blog` (post list and post page).
+Three areas: `/` (hero → about → experience → writing → contacts, a vertical slider),
+`/projects` (a "coming soon" placeholder, case studies at `/projects/:slug`), `/blog`
+(post list and post page). Plus `/colophon`, "How this site is built", linked from the footer.
 
 The constraint that drives almost everything else: **there is no backend and none is
 planned**. The site is static files on GitHub Pages. No `HttpClient`, no database, no
 migrations, no authentication. The only runtime external dependencies are Google Fonts
 (the Urbanist typeface, linked from `src/index.html`), Web3Forms — a single `fetch` from
-the contact form (ADR 0015) — and outbound links to GitHub / X / LinkedIn / Telegram /
-`mailto:` / `tel:`.
+the contact form (ADR 0015) — a GoatCounter page-view beacon (ADR 0022) and outbound links
+to GitHub / X / LinkedIn / Telegram / `mailto:` / `tel:`.
 
 The reasoning behind the decisions lives in `docs/architecture/` (ADRs). Read them
 before any large architectural change — they record why things are the way they are.
@@ -28,29 +29,40 @@ before any large architectural change — they record why things are the way the
 - **SCSS** — global `src/styles.scss` plus a per-component `styleUrl`. No UI framework.
   The palette lives once in `src/styles/_brand.scss` (`@use "brand"`, resolved through
   `stylePreprocessorOptions.includePaths`): `var(--brand-*)` for opaque colours,
-  `brand.ink($alpha)` / `brand.wine($alpha)` for translucent ones — no raw `rgba()` of
-  brand colours in component styles.
-- **Vitest 4** (jsdom) for unit tests; **Playwright** for e2e.
+  `brand.ink($alpha)` / `brand.wine($alpha)` / `brand.paper($alpha)` /
+  `brand.surface($alpha)` / `brand.shadow($alpha)` for translucent ones — no raw `rgba()`,
+  `#fff` or other literal colours in component styles. There is a light and a dark theme
+  (ADR 0020): every `--brand-*` property has a value per theme, and the helpers mix the
+  property, so a component that sticks to them works in both without knowing which is on.
+  `--brand-paper` is the layer above the page (white in light). Code in posts is coloured
+  by `--code-*`, defined per theme next to the brand properties. The hero is the exception:
+  it sits on a photo in both themes and keeps its literal whites and `brand.fixed-ink()`.
+- **Vitest 5** (jsdom 30) for unit tests; **Playwright** for e2e.
 - **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.
 - **npm 11.13.0** (`packageManager` in `package.json`), Node 24 (`.nvmrc`, `engines`).
 - **GitHub Actions** → GitHub Pages.
 
-`rxjs` is used in `app.ts` and `home-page.component.ts`; `@angular/forms` is used by the
+`rxjs` is used in `seo/page-url.ts` and `analytics/page-views.ts`; `@angular/forms` is used by the
 contact form. Nothing else in `dependencies` is optional.
 
 ## Commands
 
-| Command                           | What it does                                                      |
-| --------------------------------- | ----------------------------------------------------------------- |
-| `npm start`                       | dev server at `http://localhost:4200/`                            |
-| `npm run build`                   | production build into `dist/dimacodehub/browser`                  |
-| `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs |
-| `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch) |
-| `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself   |
-| `npm run test:e2e:ui`             | Playwright in UI mode                                             |
-| `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)         |
-| `npm run format` / `format:check` | Prettier write / check                                            |
-| `npm test`                        | `test:unit` + `test:e2e`                                          |
+| Command                           | What it does                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| `npm start`                       | dev server at `http://localhost:4200/`                                         |
+| `npm run build`                   | production build into `dist/dimacodehub/browser`                               |
+| `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs              |
+| `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)       |
+| `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
+| `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page               |
+| `npm run lighthouse`              | Lighthouse budgets on the built site (after `build:gh`; CI runs it)            |
+| `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)              |
+| `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself                |
+| `npm run test:e2e:ui`             | Playwright in UI mode                                                          |
+| `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)                      |
+| `npm run typecheck`               | `tsc` over the app, the unit tests and the Node code (scripts, e2e, config)    |
+| `npm run format` / `format:check` | Prettier write / check                                                         |
+| `npm test`                        | `test:unit` + `test:e2e`                                                       |
 
 ## Directory layout
 
@@ -58,22 +70,41 @@ contact form. Nothing else in `dependencies` is optional.
 src/
   index.html                  static meta/OG tags, font link
   main.ts                     bootstrapApplication(App, appConfig)
-  styles/_brand.scss          the brand palette: SCSS variables + ink()/wine() helpers
-  styles.scss                 brand CSS variables, background effects, route-animation
-                              keyframes, `.slide-section` snap rules
+  main.server.ts              the same bootstrap for prerendering (build time only)
+  styles/_brand.scss          the palette for both themes + ink()/wine()/paper()/… helpers
+  styles/_motion.scss         slide-reveal() / view-reveal(): scroll-driven entrances (ADR 0025)
+  styles.scss                 the theme custom properties, background effects, view-transition
+                              rules for route changes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
+scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
+scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Playwright
+scripts/build-stats.ts        bundle sizes, page and test counts → build-stats.json
+scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → build-stats.json
   images/                     assets referenced only from SCSS (hashed by the bundler)
   app/
     app.ts / app.html / app.scss   root component: router-outlet + cursor spotlight
     app.config.ts             provideZonelessChangeDetection + provideRouter(withComponentInputBinding)
     app.routes.ts             root routes, lazy blog and projects, `**` → redirect to `/`
-    components/               reusable: header, footer, animated-text, loader
+    app.routes.server.ts      which routes are prerendered, and the slugs for each
+    app.config.server.ts      appConfig + server rendering
+    components/               reusable: header, footer, theme-toggle (+ ThemeService),
+                              command-palette (⌘K, deferred in app.html), animated-text, loader
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
-      projects/               "coming soon" placeholder
+      colophon/               "How this site is built" (`/colophon`): stack, ADRs, CI, numbers,
+                              and signals-demo/ — a live signal graph with real run counters
+      projects/               "coming soon" list placeholder, case study page
+                              (`/projects/:slug`), CaseStudyService
+    site.ts                   SITE_URL, pageUrl(), profiles, contact email, CV path — no runtime
+                              imports (scripts/ uses it)
+    analytics/page-views.ts   countPageViews(): a GoatCounter beacon per navigation, production only
+    navigation/scroll-to-top.ts  a new page opens at its top; #heading, ?tag= and Back keep the scroll
+    seo/                      syncPageMeta(): per-page description/OG tags;
+                              syncPageUrl(): og:url + canonical follow the route;
+                              syncJsonLd(): schema.org data for the page
 public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg
-e2e/                          Playwright specs: home, blog, contact, mobile
+e2e/                          Playwright specs: home, blog, projects, contact, mobile
 docs/architecture/            ADRs and the architecture overview
 ```
 
@@ -102,14 +133,29 @@ is the exception: `app.ts` / class `App`.
   An absolute path ignores `base href` and 404s on Pages.
 - Images needed only by CSS live in `src/images/` — the bundler hashes them.
   `public/` holds only what must be reachable at a stable URL: `favicon.ico`,
-  the CV, `images/logo.svg` (loaded through `<img src>`), `images/og-cover.jpg` (for OG tags).
+  the CV, `images/logo.svg` and `images/companies/*.svg` (loaded through `<img src>`),
+  `images/og-cover.jpg` (for OG tags).
   The same file in both places is a duplicate in the deployment — don't do it.
 - Everything in `public/` ships in full. Do not put unused files or PNG sources there —
   only compressed images that are actually needed.
-- GitHub Pages has no SPA rewrite: `404.html` is produced as a copy of `index.html`
-  by a workflow step. Do not remove that step, or direct links to `/blog/:slug` break.
+- Every route is prerendered at build time (ADR 0019): `/`, `/blog`, `/projects` and each
+  post and case study get their own `index.html` with their own meta tags. The list lives
+  in `src/app/app.routes.server.ts`; slugs come from the services, so a new post needs no
+  extra step. Anything else falls through to `404.html`, a workflow-made copy of
+  `index.csr.html` (the empty client shell). Never copy `index.html` there — it is the
+  prerendered home page now.
+- Code runs in Node during the build. Browser globals (`window`, `document`, observers)
+  belong in `afterNextRender()`, which the server skips.
+- The CSP allows no inline script except the theme script in `index.html`, by its hash
+  (`index-html.spec.ts` keeps the two in step). So incremental hydration and critical-CSS
+  inlining stay off: their scripts are generated and could not be hashed. Check the built
+  HTML for any other bare `<script>` after touching hydration or the build.
 - The absolute URLs in the OG tags (`src/index.html`) are hardcoded to
   `https://gudvit.github.io/dimacodehub/`. Update them when moving to a custom domain.
+
+- The content files (`blog-posts.ts`, `case-studies.ts`) and `site.ts` are imported by
+  `scripts/build-feeds.ts` straight into Node, which only strips types. Keep their imports
+  `import type` — a value import there breaks the build.
 
 ## Angular style
 
@@ -147,11 +193,21 @@ bundle). Practical consequences:
   (see `.post-card__link`).
 - Every external link with `target="_blank"` also gets `rel="noopener noreferrer"`.
 - Animations respect `prefers-reduced-motion` (see the about section — follow that pattern).
+  An entrance on scroll is `@include motion.slide-reveal($order)` on the home slides and
+  `motion.view-reveal` elsewhere; both already handle reduced motion and missing support.
 
 ## Quality
 
 - Before considering a task done, everything CI runs must be green:
-  `npm run format:check`, `npm run lint`, `npm run test:unit`, `npm run test:e2e`.
+  `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test:unit`,
+  `npm run test:e2e`.
+- TypeScript configs: `tsconfig.json` holds the shared options and checks no files itself;
+  `tsconfig.app.json` (the bundle), `tsconfig.spec.json` (unit tests) and
+  `tsconfig.node.json` (build scripts, e2e, Playwright config — `erasableSyntaxOnly`,
+  because Node runs the scripts by stripping types) do the checking.
+- The colophon page describes the repository, and `colophon.spec.ts` holds it to it: adding
+  or renaming an ADR, renaming a CI step or moving the coverage floor fails the unit tests
+  until `src/app/pages/colophon/colophon.ts` says the same.
 - Formatting is Prettier (`npm run format`): double quotes, `printWidth: 100`.
   Component templates are parsed with the `angular` parser — do not align them by hand.
 - Empty `describe()` blocks are forbidden: Vitest fails with `No test found in suite`.
@@ -168,8 +224,8 @@ this step.
 ## Contacts
 
 The contact section has a real form (ADR 0015). It posts with `fetch` straight to
-Web3Forms, which relays the message by email — that is the app's only outbound request
-and the only reason `@angular/forms` is a dependency.
+Web3Forms, which relays the message by email — that is the app's only `fetch` and the only
+reason `@angular/forms` is a dependency.
 
 - The transport is `postToWeb3Forms()` in `home-contact-section/contact-form.service.ts`.
   It rejects unless the response is `ok` **and** the body says `success: true`.

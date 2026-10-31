@@ -1,5 +1,7 @@
+@use "brand";
+
 .title-animation {
-  background: linear-gradient(90deg, #111, #444, #111);
+  background: linear-gradient(90deg, var(--brand-ink), brand.ink(0.7), var(--brand-ink));
   background-size: 200%;
   -webkit-background-clip: text;
   color: transparent;

@@ -1,0 +1,321 @@
+@use "brand";
+
+.case {
+  padding: calc(82px + clamp(1.5rem, 3vw, 2.5rem)) 1.5rem clamp(3rem, 8vw, 6rem);
+
+  &__inner {
+    max-width: 760px;
+    margin: 0 auto;
+    animation: fadeUp 0.5s ease both;
+  }
+}
+
+.case-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--brand-muted);
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--brand-ink);
+  }
+
+  &__arrow {
+    transition: transform 0.2s ease;
+  }
+
+  &:hover &__arrow {
+    transform: translateX(-4px);
+  }
+}
+
+.case-draft {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--brand-wine);
+  background: brand.wine(0.07);
+  border: 1px dashed brand.wine(0.4);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0 0 2rem;
+}
+
+.case-header {
+  margin-bottom: 2.5rem;
+
+  &__eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-wine);
+    margin: 0 0 1rem;
+  }
+
+  &__title {
+    font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+    font-weight: 800;
+    color: var(--brand-ink);
+    line-height: 1.15;
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  &__summary {
+    font-size: clamp(1.05rem, 1.8vw, 1.2rem);
+    line-height: 1.7;
+    color: var(--brand-ink);
+    opacity: 0.85;
+    margin: 0 0 1.75rem;
+  }
+}
+
+.case-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem 2rem;
+  margin: 0;
+
+  // The wrappers only group a term with its value; the grid lays out their children.
+  > div {
+    display: contents;
+  }
+
+  dt {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+    padding-top: 0.2rem;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--brand-ink);
+  }
+
+  &__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--brand-ink);
+      background: brand.ink(0.05);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+  }
+}
+
+.case-outcomes {
+  // Flex, not grid: an odd last item stretches across its row instead of leaving an empty
+  // cell, which the 1px-gap borders would show as a grey block.
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  margin: 0 0 3rem;
+  background: var(--brand-outline);
+  border: 1px solid var(--brand-outline);
+  border-radius: 12px;
+  overflow: hidden;
+
+  &__item {
+    flex: 1 1 160px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.35rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--brand-surface);
+  }
+
+  dt {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--brand-muted);
+  }
+
+  dd {
+    margin: 0;
+    font-size: clamp(1.6rem, 3.5vw, 2.1rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--brand-wine);
+  }
+}
+
+.case-section {
+  margin-bottom: 2.75rem;
+
+  &__heading {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    color: var(--brand-ink);
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  &__index {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--brand-wine);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__para,
+  &__list li {
+    font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+    line-height: 1.8;
+    color: var(--brand-ink);
+    opacity: 0.85;
+  }
+
+  &__para {
+    margin: 0 0 1.25rem;
+  }
+
+  &__list {
+    margin: 0;
+    padding-left: 1.25rem;
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.case-decisions {
+  display: grid;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.case-decision {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--brand-outline);
+  border-radius: 12px;
+  background: brand.ink(0.02);
+
+  &__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--brand-ink);
+    margin: 0 0 0.5rem;
+  }
+
+  &__choice {
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--brand-ink);
+    opacity: 0.85;
+    margin: 0 0 0.75rem;
+  }
+
+  &__tradeoff {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--brand-muted);
+    margin: 0;
+    padding-left: 0.85rem;
+    border-left: 2px solid brand.wine(0.4);
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-wine);
+    margin-bottom: 0.2rem;
+  }
+}
+
+.case-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3.5rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: brand.wine(0.06);
+
+  &__text {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--brand-ink);
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    background: var(--brand-wine);
+    color: var(--brand-surface);
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.case-not-found {
+  min-height: calc(100vh - 82px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--brand-muted);
+
+  a {
+    color: var(--brand-ink);
+    font-weight: 600;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case__inner {
+    animation: none;
+  }
+
+  .case-back__arrow,
+  .case-cta__button {
+    transition: none;
+  }
+}

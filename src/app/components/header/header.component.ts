@@ -8,10 +8,12 @@ import {
   signal,
 } from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
+import { CommandPaletteService } from "../command-palette/command-palette.service";
+import { ThemeToggleComponent } from "../theme-toggle/theme-toggle.component";
 
 @Component({
   selector: "app-header",
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, ThemeToggleComponent],
   templateUrl: "./header.component.html",
   styleUrl: "./header.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,6 +22,7 @@ export class HeaderComponent {
   readonly menuOpen = signal(false);
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly palette = inject(CommandPaletteService);
   private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
@@ -41,6 +44,11 @@ export class HeaderComponent {
 
   closeMenu(): void {
     this.menuOpen.set(false);
+  }
+
+  openPalette(): void {
+    this.closeMenu();
+    this.palette.open();
   }
 
   private headerElement(): HTMLElement | null {

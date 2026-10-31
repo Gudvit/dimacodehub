@@ -1,15 +1,65 @@
 @use "brand";
 
 :root {
-  color-scheme: light;
   // Measured and kept up to date by HeaderComponent; the home slider subtracts it when
   // scrolling to a section. The fallback matters only before the first render.
   --header-height: 0px;
+}
+
+// The theme. Light by default; dark when the system asks for it, unless the visitor picked
+// light with the header toggle. The pick is `data-theme` on `<html>`, set before the first
+// paint by the inline `#theme-init` script in `index.html` and afterwards by `ThemeService`.
+@mixin light-theme {
+  color-scheme: light;
   --brand-ink: #{brand.$ink};
   --brand-wine: #{brand.$wine};
   --brand-surface: #{brand.$surface};
   --brand-muted: #{brand.$muted};
+  --brand-paper: #{brand.$paper};
+  --brand-danger: #{brand.$danger};
+  --brand-shadow: #{brand.$ink};
   --brand-outline: #{brand.ink(0.12)};
+  --code-string: #{brand.$code-string};
+  --code-number: #{brand.$code-number};
+  --code-type: #{brand.$code-type};
+  --code-function: #{brand.$code-function};
+  --spotlight-blend: multiply;
+  --logo-filter: none;
+}
+
+@mixin dark-theme {
+  color-scheme: dark;
+  --brand-ink: #{brand.$ink-dark};
+  --brand-wine: #{brand.$wine-dark};
+  --brand-surface: #{brand.$surface-dark};
+  --brand-muted: #{brand.$muted-dark};
+  --brand-paper: #{brand.$paper-dark};
+  --brand-danger: #{brand.$danger-dark};
+  --brand-shadow: #000;
+  --brand-outline: #{brand.ink(0.14)};
+  --code-string: #{brand.$code-string-dark};
+  --code-number: #{brand.$code-number-dark};
+  --code-type: #{brand.$code-type-dark};
+  --code-function: #{brand.$code-function-dark};
+  // Multiplying a tint into a dark page leaves nothing; screen lightens it instead.
+  --spotlight-blend: screen;
+  // The logo is a dark gradient drawn for a light page. Inverting it and turning the hue
+  // back keeps its two brand colours recognisable.
+  --logo-filter: invert(1) hue-rotate(180deg) brightness(1.1);
+}
+
+:root {
+  @include light-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include dark-theme;
+  }
+}
+
+:root[data-theme="dark"] {
+  @include dark-theme;
 }
 
 * {
@@ -39,7 +89,7 @@ body::before {
     transparent 60%
   );
   opacity: 0.8;
-  mix-blend-mode: multiply;
+  mix-blend-mode: var(--spotlight-blend);
   transition: opacity 0.4s ease;
   z-index: 0;
 }
@@ -60,19 +110,26 @@ a {
   text-decoration: none;
 }
 
-.route-shell {
-  position: relative;
-  overflow: hidden;
-}
-
 // Marks a section of the home slider. `HomePageComponent.scrollToNextSection()` finds
 // sections by this class, and every one of them snaps the same way. It has to be global:
 // the class lives in the section components' templates, so neither the home page's own
 // styles nor the sections' would cover all of them. Height and layout stay per-section —
 // the experience panel sizes itself in `dvh`, the hero is a grid.
+//
+// Each section is also a view timeline, `--slide`: its content rises in as the slide comes
+// up (`motion.slide-reveal()`, ADR 0025).
 .slide-section {
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  view-timeline-name: --slide;
+}
+
+// Global, so every component's `motion` mixins reach the same keyframes.
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
 }
 
 @media (max-width: 768px) {
@@ -82,47 +139,42 @@ a {
   }
 }
 
-.route-container:not(.route-enabled) .route-enter,
-.route-container:not(.route-enabled) .route-leave {
-  animation-name: none;
+// Route changes animate through the View Transitions API (`withViewTransitions()` in
+// `app.config.ts`): the browser snapshots the old page, Angular renders the new one, and the
+// two snapshots cross-fade with a short lift. Elements with their own `view-transition-name`
+// (the header, a post title) are animated apart from the page.
+::view-transition-old(root) {
+  animation: route-out 200ms cubic-bezier(0.4, 0, 1, 1) both;
 }
 
-.route-enter {
-  animation: route-enter 380ms cubic-bezier(0.4, 0, 0.2, 1) both;
+::view-transition-new(root) {
+  animation: route-in 320ms cubic-bezier(0, 0, 0.2, 1) 80ms both;
 }
 
-.route-leave {
-  animation: route-leave 380ms cubic-bezier(0.4, 0, 0.2, 1) both;
+::view-transition-group(*) {
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-// A full-width slide with blur on every navigation is exactly what this preference opts
-// out of. The class stays, so `animate.leave` still finds no animation and removes the
-// old page at once.
+// No motion at all for this preference: the new page simply replaces the old one.
 @media (prefers-reduced-motion: reduce) {
-  .route-enter,
-  .route-leave {
-    animation-name: none;
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 
-@keyframes route-enter {
-  from {
-    transform: translateX(100%);
-    filter: blur(3px);
-  }
+@keyframes route-out {
   to {
-    transform: translateX(0);
-    filter: blur(0);
+    opacity: 0;
+    transform: translateY(-12px);
   }
 }
 
-@keyframes route-leave {
+@keyframes route-in {
   from {
-    transform: translateX(0);
-    filter: blur(0);
-  }
-  to {
-    transform: translateX(-100%);
-    filter: blur(3px);
+    opacity: 0;
+    transform: translateY(16px);
   }
 }

@@ -1,11 +1,15 @@
 # pages/blog — the blog
 
-The only feature area with lazy loading, its own routes and its own data.
+A lazy feature area with its own routes and its own data (`pages/projects/` follows the
+same shape for case studies).
 
 ```
 blog.routes.ts                          BLOG_ROUTES + the post-title resolver
-blog-page.component.*                   post list
-components/blog-post-page/              post page
+blog-page.component.*                   post list + the tag filter (`?tag=`)
+components/blog-post-page/              post page: contents list, reading progress
+components/code-block/                  a highlighted code block
+code/highlight.ts                       the tokenizer behind it (ADR 0023)
+table-of-contents.ts                    heading ids and the contents list
 blog-posts.ts                           BLOG_POSTS — the posts as an in-code array
 models/blog-post.model.ts               BlogPost / BlogPostSection
 services/blog.service.ts                getAll / getBySlug over BLOG_POSTS
@@ -20,11 +24,18 @@ Posts live neither in a CMS nor in markdown files: `blog-posts.ts` exports a
 `BlogPost[]` right in TypeScript, which `BlogService` serves (see
 `docs/architecture/0005-content-in-code.md`). A post is a title, a `slug`, a date as a
 string, tags, a preview, `readingTime` and an array of `sections`; a section has an
-optional `heading`, required `paragraphs` and an optional `code` block.
+optional `heading`, required `paragraphs` and an optional `code` block —
+`{ language, source }`, where `language` is one `highlight.ts` knows (`typescript`,
+`html`, `scss`, `shell`). The source is written as is; indentation and blank lines are
+kept.
 
 The post template renders exactly these fields and **does not interpret HTML** — text
 goes through interpolation. You cannot put markup inside a paragraph; if a new kind of
 content is needed, extend `BlogPostSection` rather than smuggling in HTML.
+
+Section headings are anchors: the id comes from the heading text (`/blog/x#what-hasn-t-changed`),
+and from three headings up the post gets an "On this page" list. Renaming a heading breaks
+links to it.
 
 ### Adding a post
 
@@ -35,6 +46,11 @@ content is needed, extend `BlogPostSection` rather than smuggling in HTML.
 4. `date` must be a string `Date.parse` understands (the project uses `YYYY-MM-DD`),
    otherwise the "keeps every post renderable by the post page" spec fails.
 
+A new post also lands in `sitemap.xml` and `feed.xml` on the next build
+(`scripts/build-feeds.ts`), gets its own sharing image (`scripts/build-og-images.ts`, from
+the title, tags, date and reading time) and `BlogPosting` JSON-LD — nothing to do by hand.
+Check the image once: a very long title is clamped to three lines.
+
 The `BlogService` specs are effectively content validation. If adding a post breaks a
 test, fix the content, not the test.
 
@@ -44,14 +60,24 @@ test, fix the content, not the test.
   `withComponentInputBinding()` in `app.config.ts` — `ActivatedRoute` is not needed here.
 - The `<title>` is set by the `postTitle` `ResolveFn` in `blog.routes.ts` (which also
   holds the "Post not found" fallback), not by the component.
-- OG/description tags are set by an `effect()` in `BlogPostPageComponent` through `Meta`.
-  The component snapshots the site-wide values from `index.html` on creation and puts
-  them back in `DestroyRef.onDestroy()`, so `/` does not keep describing the last post.
-  A new tag written by the effect must also be listed in `POST_META_TAGS`, or it leaks.
+- OG/description tags are set by `syncPageMeta()` (`src/app/seo/page-meta.ts`), called
+  from the `BlogPostPageComponent` constructor. It puts the site-wide values
+  (`SITE_META_TAGS`, kept equal to `index.html` by a unit test) back when the page is
+  destroyed, so `/` does not keep
+  describing the last post. A new tag it writes must also be listed in `PAGE_META_TAGS`,
+  or it leaks. Case studies use the same helper.
 - An unknown slug does not redirect: `post()` returns `undefined` and the template shows
   the "Post not found." state — there is an e2e test for it.
 - A direct link to `/blog/:slug` only survives on GitHub Pages because of the
-  "Add SPA fallback" workflow step (a copy of `index.html` as `404.html`).
+  build-time prerender (ADR 0019): each post is written to `blog/<slug>/index.html` with
+  its own title and OG tags, which is what link previews read.
+
+## The tag filter
+
+`/blog?tag=NgRx` — the query parameter arrives as the `tag` input. The page is prerendered
+without a query, so `selectedTag()` stays empty until `afterNextRender`: filtering during
+hydration would not match the HTML. The chips and a post's own tags are links, so a filter
+can be shared and undone with Back.
 
 ## Card accessibility
 

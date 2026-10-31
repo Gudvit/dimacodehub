@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted. In effect.
+Accepted. The per-post preview limitation below is lifted by
+[0019](0019-build-time-prerender.md): every post is prerendered with its own tags.
 
 ## Context
 
@@ -47,3 +48,27 @@ Titles and the post's OG tag are asserted in e2e (`toHaveTitle` and a check on
 - There is one `og:image` for the entire site; posts have no per-post image.
 - There is no `sitemap.xml`, `robots.txt` or canonical link — the assumption is that a site
   this small did not need them; neither the code nor the history records any discussion.
+
+## Addendum: the SEO baseline
+
+Added once prerender (ADR 0019) made per-page tags visible to crawlers.
+
+- **Canonical and `og:url`** follow the route (`syncPageUrl()`), as the directory URL with a
+  trailing slash (`pageUrl()` in `src/app/site.ts`) — the address Pages answers 200 on.
+- **JSON-LD** (`syncJsonLd()` in `src/app/seo/json-ld.ts`): `Person` on the home page,
+  `BlogPosting` on each post. It is a data block, so the CSP's ban on inline scripts does
+  not touch it; `<` is escaped so content cannot close the element.
+- **`sitemap.xml` and `feed.xml` (RSS 2.0)** are written after `ng build` by
+  `scripts/build-feeds.ts`, which imports the same in-code content (ADR 0005) into plain
+  Node. Drafts are left out. The feed is announced with `<link rel="alternate">` in
+  `index.html`.
+- **A sharing image per post and case study** (`og/<route>.jpg`, 1200×630) is rendered
+  after the build by `scripts/build-og-images.ts`: an HTML card in the site's palette,
+  screenshotted with Playwright's Chromium — the browser e2e already installs, so no image
+  library joins the dependencies. `ogImagePath()` in `site.ts` is the one place the path is
+  decided, for the script and for `og:image`. Pages without content of their own keep the
+  site-wide cover. Without network access the card falls back to a system font.
+- **No `robots.txt`.** Crawlers read it only at the host root (`gudvit.github.io/robots.txt`);
+  a file under `/dimacodehub/` is ignored, and the root belongs to another repository. The
+  sitemap is submitted in Search Console instead. With a custom domain, add
+  `public/robots.txt` pointing at the sitemap.

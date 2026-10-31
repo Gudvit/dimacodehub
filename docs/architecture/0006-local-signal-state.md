@@ -12,7 +12,7 @@ boundaries or has to survive navigation.
 
 This application has none of that. All state is local UI state: whether the mobile menu
 is open, which role is active in the timeline, whether the about heading has been
-revealed, whether route animations are enabled. The data (posts, roles) is immutable and
+revealed. The data (posts, roles) is immutable and
 synchronously available (ADR 0005).
 
 ## Decision
@@ -21,7 +21,7 @@ No store: no NgRx, no NGXS, no signal-based state services.
 
 - State lives in the component that owns it: `menuOpen` in `HeaderComponent`,
   `activeIndex` / `panelKey` in the experience section, `aboutHeadlineVisible` in the
-  about section, `routeAnimationsEnabled` in `App`.
+  about section.
 - Derived values are `computed()` (`activeRole`, `post`, `words`).
 - Shared data access is a plain root service with no internal state (`BlogService`).
 - Home sections do not hold state that belongs elsewhere; they report intent upward

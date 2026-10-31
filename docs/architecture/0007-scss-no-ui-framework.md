@@ -16,10 +16,11 @@ noise texture, a snap slider, per-letter text animation). Not one element on the
 SCSS only, no CSS libraries and no utility frameworks.
 
 - `src/styles.scss` is the global layer: the brand palette as CSS custom properties
-  (`--brand-ink`, `--brand-wine`, `--brand-surface`, `--brand-muted`, `--brand-outline`),
+  (`--brand-ink`, `--brand-wine`, `--brand-surface`, `--brand-muted`, `--brand-paper`,
+  `--brand-outline` and a few more), one set per theme (ADR 0020),
   a `box-sizing` reset, the font, the `body::before` effect (cursor spotlight driven by
   `--cursor-x` / `--cursor-y`) and `body::after` (SVG noise as a data URI), the
-  route-animation keyframes and the loader styles.
+  view-transition rules for route changes and the loader styles.
 - Component styles go in `styleUrl` with Angular's default (emulated) encapsulation. The
   schematic is set to SCSS in `angular.json`.
 - There is one theme, light, pinned by `color-scheme: light`.

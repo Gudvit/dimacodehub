@@ -1,0 +1,182 @@
+@use "brand";
+
+.palette {
+  width: min(560px, calc(100vw - 2rem));
+  max-height: min(480px, calc(100dvh - 4rem));
+  margin: 12vh auto auto;
+  padding: 0;
+  border: 1px solid var(--brand-outline);
+  border-radius: 16px;
+  background: var(--brand-paper);
+  color: var(--brand-ink);
+  box-shadow: 0 24px 64px brand.shadow(0.28);
+  overflow: hidden;
+
+  &[open] {
+    animation: palette-in 0.16s ease-out;
+  }
+
+  &::backdrop {
+    background: brand.ink(0.28);
+    backdrop-filter: blur(3px);
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1.1rem;
+    border-bottom: 1px solid var(--brand-outline);
+  }
+
+  &__icon {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: var(--brand-muted);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    padding: 1.05rem 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--brand-ink);
+    outline: none;
+
+    &::placeholder {
+      color: var(--brand-muted);
+    }
+  }
+
+  &__results {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    padding: 0.4rem;
+    list-style: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    cursor: pointer;
+
+    &.is-active {
+      background: brand.wine(0.09);
+
+      .palette__label {
+        color: var(--brand-wine);
+      }
+    }
+  }
+
+  &__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.95rem;
+  }
+
+  &__group {
+    flex: none;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+  }
+
+  &__empty {
+    padding: 1rem 0.75rem;
+    color: var(--brand-muted);
+  }
+
+  &__hints {
+    display: flex;
+    gap: 1.1rem;
+    margin: 0;
+    padding: 0.6rem 1.1rem;
+    border-top: 1px solid var(--brand-outline);
+    font-size: 0.75rem;
+    color: var(--brand-muted);
+
+    kbd {
+      display: inline-block;
+      min-width: 1.4em;
+      margin-right: 0.25rem;
+      padding: 0 0.3rem;
+      border: 1px solid var(--brand-outline);
+      border-radius: 4px;
+      font-family: inherit;
+      text-align: center;
+    }
+  }
+}
+
+// Touch screens have no arrow keys to hint at.
+@media (hover: none) {
+  .palette__hints {
+    display: none;
+  }
+}
+
+.palette-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 1100;
+  margin: 0;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  background: var(--brand-ink);
+  color: var(--brand-paper);
+  font-size: 0.88rem;
+  box-shadow: 0 12px 32px brand.shadow(0.25);
+  transform: translate(-50%, 1rem);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  &.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palette[open] {
+    animation: none;
+  }
+
+  .palette-toast {
+    transition: none;
+  }
+}

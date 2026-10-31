@@ -2,11 +2,52 @@
   <app-header></app-header>
   <div class="hero-text">
     <h1 class="name">Dmytro Huliaiev</h1>
-    <p class="eyebrow">Frontend Engineer</p>
-    <p class="lead">I build systems, not just features</p>
+    <p class="eyebrow">Senior Frontend Engineer</p>
+    <p class="availability">
+      <span class="availability__dot" aria-hidden="true"></span>
+      <span
+        >Open to new conversations<span class="availability__where"> · Kraków, remote</span></span
+      >
+    </p>
+    <p class="lead">
+      I help product teams build Angular platforms that stay fast, tested and easy to change<span
+        class="lead__more"
+      >
+        — 10+ years of frontend architecture behind products used by 100K+ people</span
+      >.
+    </p>
     <div class="hero-actions">
+      <!-- Contracts come first (docs/roadmap.md, 0.1): the solid button is the main action. -->
+      <button class="primary primary--solid" type="button" (click)="scrollToContacts.emit()">
+        Discuss a project
+      </button>
       <a class="primary" href="dmytro_huliaiev_cv.pdf" download>Download CV</a>
-      <button class="primary" type="button" (click)="scrollToContacts.emit()">Contact me</button>
+    </div>
+
+    <div class="proof">
+      <dl class="proof__metrics">
+        @for (metric of metrics; track metric.label) {
+          <div class="proof__metric">
+            <dt>{{ metric.label }}</dt>
+            <dd>{{ metric.value }}</dd>
+          </div>
+        }
+      </dl>
+
+      <div class="proof__companies">
+        <p class="proof__caption">Built products at</p>
+        <ul>
+          @for (company of companies; track company.name) {
+            <li>
+              @if (company.logo) {
+                <img [src]="company.logo" [alt]="company.name" height="18" />
+              } @else {
+                {{ company.name }}
+              }
+            </li>
+          }
+        </ul>
+      </div>
     </div>
   </div>
   <button

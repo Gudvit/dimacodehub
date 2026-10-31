@@ -1,4 +1,5 @@
 @use "brand";
+@use "motion";
 @use "../../display-title";
 
 :host {
@@ -12,12 +13,12 @@
   padding: clamp(3.6rem, 12vh, 8.4rem) clamp(2rem, 9vw, 2rem) clamp(1.4rem, 4vh, 2.6rem);
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--brand-paper);
   border-bottom: 1px solid var(--brand-outline);
 }
 
 .about-hero__display-title {
-  @include display-title.display-title(clamp(18px, 12vw, 220px));
+  @include display-title.display-title;
   width: 100%;
   z-index: 0;
   margin-bottom: clamp(1.1rem, 3vw, 2rem);
@@ -123,12 +124,12 @@
   padding: 0.46rem 0.9rem 0.46rem 1.08rem;
   border-radius: 10px;
   border: 1px solid brand.ink(0.14);
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(246, 241, 245, 0.96));
+  background: linear-gradient(145deg, brand.paper(0.94), brand.surface(0.96));
   color: var(--brand-ink);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.01em;
-  box-shadow: 0 8px 18px -16px brand.ink(0.28);
+  box-shadow: 0 8px 18px -16px brand.shadow(0.28);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -150,7 +151,7 @@
 .about-hero__pills span:hover {
   transform: translateY(-2px);
   border-color: brand.wine(0.4);
-  box-shadow: 0 12px 24px -18px brand.ink(0.36);
+  box-shadow: 0 12px 24px -18px brand.shadow(0.36);
 }
 
 .about-hero__metrics {
@@ -169,21 +170,14 @@
   text-align: center;
   border: 0;
   border-radius: 14px;
-  box-shadow: 0 8px 22px -20px brand.ink(0.24);
-  animation: metric-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow: 0 8px 22px -20px brand.shadow(0.24);
 }
 
-.about-hero__metrics article:nth-child(1) {
-  animation-delay: 0.03s;
-}
-.about-hero__metrics article:nth-child(2) {
-  animation-delay: 0.09s;
-}
-.about-hero__metrics article:nth-child(3) {
-  animation-delay: 0.15s;
-}
-.about-hero__metrics article:nth-child(4) {
-  animation-delay: 0.21s;
+// The metrics sit at the foot of the slide and rise in last, one after another.
+@for $i from 1 through 4 {
+  .about-hero__metrics article:nth-child(#{$i}) {
+    @include motion.slide-reveal(2 + $i);
+  }
 }
 
 .about-hero__metric-value {
@@ -203,17 +197,6 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
-}
-
-@keyframes metric-rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @media (max-width: 900px) {
@@ -262,4 +245,17 @@
     transition: none;
     color: var(--brand-wine);
   }
+}
+
+// The copy under the animated headline follows it in, part by part.
+.about-hero__subhead {
+  @include motion.slide-reveal(1);
+}
+
+.about-hero__body {
+  @include motion.slide-reveal(2);
+}
+
+.about-hero__pills {
+  @include motion.slide-reveal(3);
 }

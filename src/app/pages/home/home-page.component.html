@@ -1,14 +1,19 @@
-<div class="route-shell" animate.enter="route-enter" animate.leave="route-leave">
-  <div class="home-slider" #homeSlider>
-    <app-home-hero-section
-      (scrollNext)="scrollToNextSection()"
-      (scrollToContacts)="scrollToContactsSection()"
-    ></app-home-hero-section>
+<main class="home-slider" #homeSlider>
+  <app-home-hero-section
+    (scrollNext)="scrollToNextSection()"
+    (scrollToContacts)="scrollToContactsSection()"
+  ></app-home-hero-section>
 
-    <app-home-about-section></app-home-about-section>
+  <app-home-about-section></app-home-about-section>
 
-    <app-home-experience-section></app-home-experience-section>
+  <app-home-experience-section></app-home-experience-section>
 
-    <app-home-contact-section (backToTop)="scrollToTop()"></app-home-contact-section>
-  </div>
-</div>
+  <!-- Deferred so the posts stay out of the initial bundle; see the local CLAUDE.md. -->
+  @defer (on viewport; prefetch on idle) {
+    <app-home-writing-section></app-home-writing-section>
+  } @placeholder {
+    <div class="writing-placeholder slide-section" aria-hidden="true"></div>
+  }
+
+  <app-home-contact-section (backToTop)="scrollToTop()"></app-home-contact-section>
+</main>

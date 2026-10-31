@@ -1,6 +1,6 @@
 # dimacodehub architecture
 
-A personal portfolio site: a single-page home (hero → about → experience → contacts), a
+A personal portfolio site: a single-page home (hero → about → experience → writing → contacts), a
 blog section and a Projects placeholder. Angular 22, static build, GitHub Pages.
 
 This is the high-level overview and the ADR index. Day-to-day working rules (style,
@@ -14,32 +14,35 @@ root and in the local `CLAUDE.md` files under `src/app/pages/home/` and
                     browser
                        │
         ┌──────────────┴───────────────┐
-        │  index.html (static meta /   │  ← the same content also ships as 404.html:
-        │  OG tags, base href)         │    the SPA fallback for GitHub Pages
+        │  <route>/index.html           │  ← prerendered per route at build time
+        │  (its own meta / OG tags)    │    (ADR 0019); 404.html is the empty shell
         └──────────────┬───────────────┘
-                       │ bootstrapApplication(App, appConfig)
+                       │ bootstrapApplication(App, appConfig) + hydration
                        ▼
             App  ─ router-outlet ─ cursor spotlight (CSS variables)
                        │
       ┌────────────────┼─────────────────────┐
       ▼                ▼                     ▼
-  HomePage         ProjectsPage        BLOG_ROUTES  (lazy chunk)
-  slider of 4      placeholder         ├── BlogPage      list
-  sections,        + app-loader        └── BlogPostPage  post, :slug → input()
-  manual scroll                               │
-                                              ▼
-                                        BlogService — posts as an in-code array
+  HomePage         PROJECTS_ROUTES       BLOG_ROUTES  (lazy chunk)
+  slider of 4      (lazy chunk)          ├── BlogPage      list
+  sections,        ├── ProjectsPage      └── BlogPostPage  post, :slug → input()
+  manual scroll    └── CaseStudyPage            │
+                       :slug → input()          ▼
+                         │               BlogService — posts as an in-code array
+                         ▼
+                   CaseStudyService — case studies as an in-code array
 ```
 
 Cross-cutting facts that explain nearly every decision below:
 
 - **There is no backend.** No database, no migrations, no server-side models, no
   authentication. All content is part of the bundle.
-- **External integrations are minimal:** Google Fonts (the Urbanist typeface) and
-  Web3Forms, which receives the contact form (ADR 0015) — one `fetch`, no `HttpClient`.
-  The rest are outbound links (`mailto:`, `tel:`, GitHub, X, LinkedIn, Telegram) and
-  the CV file.
+- **External integrations are minimal:** Google Fonts (the Urbanist typeface),
+  Web3Forms, which receives the contact form (ADR 0015) — one `fetch`, no `HttpClient` —
+  and GoatCounter, which receives a cookie-free beacon per page view (ADR 0022). The rest
+  are outbound links (`mailto:`, `tel:`, GitHub, X, LinkedIn, Telegram) and the CV file.
 - **The build is static**, deployed into the `/dimacodehub/` subdirectory on GitHub Pages.
+  Every route is prerendered into its own HTML at build time; nothing renders on a server.
 - **The app is zoneless**, so state is signals and animations are CSS.
 
 ## ADR index
@@ -57,24 +60,29 @@ Cross-cutting facts that explain nearly every decision below:
 | [0009](0009-ci-quality-gate-before-deploy.md)               | CI                               | one workflow: format → lint → tests → build → deploy               |
 | [0010](0010-mailto-instead-of-contact-form.md)              | Contact (superseded)             | `mailto` instead of a form that sent nothing                       |
 | [0011](0011-asset-placement.md)                             | Assets                           | `public/` versus `src/images/`, removing build duplicates          |
-| [0012](0012-css-animations-and-dom-access.md)               | Animations and DOM               | CSS + `animate.enter/leave`, `afterNextRender`, rAF                |
+| [0012](0012-css-animations-and-dom-access.md)               | Animations and DOM               | CSS, View Transitions for routes, `afterNextRender`, rAF           |
 | [0013](0013-seo-metadata.md)                                | Metadata                         | static OG in `index.html`, `title` from routes, `Meta` for posts   |
 | [0014](0014-accessibility-approach.md)                      | Accessibility                    | semantic markup + ESLint a11y + role-based locators in e2e         |
 | [0015](0015-contact-form-via-web3forms.md)                  | Contact                          | a real form posting to Web3Forms, `mailto` as the fallback         |
 | [0016](0016-component-tests-through-the-angular-builder.md) | Testing                          | `ng test` through the Angular builder, so components can be tested |
 | [0017](0017-unit-coverage-floor.md)                         | Coverage                         | a measured global floor enforced by CI                             |
 | [0018](0018-manual-dependency-updates.md)                   | Dependencies                     | coherent manual updates instead of Dependabot PRs                  |
+| [0019](0019-build-time-prerender.md)                        | Prerender                        | every route written to HTML at build time, hydrated in the browser |
+| [0020](0020-light-and-dark-theme.md)                        | Theme                            | light and dark tokens, system default, a toggle that remembers     |
+| [0021](0021-lighthouse-budgets.md)                          | Lighthouse                       | category budgets checked in CI, scores published on the colophon   |
+| [0022](0022-cookie-free-analytics.md)                       | Analytics                        | a GoatCounter beacon per page view, no cookies, no third-party JS  |
+| [0023](0023-blog-reading-aids.md)                           | Blog                             | own highlighter, contents list, tag filter, CSS reading progress   |
+| [0024](0024-command-palette.md)                             | Command palette                  | ⌘K over a native `<dialog>`, deferred, commands as data            |
+| [0025](0025-scroll-driven-entrances.md)                     | Motion                           | content rises in on scroll, pure CSS view timelines                |
 
 ## What the architecture deliberately does not solve
 
 These are not debt but consequences of the decisions above. They only become problems if
 the requirements change:
 
-- Social previews for an **individual post** (needs prerender/SSR — ADR 0013, 0003).
 - Preserving state across navigations (ADR 0006).
 - A dark theme (ADR 0007).
 - Localisation: i18n is not wired in, all copy is English literals in templates.
-- Analytics: there are no counters or trackers of any kind.
 
 ## How to work with ADRs
 

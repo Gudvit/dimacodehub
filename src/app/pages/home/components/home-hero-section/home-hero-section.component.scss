@@ -102,13 +102,50 @@ $scrim-tone: rgb(12 14 30);
     color: var(--brand-wine);
   }
 
+  // Above the title: the first thing read is whether a conversation is welcome at all.
+  .availability {
+    order: -2;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0 0 0.35rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(4px);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .availability__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #6ee7a0;
+    box-shadow: 0 0 0 0 rgba(110, 231, 160, 0.6);
+    animation: availability-pulse 2.4s ease-out infinite;
+  }
+
   .lead {
     margin: 0.2rem 0 0;
-    max-width: 36ch;
+    max-width: 46ch;
     font-size: clamp(1.02rem, 1.45vw, 1.3rem);
     line-height: 1.5;
     color: rgba(235, 241, 250, 0.9);
     text-shadow: 0 3px 14px rgba(0, 0, 0, 0.32);
+  }
+}
+
+@keyframes availability-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(110, 231, 160, 0.6);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px rgba(110, 231, 160, 0);
   }
 }
 
@@ -155,7 +192,7 @@ $scrim-tone: rgb(12 14 30);
 
 .hero-actions a:hover,
 .hero-actions button:hover {
-  box-shadow: 0 12px 24px brand.ink(0.18);
+  box-shadow: 0 12px 24px brand.shadow(0.18);
 }
 
 .hero-actions .primary {
@@ -187,6 +224,108 @@ $scrim-tone: rgb(12 14 30);
 
 .hero-actions button.primary {
   appearance: none;
+}
+
+// The proof strip: the agreed numbers and where they come from, read in the first seconds.
+.proof {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 560px;
+  margin-top: clamp(1.4rem, 4vh, 2.6rem);
+  padding-top: 1.3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.proof__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem clamp(1.5rem, 3vw, 2.75rem);
+  margin: 0;
+}
+
+// `dt` comes first for screen readers ("years in frontend: 10+"); the number reads first
+// on screen.
+.proof__metric {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.2rem;
+
+  dd {
+    margin: 0;
+    font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  dt {
+    font-size: 0.82rem;
+    color: rgba(235, 241, 250, 0.7);
+  }
+}
+
+.proof__companies {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 1.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  // Logos are recoloured to the wordmarks' white, so a mixed set still reads as one row.
+  img {
+    display: block;
+    width: auto;
+    height: 18px;
+    filter: brightness(0) invert(1);
+    opacity: 0.82;
+  }
+}
+
+.proof__caption {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(235, 241, 250, 0.55);
+}
+
+// The main action: solid, so it reads first next to the outlined CV link.
+.hero-actions .primary--solid {
+  background: #fff;
+  color: #{brand.$ink};
+  border-color: #fff;
+}
+
+.hero-actions .primary--solid::before {
+  background: linear-gradient(
+    120deg,
+    brand.fixed-ink(0) 25%,
+    brand.fixed-ink(0.12) 50%,
+    brand.fixed-ink(0) 75%
+  );
+}
+
+.hero-actions .primary--solid:hover {
+  background: #fff;
+  border-color: #fff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
 .hero-actions .primary:hover::before {
@@ -251,38 +390,64 @@ $scrim-tone: rgb(12 14 30);
 }
 
 @media (max-width: 640px) {
-  // A phone is portrait-shaped, so here the photo covers the whole section again, and the
-  // copy is stacked under the face: the scrim runs top to bottom instead.
+  // One section, one screen. The photo fills the top and fades into the background; the
+  // copy sits at the bottom of the screen and reaches up into the dark part of the photo,
+  // below the face. The scrim layer is sized to the photo, so the fade ends exactly where
+  // the photo does. A screen too short for the copy still grows the section.
   .hero::after {
     content: none;
   }
 
   .hero::before {
-    background: linear-gradient(180deg, rgba($scrim-tone, 0) 70%, rgba($scrim-tone, 0.5) 100%);
+    content: none;
   }
 
   .hero {
-    background-size: cover;
-    background-repeat: no-repeat;
     @include portrait(
       linear-gradient(
         180deg,
         rgba($scrim-tone, 0.05) 0%,
-        rgba($scrim-tone, 0.08) 38%,
-        rgba($scrim-tone, 0.72) 60%,
-        rgba($scrim-tone, 0.9) 100%
+        rgba($scrim-tone, 0.1) 45%,
+        rgba($scrim-tone, 0.8) 72%,
+        $scrim-tone 94%
       )
     );
-    background-position: 62% top;
-    align-items: center;
+    background-size:
+      100% calc(62svh + 2px),
+      auto 62svh;
+    background-position:
+      center top,
+      62% top;
+    background-repeat: no-repeat;
+    min-height: 100svh;
+    align-content: end;
     justify-items: center;
-    padding-top: 6.2rem;
-    padding-bottom: 2rem;
+    padding-top: calc(var(--header-height) + 1rem);
+    // Room for the scroll hint under the copy; a taller screen lifts the copy further.
+    padding-bottom: max(3.6rem, 11svh);
+    // The same phone gutter as the contact section; 2rem squeezed the proof row onto two lines.
+    padding-inline: 1.25rem;
   }
 
   .hero-text {
     align-items: center;
     text-align: center;
+    gap: 0.6rem;
+
+    // The numbers right below say it; on a phone the lead stays three lines.
+    .lead__more {
+      display: none;
+    }
+
+    .availability {
+      align-self: center;
+      white-space: nowrap;
+    }
+
+    // The location is in the contact section; on a phone the chip stays one line.
+    .availability__where {
+      display: none;
+    }
     max-width: min(92vw, 620px);
 
     .eyebrow {
@@ -295,17 +460,72 @@ $scrim-tone: rgb(12 14 30);
 
     .lead {
       font-size: 1rem;
-      max-width: 32ch;
+      max-width: 34ch;
     }
   }
 
+  // One row: the main action as a button, the CV as a quieter link beside it — two full
+  // buttons do not fit a 360px screen side by side, and stacked they cost a screen line.
   .hero-actions {
+    flex-wrap: nowrap;
+    align-items: center;
     justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+  }
+
+  .hero-actions > * {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .hero-actions .primary:not(.primary--solid) {
+    padding-inline: 1rem;
+    border-color: transparent;
+    background: none;
+    backdrop-filter: none;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .proof {
+    justify-items: center;
+    gap: 0.7rem;
     width: 100%;
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+  }
+
+  .proof__metrics {
+    justify-content: center;
+    gap: 1.2rem;
+  }
+
+  .proof__metric dd {
+    font-size: 1.5rem;
+  }
+
+  .proof__metric dt {
+    font-size: 0.75rem;
+  }
+
+  .proof__companies {
+    align-items: center;
+    gap: 0.45rem;
+
+    ul {
+      justify-content: center;
+      gap: 0.4rem 1rem;
+    }
+
+    // All three fit one row inside the 326px a 390px phone leaves.
+    img {
+      height: 14px;
+    }
   }
 
   .scroll-hint {
-    bottom: 1.35rem;
+    bottom: max(0.9rem, 3.5svh);
   }
 }
 
@@ -313,5 +533,9 @@ $scrim-tone: rgb(12 14 30);
   .hero-text {
     animation: none;
     opacity: 1;
+  }
+
+  .availability__dot {
+    animation: none;
   }
 }

@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted. In effect.
+Accepted. Amended by [0019](0019-build-time-prerender.md): the build now prerenders every
+route, and `404.html` is a copy of `index.csr.html`, not of `index.html`.
 
 ## Context
 

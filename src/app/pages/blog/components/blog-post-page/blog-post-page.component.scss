@@ -2,11 +2,45 @@
 
 .post-page {
   padding: calc(82px + clamp(1.5rem, 3vw, 2.5rem)) 1.5rem clamp(3rem, 8vw, 6rem);
+  // The article's scroll timeline, made visible to the progress bar outside it.
+  timeline-scope: --post-article;
 
   &__inner {
+    position: relative;
     max-width: 720px;
     margin: 0 auto;
     animation: fadeUp 0.5s ease both;
+  }
+}
+
+// Fills as the article is read: 0 while its top is below the top of the screen, full when
+// its end reaches the bottom. Pure CSS (a view timeline); a browser without scroll-driven
+// animations simply shows no bar.
+.reading-progress {
+  display: none;
+}
+
+@supports (animation-timeline: view()) {
+  .reading-progress {
+    display: block;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    z-index: 999;
+    height: 3px;
+    background: var(--brand-wine);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    animation: reading-progress linear both;
+    animation-timeline: --post-article;
+    animation-range: contain;
+  }
+}
+
+@keyframes reading-progress {
+  to {
+    transform: scaleX(1);
   }
 }
 
@@ -41,10 +75,15 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1.25rem;
+    margin: 0 0 1.25rem;
+    padding: 0;
+    list-style: none;
   }
 
   &__tag {
+    display: inline-block;
+    text-decoration: none;
+    transition: background 0.2s ease;
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -53,6 +92,15 @@
     background: brand.wine(0.07);
     padding: 0.25rem 0.6rem;
     border-radius: 4px;
+
+    &:hover {
+      background: brand.wine(0.14);
+    }
+
+    &:focus-visible {
+      outline: 2px solid brand.wine(0.42);
+      outline-offset: 2px;
+    }
   }
 
   &__title {
@@ -83,8 +131,84 @@
   margin-bottom: 2.5rem;
 }
 
+// In the flow above the article on narrow screens; in the right-hand margin, following the
+// reader, where the margin is wide enough.
+.post-toc {
+  margin: 0 0 2.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--brand-outline);
+  border-radius: 12px;
+  background: brand.paper(0.6);
+
+  &__title {
+    margin: 0 0 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  &__link {
+    display: block;
+    padding: 0.2rem 0 0.2rem 0.75rem;
+    border-left: 2px solid transparent;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: var(--brand-muted);
+    text-decoration: none;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover {
+      color: var(--brand-ink);
+    }
+
+    &.is-active {
+      color: var(--brand-wine);
+      border-left-color: var(--brand-wine);
+    }
+
+    &:focus-visible {
+      outline: 2px solid brand.wine(0.42);
+      outline-offset: 2px;
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .post-toc {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(100% + 2.5rem);
+    width: 200px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+
+    &__sticky {
+      position: sticky;
+      top: calc(var(--header-height) + 2rem);
+    }
+  }
+}
+
 .post-content {
+  view-timeline-name: --post-article;
+
   &__heading {
+    scroll-margin-top: calc(var(--header-height) + 1.5rem);
     font-size: clamp(1.2rem, 2.5vw, 1.5rem);
     font-weight: 700;
     color: var(--brand-ink);
@@ -98,22 +222,6 @@
     color: var(--brand-ink);
     opacity: 0.85;
     margin: 0 0 1.25rem;
-  }
-
-  &__code {
-    background: brand.ink(0.04);
-    border: 1px solid var(--brand-outline);
-    border-radius: 8px;
-    padding: 1.25rem 1.5rem;
-    margin: 0 0 1.5rem;
-    overflow-x: auto;
-    font-size: 0.88rem;
-    line-height: 1.65;
-    color: var(--brand-ink);
-
-    code {
-      font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
-    }
   }
 }
 

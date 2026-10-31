@@ -4,7 +4,10 @@ test("home hero renders the primary actions", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Dmytro Huliaiev", level: 1 })).toBeVisible();
   await expect(page.getByRole("link", { name: "Download CV" }).first()).toBeVisible();
-  await expect(page.getByRole("button", { name: "Contact me" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Discuss a project" })).toBeVisible();
+  // The proof strip: the agreed numbers and the company logos, named for screen readers.
+  await expect(page.getByText("100K+", { exact: true })).toBeVisible();
+  await expect(page.getByRole("img", { name: "IdeaSoft" })).toBeVisible();
 });
 
 test("cv link stays relative so it survives the base href", async ({ page }) => {
@@ -23,10 +26,10 @@ test("the scroll hint moves down the slider from the keyboard", async ({ page })
   await expect(page.getByRole("heading", { name: "ABOUT ME" })).toBeInViewport();
 });
 
-test("contact me jumps to the contact section and back to top returns", async ({ page }) => {
+test("discuss a project jumps to the contact section and back to top returns", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Contact me" }).click();
+  await page.getByRole("button", { name: "Discuss a project" }).click();
   await expect(page.getByRole("heading", { name: "LET'S CONNECT" })).toBeInViewport();
 
   await page.getByRole("button", { name: "Back to top" }).click();
@@ -92,4 +95,37 @@ test("the projects page shows the placeholder", async ({ page }) => {
   await expect(page).toHaveTitle("Projects - Dmytro Huliaiev");
   await expect(page.getByText("Coming soon")).toBeVisible();
   await expect(page.locator("app-loader svg")).toBeVisible();
+});
+
+test("the writing section lists the latest posts and links to the blog", async ({ page }) => {
+  await page.goto("/");
+
+  // Deferred until it nears the viewport: the placeholder holds its place until then.
+  await page.locator(".writing-placeholder").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading", { name: "WRITING" })).toBeVisible();
+
+  const cards = page.locator(".writing-card");
+  await expect(cards).toHaveCount(3);
+  await expect(cards.first()).toContainText("What AI Actually Changes About Frontend Engineering");
+
+  await page
+    .getByRole("link", { name: "What AI Actually Changes About Frontend Engineering" })
+    .click();
+  await expect(page).toHaveURL(/\/blog\/ai-frontend-engineering$/);
+
+  await page.goto("/");
+  await page.locator(".writing-placeholder").scrollIntoViewIfNeeded();
+  await page.getByRole("link", { name: "All posts" }).click();
+  await expect(page).toHaveURL(/\/blog$/);
+});
+
+test("the home page names its author for search engines", async ({ page }) => {
+  await page.goto("/");
+
+  const data = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
+  );
+  expect(data["@type"]).toBe("Person");
+  expect(data.name).toBe("Dmytro Huliaiev");
+  expect(data.sameAs).toContain("https://github.com/Gudvit");
 });

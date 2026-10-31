@@ -16,6 +16,7 @@ home-page.component.*                     slider container, owns #homeSlider
 components/home-hero-section/             first screen, header lives inside it
 components/home-about-section/            "about", revealed by IntersectionObserver
 components/home-experience-section/       role timeline: clicks, swipes, wheel
+components/home-writing-section/          the latest blog posts, loaded through @defer
 components/home-contact-section/          contacts + working message form + footer
 ```
 
@@ -38,6 +39,11 @@ What scrolls is **`.home-slider`, not `window`** (`overflow-y: auto` + `scroll-s
   `root: null` (the viewport) it would never fire — as far as the document is concerned,
   the section is always visible.
 
+Each `.slide-section` is also a scroll-driven view timeline, `--slide`: its title, copy
+and cards rise in as the slide comes up, through `motion.slide-reveal($order)` (ADR 0025).
+Use that mixin rather than `view()` inside a section — the sections clip their overflow,
+so `view()` would follow the section, which never scrolls, and silently do nothing.
+
 The sections `scrollToNextSection()` walks through are found by the `.slide-section`
 class. A new section without that class will be skipped by the "down" arrow — and will
 not snap, because that class is also what carries `scroll-snap-align`.
@@ -51,6 +57,26 @@ the hero is a grid — so do not pull those into the global rule.
 `scroll-snap-type: y mandatory` is desktop-only: at `max-width: 768px` snapping,
 `scroll-snap-align` and `overscroll-behavior: contain` are all turned off, otherwise
 sections stick on mobile and the page becomes impossible to scroll properly.
+
+Without snapping, a phone still reads the page as slides: **every section fits one
+screen**, checked down to 390×664 (the visible height of Safari on a 390px iPhone). The
+hero pins its copy to the bottom over the darkened photo; the contact section puts the
+form first and shrinks the contact card to a strip of fallbacks. Adding content to a
+section on a phone means taking something out — measure the section heights after any
+change there.
+
+## The writing section
+
+It reads `BlogService.getLatest()` — the newest posts by `date`, not by array position —
+so it imports from `pages/blog/`. That pulls the posts into whatever chunk holds the
+section, which is why `home-page.component.html` wraps it in
+`@defer (on viewport; prefetch on idle)`: the posts stay out of the initial bundle.
+
+The placeholder (`.writing-placeholder`) carries `.slide-section` and the same
+`min-height` as the section. Keep the two equal: `/#contacts` scrolls past a section that
+has not loaded yet, and a placeholder of another height would move the contacts out from
+under the scroll when the posts arrive. For the same reason `#writing` is not a usable deep
+link — the element does not exist until the section loads.
 
 ## Fragment deep links
 

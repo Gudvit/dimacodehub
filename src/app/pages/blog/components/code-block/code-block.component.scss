@@ -1,0 +1,72 @@
+@use "brand";
+
+:host {
+  display: block;
+  margin: 0 0 1.5rem;
+}
+
+.code-block {
+  margin: 0;
+  border: 1px solid var(--brand-outline);
+  border-radius: 8px;
+  background: brand.ink(0.04);
+  overflow: hidden;
+
+  &__language {
+    padding: 0.4rem 1rem;
+    border-bottom: 1px solid var(--brand-outline);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+  }
+
+  &__pre {
+    margin: 0;
+    padding: 1.1rem 1.5rem;
+    overflow-x: auto;
+    font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--brand-ink);
+    tab-size: 2;
+
+    &:focus-visible {
+      outline: 2px solid brand.wine(0.42);
+      outline-offset: -2px;
+    }
+  }
+}
+
+// The syntax colours are theme tokens (`--code-*` in `styles.scss`).
+.token {
+  &--comment {
+    color: var(--brand-muted);
+    font-style: italic;
+  }
+
+  &--keyword {
+    color: var(--brand-wine);
+    font-weight: 600;
+  }
+
+  &--string {
+    color: var(--code-string);
+  }
+
+  &--number {
+    color: var(--code-number);
+  }
+
+  &--type,
+  &--tag {
+    color: var(--code-type);
+  }
+
+  &--function,
+  &--attribute,
+  &--property {
+    color: var(--code-function);
+  }
+}
