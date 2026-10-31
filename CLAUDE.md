@@ -37,7 +37,7 @@ before any large architectural change — they record why things are the way the
   `--brand-paper` is the layer above the page (white in light). Code in posts is coloured
   by `--code-*`, defined per theme next to the brand properties. The hero is the exception:
   it sits on a photo in both themes and keeps its literal whites and `brand.fixed-ink()`.
-- **Vitest 4** (jsdom) for unit tests; **Playwright** for e2e.
+- **Vitest 5** (jsdom 30) for unit tests; **Playwright** for e2e.
 - **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.
 - **npm 11.13.0** (`packageManager` in `package.json`), Node 24 (`.nvmrc`, `engines`).
 - **GitHub Actions** → GitHub Pages.
