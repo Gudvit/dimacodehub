@@ -37,10 +37,10 @@ Cross-cutting facts that explain nearly every decision below:
 
 - **There is no backend.** No database, no migrations, no server-side models, no
   authentication. All content is part of the bundle.
-- **External integrations are minimal:** Google Fonts (the Urbanist typeface) and
-  Web3Forms, which receives the contact form (ADR 0015) — one `fetch`, no `HttpClient`.
-  The rest are outbound links (`mailto:`, `tel:`, GitHub, X, LinkedIn, Telegram) and
-  the CV file.
+- **External integrations are minimal:** Google Fonts (the Urbanist typeface),
+  Web3Forms, which receives the contact form (ADR 0015) — one `fetch`, no `HttpClient` —
+  and GoatCounter, which receives a cookie-free beacon per page view (ADR 0022). The rest
+  are outbound links (`mailto:`, `tel:`, GitHub, X, LinkedIn, Telegram) and the CV file.
 - **The build is static**, deployed into the `/dimacodehub/` subdirectory on GitHub Pages.
   Every route is prerendered into its own HTML at build time; nothing renders on a server.
 - **The app is zoneless**, so state is signals and animations are CSS.
@@ -70,6 +70,7 @@ Cross-cutting facts that explain nearly every decision below:
 | [0019](0019-build-time-prerender.md)                        | Prerender                        | every route written to HTML at build time, hydrated in the browser |
 | [0020](0020-light-and-dark-theme.md)                        | Theme                            | light and dark tokens, system default, a toggle that remembers     |
 | [0021](0021-lighthouse-budgets.md)                          | Lighthouse                       | category budgets checked in CI, scores published on the colophon   |
+| [0022](0022-cookie-free-analytics.md)                       | Analytics                        | a GoatCounter beacon per page view, no cookies, no third-party JS  |
 
 ## What the architecture deliberately does not solve
 
@@ -79,7 +80,6 @@ the requirements change:
 - Preserving state across navigations (ADR 0006).
 - A dark theme (ADR 0007).
 - Localisation: i18n is not wired in, all copy is English literals in templates.
-- Analytics: there are no counters or trackers of any kind.
 
 ## How to work with ADRs
 

@@ -4,9 +4,9 @@ The personal portfolio of Dmytro Huliaiev: a single-page home (hero → about �
 contacts), a blog and a Projects placeholder. Angular 22 — standalone, signals, zoneless —
 built to static files and served from GitHub Pages.
 
-There is no backend and none is planned. The only outbound request the app makes is the
-contact form, which posts straight to Web3Forms; everything else is bundled content and
-outbound links.
+There is no backend and none is planned. The app makes two kinds of outbound request: the
+contact form, which posts straight to Web3Forms, and a cookie-free page-view beacon to
+GoatCounter on the deployed site. Everything else is bundled content and outbound links.
 
 ## Getting started
 

@@ -14,8 +14,8 @@ The constraint that drives almost everything else: **there is no backend and non
 planned**. The site is static files on GitHub Pages. No `HttpClient`, no database, no
 migrations, no authentication. The only runtime external dependencies are Google Fonts
 (the Urbanist typeface, linked from `src/index.html`), Web3Forms — a single `fetch` from
-the contact form (ADR 0015) — and outbound links to GitHub / X / LinkedIn / Telegram /
-`mailto:` / `tel:`.
+the contact form (ADR 0015) — a GoatCounter page-view beacon (ADR 0022) and outbound links
+to GitHub / X / LinkedIn / Telegram / `mailto:` / `tel:`.
 
 The reasoning behind the decisions lives in `docs/architecture/` (ADRs). Read them
 before any large architectural change — they record why things are the way they are.
@@ -41,7 +41,7 @@ before any large architectural change — they record why things are the way the
 - **npm 11.13.0** (`packageManager` in `package.json`), Node 24 (`.nvmrc`, `engines`).
 - **GitHub Actions** → GitHub Pages.
 
-`rxjs` is used in `seo/page-url.ts`; `@angular/forms` is used by the
+`rxjs` is used in `seo/page-url.ts` and `analytics/page-views.ts`; `@angular/forms` is used by the
 contact form. Nothing else in `dependencies` is optional.
 
 ## Commands
@@ -92,6 +92,7 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
       projects/               "coming soon" list placeholder, case study page
                               (`/projects/:slug`), CaseStudyService
     site.ts                   SITE_URL, pageUrl(), profiles — no runtime imports (scripts/ uses it)
+    analytics/page-views.ts   countPageViews(): a GoatCounter beacon per navigation, production only
     seo/                      syncPageMeta(): per-page description/OG tags;
                               syncPageUrl(): og:url + canonical follow the route;
                               syncJsonLd(): schema.org data for the page
@@ -209,8 +210,8 @@ this step.
 ## Contacts
 
 The contact section has a real form (ADR 0015). It posts with `fetch` straight to
-Web3Forms, which relays the message by email — that is the app's only outbound request
-and the only reason `@angular/forms` is a dependency.
+Web3Forms, which relays the message by email — that is the app's only `fetch` and the only
+reason `@angular/forms` is a dependency.
 
 - The transport is `postToWeb3Forms()` in `home-contact-section/contact-form.service.ts`.
   It rejects unless the response is `ok` **and** the body says `success: true`.

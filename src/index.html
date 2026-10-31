@@ -8,8 +8,9 @@
 
     <!--
       GitHub Pages cannot send headers, so the policy ships as a meta tag. It is the whole
-      outside world this app touches: the Web3Forms endpoint, Google Fonts, and nothing
-      else. 'unsafe-inline' for styles is unavoidable - Angular inlines component styles.
+      outside world this app touches: the Web3Forms endpoint, the GoatCounter beacon (its
+      origin must match GOATCOUNTER_ENDPOINT), Google Fonts, and nothing else.
+      'unsafe-inline' for styles is unavoidable - Angular inlines component styles.
       The one inline script allowed is the theme script below, by its hash: change a byte of
       it and the hash must change too (index-html.spec.ts checks). frame-ancestors is not
       here - browsers ignore it in a meta tag and log an error for trying.
@@ -22,7 +23,7 @@
                form-action 'none';
                img-src 'self' data:;
                script-src 'self' 'sha256-M/Jt+U9rDPhNexaDjIh0znqkCftgWXaJ4uP8V0og9Ww=';
-               connect-src 'self' https://api.web3forms.com;
+               connect-src 'self' https://api.web3forms.com https://dimacodehub.goatcounter.com;
                style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
                font-src 'self' https://fonts.gstatic.com"
     />

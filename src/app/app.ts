@@ -6,6 +6,7 @@ import {
   inject,
 } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
+import { countPageViews } from "./analytics/page-views";
 import { syncPageUrl } from "./seo/page-url";
 
 @Component({
@@ -21,6 +22,7 @@ export class App {
 
   constructor() {
     syncPageUrl();
+    countPageViews();
     afterNextRender(() => this.trackCursor());
   }
 

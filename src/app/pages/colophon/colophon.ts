@@ -26,7 +26,7 @@ export const STACK: readonly StackItem[] = [
   {
     name: "Static hosting, no backend",
     detail:
-      "GitHub Pages serves files and nothing else. Content lives in TypeScript; the contact form is the only outbound request.",
+      "GitHub Pages serves files and nothing else. Content lives in TypeScript; the contact form and a cookie-free page-view beacon are the only outbound requests.",
   },
   {
     name: "Hand-written SCSS",
@@ -91,6 +91,7 @@ export const ADRS: readonly Adr[] = [
   ["0019", "Every route is prerendered at build time", "build-time-prerender"],
   ["0020", "A light and a dark theme from one set of tokens", "light-and-dark-theme"],
   ["0021", "Lighthouse budgets in CI", "lighthouse-budgets"],
+  ["0022", "Cookie-free page views through GoatCounter", "cookie-free-analytics"],
 ].map(([number, title, slug]) => ({ number, title, file: `${number}-${slug}.md` }));
 
 export interface PipelineStep {

@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { GOATCOUNTER_ENDPOINT } from "./app/analytics/page-views";
 
 describe("index.html", () => {
   const html = new DOMParser().parseFromString(readFileSync("src/index.html", "utf8"), "text/html");
@@ -20,5 +21,11 @@ describe("index.html", () => {
       (script) => script.id !== "theme-init",
     );
     expect(inline).toEqual([]);
+  });
+
+  // The page-view beacon goes to GoatCounter; a renamed site there must reach the policy too.
+  it("lets the page-view beacon through", () => {
+    const connect = /connect-src ([^;]+)/.exec(policy)?.[1]?.split(/\s+/) ?? [];
+    expect(connect).toContain(new URL(GOATCOUNTER_ENDPOINT).origin);
   });
 });
