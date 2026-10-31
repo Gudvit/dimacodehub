@@ -92,6 +92,7 @@ export const ADRS: readonly Adr[] = [
   ["0020", "A light and a dark theme from one set of tokens", "light-and-dark-theme"],
   ["0021", "Lighthouse budgets in CI", "lighthouse-budgets"],
   ["0022", "Cookie-free page views through GoatCounter", "cookie-free-analytics"],
+  ["0023", "Blog reading aids without libraries", "blog-reading-aids"],
 ].map(([number, title, slug]) => ({ number, title, file: `${number}-${slug}.md` }));
 
 export interface PipelineStep {

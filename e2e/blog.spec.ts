@@ -118,3 +118,55 @@ test("a post card and the post heading share one view-transition name", async ({
   await expect(title).toBeVisible();
   expect(await transitionName(title)).toBe("post-ai-frontend-engineering");
 });
+
+test("the tag filter narrows the list and lives in the URL", async ({ page }) => {
+  await page.goto("/blog");
+  const filter = page.getByRole("navigation", { name: "Filter posts by tag" });
+  const cards = page.locator(".post-card");
+  const all = await cards.count();
+
+  await filter.getByRole("link", { name: /^NgRx/ }).click();
+  await expect(page).toHaveURL(/\/blog\?tag=NgRx$/);
+  await expect(page.getByRole("status")).toHaveText("2 posts tagged “NgRx”");
+  await expect(cards).toHaveCount(2);
+  await expect(filter.getByRole("link", { name: /^NgRx/ })).toHaveAttribute("aria-current", "page");
+
+  await filter.getByRole("link", { name: "All posts" }).click();
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(cards).toHaveCount(all);
+});
+
+test("a filtered link opens the list already filtered", async ({ page }) => {
+  await page.goto("/blog?tag=AI");
+  await expect(page.locator(".post-card")).toHaveCount(1);
+  await expect(
+    page.getByRole("heading", { name: "What AI Actually Changes About Frontend Engineering" }),
+  ).toBeVisible();
+});
+
+test("a post's tags lead back to the list filtered by that tag", async ({ page }) => {
+  await page.goto("/blog/angular-architecture-patterns");
+  await page.getByRole("link", { name: "More posts tagged NgRx" }).click();
+  await expect(page).toHaveURL(/\/blog\?tag=NgRx$/);
+  await expect(page.getByRole("status")).toHaveText("2 posts tagged “NgRx”");
+});
+
+test("the contents list jumps to a heading and marks it", async ({ page }) => {
+  await page.goto("/blog/ai-frontend-engineering");
+  const contents = page.getByRole("navigation", { name: "On this page" });
+  const entry = contents.getByRole("link", { name: "Where does AI logic actually belong?" });
+
+  await entry.click();
+  await expect(page).toHaveURL(
+    /\/blog\/ai-frontend-engineering#where-does-ai-logic-actually-belong$/,
+  );
+  await expect(
+    page.getByRole("heading", { name: "Where does AI logic actually belong?" }),
+  ).toBeInViewport();
+  await expect(entry).toHaveAttribute("aria-current", "location");
+});
+
+test("a link to a heading opens the post at that heading", async ({ page }) => {
+  await page.goto("/blog/ai-frontend-engineering#what-hasn-t-changed");
+  await expect(page.getByRole("heading", { name: "What hasn't changed" })).toBeInViewport();
+});

@@ -54,6 +54,7 @@ export function countPageViews(): void {
   const router = inject(Router);
   const titles = inject(TitleStrategy);
   let referrer = document.referrer;
+  let lastPath: string | null = null;
 
   router.events
     .pipe(
@@ -61,8 +62,15 @@ export function countPageViews(): void {
       takeUntilDestroyed(),
     )
     .subscribe((event) => {
+      // A jump to a heading or a blog tag filter changes the URL, not the page.
+      const path = event.urlAfterRedirects.split(/[?#]/)[0]!;
+      if (path === lastPath) {
+        return;
+      }
+      lastPath = path;
+
       const view: PageView = {
-        path: event.urlAfterRedirects.split(/[?#]/)[0]!,
+        path,
         // The router may set the document title after NavigationEnd; ask it directly.
         title: titles.buildTitle(router.routerState.snapshot) ?? document.title,
         referrer,

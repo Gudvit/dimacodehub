@@ -71,6 +71,7 @@ Cross-cutting facts that explain nearly every decision below:
 | [0020](0020-light-and-dark-theme.md)                        | Theme                            | light and dark tokens, system default, a toggle that remembers     |
 | [0021](0021-lighthouse-budgets.md)                          | Lighthouse                       | category budgets checked in CI, scores published on the colophon   |
 | [0022](0022-cookie-free-analytics.md)                       | Analytics                        | a GoatCounter beacon per page view, no cookies, no third-party JS  |
+| [0023](0023-blog-reading-aids.md)                           | Blog                             | own highlighter, contents list, tag filter, CSS reading progress   |
 
 ## What the architecture deliberately does not solve
 

@@ -22,8 +22,9 @@ profiles, no events beyond a page view.
   offers custom events this site does not need.
 - **No `count.js`.** GoatCounter's script only builds a request to `/count` from the path,
   title, referrer and screen size. `countPageViews()` (`src/app/analytics/page-views.ts`)
-  does the same with `navigator.sendBeacon` on every `NavigationEnd`, so a client-side
-  route change counts like a page load. There is no third-party JavaScript on the page,
+  does the same with `navigator.sendBeacon` on every `NavigationEnd` that changes the path,
+  so a client-side route change counts like a page load and a jump to a heading or a blog
+  tag filter does not. There is no third-party JavaScript on the page,
   and the CSP only gains the GoatCounter origin in `connect-src` — `index-html.spec.ts`
   fails if `GOATCOUNTER_ENDPOINT` and the policy disagree.
 - **Only production counts.** The beacon is sent only when the page is served from the

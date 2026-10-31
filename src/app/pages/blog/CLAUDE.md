@@ -5,8 +5,11 @@ same shape for case studies).
 
 ```
 blog.routes.ts                          BLOG_ROUTES + the post-title resolver
-blog-page.component.*                   post list
-components/blog-post-page/              post page
+blog-page.component.*                   post list + the tag filter (`?tag=`)
+components/blog-post-page/              post page: contents list, reading progress
+components/code-block/                  a highlighted code block
+code/highlight.ts                       the tokenizer behind it (ADR 0023)
+table-of-contents.ts                    heading ids and the contents list
 blog-posts.ts                           BLOG_POSTS — the posts as an in-code array
 models/blog-post.model.ts               BlogPost / BlogPostSection
 services/blog.service.ts                getAll / getBySlug over BLOG_POSTS
@@ -21,11 +24,18 @@ Posts live neither in a CMS nor in markdown files: `blog-posts.ts` exports a
 `BlogPost[]` right in TypeScript, which `BlogService` serves (see
 `docs/architecture/0005-content-in-code.md`). A post is a title, a `slug`, a date as a
 string, tags, a preview, `readingTime` and an array of `sections`; a section has an
-optional `heading`, required `paragraphs` and an optional `code` block.
+optional `heading`, required `paragraphs` and an optional `code` block —
+`{ language, source }`, where `language` is one `highlight.ts` knows (`typescript`,
+`html`, `scss`, `shell`). The source is written as is; indentation and blank lines are
+kept.
 
 The post template renders exactly these fields and **does not interpret HTML** — text
 goes through interpolation. You cannot put markup inside a paragraph; if a new kind of
 content is needed, extend `BlogPostSection` rather than smuggling in HTML.
+
+Section headings are anchors: the id comes from the heading text (`/blog/x#what-hasn-t-changed`),
+and from three headings up the post gets an "On this page" list. Renaming a heading breaks
+links to it.
 
 ### Adding a post
 
@@ -61,6 +71,13 @@ test, fix the content, not the test.
 - A direct link to `/blog/:slug` only survives on GitHub Pages because of the
   build-time prerender (ADR 0019): each post is written to `blog/<slug>/index.html` with
   its own title and OG tags, which is what link previews read.
+
+## The tag filter
+
+`/blog?tag=NgRx` — the query parameter arrives as the `tag` input. The page is prerendered
+without a query, so `selectedTag()` stays empty until `afterNextRender`: filtering during
+hydration would not match the HTML. The chips and a post's own tags are links, so a filter
+can be shared and undone with Back.
 
 ## Card accessibility
 

@@ -34,7 +34,8 @@ before any large architectural change — they record why things are the way the
   `#fff` or other literal colours in component styles. There is a light and a dark theme
   (ADR 0020): every `--brand-*` property has a value per theme, and the helpers mix the
   property, so a component that sticks to them works in both without knowing which is on.
-  `--brand-paper` is the layer above the page (white in light). The hero is the exception:
+  `--brand-paper` is the layer above the page (white in light). Code in posts is coloured
+  by `--code-*`, defined per theme next to the brand properties. The hero is the exception:
   it sits on a photo in both themes and keeps its literal whites and `brand.fixed-ink()`.
 - **Vitest 4** (jsdom) for unit tests; **Playwright** for e2e.
 - **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.

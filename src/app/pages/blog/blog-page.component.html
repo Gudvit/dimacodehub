@@ -13,25 +13,65 @@
 
   <section class="blog-list">
     <div class="blog-list__inner">
-      @for (post of posts; track post.slug) {
-        <article class="post-card">
-          <div class="post-card__tags">
-            @for (tag of post.tags; track tag) {
-              <span class="post-card__tag">{{ tag }}</span>
-            }
-          </div>
-          <h2 class="post-card__title" [style.view-transition-name]="'post-' + post.slug">
-            <a class="post-card__link" [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
-          </h2>
-          <p class="post-card__preview">{{ post.preview }}</p>
-          <footer class="post-card__meta">
-            <span class="post-card__date">{{ post.date | date: "MMM d, y" }}</span>
-            <span class="post-card__sep">·</span>
-            <span class="post-card__read">{{ post.readingTime }} min read</span>
-            <span class="post-card__arrow" aria-hidden="true">→</span>
-          </footer>
-        </article>
-      }
+      <nav class="tag-filter" aria-label="Filter posts by tag">
+        <ul class="tag-filter__list">
+          <li>
+            <a
+              class="tag-filter__chip"
+              routerLink="/blog"
+              [class.is-active]="!selectedTag()"
+              [attr.aria-current]="selectedTag() ? null : 'page'"
+              >All posts</a
+            >
+          </li>
+          @for (item of tags; track item.tag) {
+            <li>
+              <a
+                class="tag-filter__chip"
+                routerLink="/blog"
+                [queryParams]="{ tag: item.tag }"
+                [class.is-active]="selectedTag() === item.tag"
+                [attr.aria-current]="selectedTag() === item.tag ? 'page' : null"
+                >{{ item.tag }} <span class="tag-filter__count">{{ item.count }}</span></a
+              >
+            </li>
+          }
+        </ul>
+      </nav>
+
+      <p class="blog-list__status" role="status">
+        @if (selectedTag(); as tag) {
+          {{ visiblePosts().length }} {{ visiblePosts().length === 1 ? "post" : "posts" }} tagged
+          “{{ tag }}”
+        }
+      </p>
+
+      <div class="blog-list__posts">
+        @for (post of visiblePosts(); track post.slug) {
+          <article class="post-card">
+            <div class="post-card__tags">
+              @for (tag of post.tags; track tag) {
+                <span class="post-card__tag">{{ tag }}</span>
+              }
+            </div>
+            <h2 class="post-card__title" [style.view-transition-name]="'post-' + post.slug">
+              <a class="post-card__link" [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+            </h2>
+            <p class="post-card__preview">{{ post.preview }}</p>
+            <footer class="post-card__meta">
+              <span class="post-card__date">{{ post.date | date: "MMM d, y" }}</span>
+              <span class="post-card__sep">·</span>
+              <span class="post-card__read">{{ post.readingTime }} min read</span>
+              <span class="post-card__arrow" aria-hidden="true">→</span>
+            </footer>
+          </article>
+        } @empty {
+          <p class="blog-list__empty">
+            No posts are tagged “{{ selectedTag() }}”.
+            <a routerLink="/blog">Show all posts</a>
+          </p>
+        }
+      </div>
     </div>
   </section>
 </main>

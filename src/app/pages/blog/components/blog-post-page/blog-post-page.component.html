@@ -2,6 +2,9 @@
 
 @if (post(); as post) {
   <main class="post-page">
+    <!-- Driven by the article's scroll position in CSS, where the browser supports it. -->
+    <div class="reading-progress" aria-hidden="true"></div>
+
     <div class="post-page__inner">
       <a class="post-back" routerLink="/blog">
         <span class="post-back__arrow" aria-hidden="true">←</span>
@@ -9,11 +12,19 @@
       </a>
 
       <header class="post-header">
-        <div class="post-header__tags">
+        <ul class="post-header__tags" aria-label="Tags">
           @for (tag of post.tags; track tag) {
-            <span class="post-header__tag">{{ tag }}</span>
+            <li>
+              <a
+                class="post-header__tag"
+                routerLink="/blog"
+                [queryParams]="{ tag }"
+                [attr.aria-label]="'More posts tagged ' + tag"
+                >{{ tag }}</a
+              >
+            </li>
           }
-        </div>
+        </ul>
         <h1 class="post-header__title" [style.view-transition-name]="'post-' + post.slug">
           {{ post.title }}
         </h1>
@@ -26,16 +37,41 @@
 
       <div class="post-divider"></div>
 
+      @if (showToc()) {
+        <nav class="post-toc" aria-labelledby="post-toc-title">
+          <div class="post-toc__sticky">
+            <p class="post-toc__title" id="post-toc-title">On this page</p>
+            <ol class="post-toc__list">
+              @for (entry of toc(); track entry.id) {
+                <li>
+                  <a
+                    class="post-toc__link"
+                    [class.is-active]="activeId() === entry.id"
+                    [attr.aria-current]="activeId() === entry.id ? 'location' : null"
+                    [routerLink]="[]"
+                    [fragment]="entry.id"
+                    (click)="scrollToHeading(entry.id)"
+                    >{{ entry.text }}</a
+                  >
+                </li>
+              }
+            </ol>
+          </div>
+        </nav>
+      }
+
       <article class="post-content">
         @for (section of post.sections; track $index) {
           @if (section.heading) {
-            <h2 class="post-content__heading">{{ section.heading }}</h2>
+            <h2 class="post-content__heading" [id]="headingIds()[$index]">
+              {{ section.heading }}
+            </h2>
           }
           @for (para of section.paragraphs; track $index) {
             <p class="post-content__para">{{ para }}</p>
           }
-          @if (section.code) {
-            <pre class="post-content__code"><code>{{ section.code }}</code></pre>
+          @if (section.code; as code) {
+            <app-code-block [block]="code" />
           }
         }
       </article>

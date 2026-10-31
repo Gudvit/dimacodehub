@@ -47,9 +47,86 @@
   &__inner {
     max-width: 800px;
     margin: 0 auto;
+  }
+
+  &__posts {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+  }
+
+  // Announces the filter's result; empty, and out of the way, when nothing is filtered.
+  &__status {
+    margin: 0 0 1rem;
+    font-size: 0.85rem;
+    color: var(--brand-muted);
+
+    &:empty {
+      margin: 0;
+    }
+  }
+
+  &__empty {
+    margin: 0;
+    color: var(--brand-muted);
+
+    a {
+      color: var(--brand-ink);
+      font-weight: 600;
+    }
+  }
+}
+
+.tag-filter {
+  margin-bottom: 1.5rem;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 32px;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--brand-outline);
+    border-radius: 999px;
+    background: brand.paper(0.6);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--brand-ink);
+    text-decoration: none;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      border-color: brand.wine(0.4);
+    }
+
+    &:focus-visible {
+      outline: 2px solid brand.wine(0.42);
+      outline-offset: 2px;
+    }
+
+    &.is-active {
+      background: var(--brand-wine);
+      border-color: var(--brand-wine);
+      color: var(--brand-paper);
+    }
+  }
+
+  &__count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    opacity: 0.6;
   }
 }
 

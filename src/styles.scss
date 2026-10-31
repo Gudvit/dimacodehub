@@ -19,6 +19,10 @@
   --brand-danger: #{brand.$danger};
   --brand-shadow: #{brand.$ink};
   --brand-outline: #{brand.ink(0.12)};
+  --code-string: #{brand.$code-string};
+  --code-number: #{brand.$code-number};
+  --code-type: #{brand.$code-type};
+  --code-function: #{brand.$code-function};
   --spotlight-blend: multiply;
   --logo-filter: none;
 }
@@ -33,6 +37,10 @@
   --brand-danger: #{brand.$danger-dark};
   --brand-shadow: #000;
   --brand-outline: #{brand.ink(0.14)};
+  --code-string: #{brand.$code-string-dark};
+  --code-number: #{brand.$code-number-dark};
+  --code-type: #{brand.$code-type-dark};
+  --code-function: #{brand.$code-function-dark};
   // Multiplying a tint into a dark page leaves nothing; screen lightens it instead.
   --spotlight-blend: screen;
   // The logo is a dark gradient drawn for a light page. Inverting it and turning the hue

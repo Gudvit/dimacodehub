@@ -1,5 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from "@angular/core";
-import { RouterLink } from "@angular/router";
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  signal,
+} from "@angular/core";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { DatePipe } from "@angular/common";
 import { HeaderComponent } from "../../../../components/header/header.component";
 import { FooterComponent } from "../../../../components/footer/footer.component";
@@ -7,12 +17,17 @@ import { PERSON, syncJsonLd } from "../../../../seo/json-ld";
 import { syncPageMeta } from "../../../../seo/page-meta";
 import { SITE_URL, ogImagePath, pageUrl } from "../../../../site";
 import { BlogService } from "../../services/blog.service";
+import { tableOfContents, TOC_MIN_ENTRIES } from "../../table-of-contents";
+import { CodeBlockComponent } from "../code-block/code-block.component";
+
+/** How far below the header a heading may be and still count as the one being read. */
+const ACTIVE_HEADING_SLACK_PX = 96;
 
 @Component({
   selector: "app-blog-post-page",
   templateUrl: "./blog-post-page.component.html",
   styleUrl: "./blog-post-page.component.scss",
-  imports: [HeaderComponent, FooterComponent, RouterLink, DatePipe],
+  imports: [HeaderComponent, FooterComponent, RouterLink, DatePipe, CodeBlockComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogPostPageComponent {
@@ -20,8 +35,25 @@ export class BlogPostPageComponent {
   readonly slug = input.required<string>();
 
   private readonly blogService = inject(BlogService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly post = computed(() => this.blogService.getBySlug(this.slug()));
+
+  /** Heading ids by section index, for the template; empty when the post has none. */
+  readonly toc = computed(() => {
+    const post = this.post();
+    return post ? tableOfContents(post) : [];
+  });
+  readonly showToc = computed(() => this.toc().length >= TOC_MIN_ENTRIES);
+  readonly headingIds = computed(() => {
+    const ids = this.toc().map((entry) => entry.id);
+    return (this.post()?.sections ?? []).map((section) => (section.heading ? ids.shift() : null));
+  });
+
+  /** The heading the reader is in, highlighted in the contents list. */
+  readonly activeId = signal<string | null>(null);
 
   constructor() {
     // The document title comes from the route resolver; this covers the sharing preview.
@@ -50,6 +82,58 @@ export class BlogPostPageComponent {
           author: PERSON,
         }
       );
+    });
+
+    afterNextRender(() => {
+      // A deep link to a heading: the prerendered page may already be there, but hydration
+      // and the entrance animation can move it, so land on it once more.
+      const fragment = this.route.snapshot.fragment;
+      if (fragment) {
+        this.scrollToHeading(fragment, "auto");
+      }
+      this.trackActiveHeading();
+    });
+  }
+
+  /**
+   * The contents links change the URL through `routerLink`; scrolling is done here, so a
+   * second click on the same entry still scrolls (the router ignores an unchanged URL).
+   * `scroll-margin-top` on the headings keeps them clear of the fixed header.
+   */
+  scrollToHeading(id: string, behavior?: ScrollBehavior): void {
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.headings()
+      .find((heading) => heading.id === id)
+      ?.scrollIntoView({ behavior: behavior ?? (reduceMotion ? "auto" : "smooth") });
+  }
+
+  private headings(): HTMLElement[] {
+    return Array.from(
+      this.host.nativeElement.querySelectorAll<HTMLElement>(".post-content__heading[id]"),
+    );
+  }
+
+  /** A scroll listener coalesced into one frame, outside change detection (as in `app.ts`). */
+  private trackActiveHeading(): void {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const header = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--header-height"),
+      );
+      const line = (header || 0) + ACTIVE_HEADING_SLACK_PX;
+      const passed = this.headings().filter((h) => h.getBoundingClientRect().top <= line);
+      this.activeId.set(passed.at(-1)?.id ?? null);
+    };
+    const onScroll = () => {
+      frame ||= requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    this.destroyRef.onDestroy(() => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
     });
   }
 }
