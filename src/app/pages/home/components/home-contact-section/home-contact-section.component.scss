@@ -1,4 +1,5 @@
 @use "brand";
+@use "motion";
 @use "../../display-title";
 
 :host {
@@ -560,4 +561,12 @@
     right: 1.25rem;
     bottom: 3.5rem;
   }
+}
+
+.contact-intro {
+  @include motion.slide-reveal(1);
+}
+
+.message-cta {
+  @include motion.slide-reveal(2);
 }

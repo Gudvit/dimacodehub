@@ -39,6 +39,11 @@ What scrolls is **`.home-slider`, not `window`** (`overflow-y: auto` + `scroll-s
   `root: null` (the viewport) it would never fire — as far as the document is concerned,
   the section is always visible.
 
+Each `.slide-section` is also a scroll-driven view timeline, `--slide`: its title, copy
+and cards rise in as the slide comes up, through `motion.slide-reveal($order)` (ADR 0025).
+Use that mixin rather than `view()` inside a section — the sections clip their overflow,
+so `view()` would follow the section, which never scrolls, and silently do nothing.
+
 The sections `scrollToNextSection()` walks through are found by the `.slide-section`
 class. A new section without that class will be skipped by the "down" arrow — and will
 not snap, because that class is also what carries `scroll-snap-align`.

@@ -1,4 +1,5 @@
 @use "brand";
+@use "motion";
 
 // The oversized, faded heading each home section opens with ("ABOUT ME", "EXPERIENCE",
 // "WRITING", "LET'S CONNECT"). One size for all four, so the slides read as a set; spacing
@@ -21,4 +22,5 @@ $font-size: clamp(18px, min(10vw, 16vh), 220px);
   line-height: 0.84;
   color: brand.ink(0.1);
   pointer-events: none;
+  @include motion.slide-reveal(0);
 }

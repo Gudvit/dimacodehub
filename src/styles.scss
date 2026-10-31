@@ -115,9 +115,21 @@ a {
 // the class lives in the section components' templates, so neither the home page's own
 // styles nor the sections' would cover all of them. Height and layout stay per-section —
 // the experience panel sizes itself in `dvh`, the hero is a grid.
+//
+// Each section is also a view timeline, `--slide`: its content rises in as the slide comes
+// up (`motion.slide-reveal()`, ADR 0025).
 .slide-section {
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  view-timeline-name: --slide;
+}
+
+// Global, so every component's `motion` mixins reach the same keyframes.
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
 }
 
 @media (max-width: 768px) {

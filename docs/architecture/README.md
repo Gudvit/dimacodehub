@@ -73,6 +73,7 @@ Cross-cutting facts that explain nearly every decision below:
 | [0022](0022-cookie-free-analytics.md)                       | Analytics                        | a GoatCounter beacon per page view, no cookies, no third-party JS  |
 | [0023](0023-blog-reading-aids.md)                           | Blog                             | own highlighter, contents list, tag filter, CSS reading progress   |
 | [0024](0024-command-palette.md)                             | Command palette                  | ⌘K over a native `<dialog>`, deferred, commands as data            |
+| [0025](0025-scroll-driven-entrances.md)                     | Motion                           | content rises in on scroll, pure CSS view timelines                |
 
 ## What the architecture deliberately does not solve
 

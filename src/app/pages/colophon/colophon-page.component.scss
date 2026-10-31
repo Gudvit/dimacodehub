@@ -1,4 +1,5 @@
 @use "brand";
+@use "motion";
 
 .colophon {
   max-width: 800px;
@@ -250,4 +251,9 @@
   .stack {
     grid-template-columns: 1fr;
   }
+}
+
+// Each section rises in as it scrolls into view; the first ones are in view on load.
+.colophon-section {
+  @include motion.view-reveal;
 }

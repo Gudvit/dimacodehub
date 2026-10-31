@@ -71,6 +71,7 @@ src/
   main.ts                     bootstrapApplication(App, appConfig)
   main.server.ts              the same bootstrap for prerendering (build time only)
   styles/_brand.scss          the palette for both themes + ink()/wine()/paper()/… helpers
+  styles/_motion.scss         slide-reveal() / view-reveal(): scroll-driven entrances (ADR 0025)
   styles.scss                 the theme custom properties, background effects, view-transition
                               rules for route changes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
@@ -189,6 +190,8 @@ bundle). Practical consequences:
   (see `.post-card__link`).
 - Every external link with `target="_blank"` also gets `rel="noopener noreferrer"`.
 - Animations respect `prefers-reduced-motion` (see the about section — follow that pattern).
+  An entrance on scroll is `@include motion.slide-reveal($order)` on the home slides and
+  `motion.view-reveal` elsewhere; both already handle reduced motion and missing support.
 
 ## Quality
 
