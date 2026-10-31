@@ -8,14 +8,23 @@
   // The article's scroll timeline, made visible to the progress bar outside it.
   timeline-scope: --post-article;
 
-  // Full width, starting at the gutter; the article itself keeps a readable measure, and
-  // the contents list takes the right-hand edge where there is room for it.
+  // Up to a tablet: full width from the gutter, the text held to a readable measure. Wider:
+  // the whole post — header, article and contents list — takes 80% of the window, centred.
   &__inner {
     position: relative;
     animation: fadeUp 0.5s ease both;
 
     > * {
       max-width: layout.$measure;
+    }
+
+    @media (min-width: 1025px) {
+      width: 80%;
+      margin: 0 auto;
+
+      > * {
+        max-width: none;
+      }
     }
   }
 }
@@ -203,13 +212,30 @@
   }
 }
 
+// The back link, header and divider span the row; below them the article takes what is
+// left beside the contents list. `dense` lets the article, which comes after the list in
+// the markup, move up beside it.
 @media (min-width: 1200px) {
+  .post-page__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-auto-flow: row dense;
+    column-gap: clamp(2.5rem, 4vw, 4rem);
+
+    > * {
+      grid-column: 1 / -1;
+    }
+
+    > .post-content {
+      grid-column: 1;
+    }
+
+    > .post-toc {
+      grid-column: 2;
+    }
+  }
+
   .post-toc {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width: 220px;
     margin: 0;
     padding: 0;
     border: 0;
