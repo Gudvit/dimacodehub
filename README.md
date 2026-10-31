@@ -32,6 +32,7 @@ npm start          # http://localhost:4200/
 | `npm run test:unit:coverage`      | unit tests plus the CI coverage floor                                          |
 | `npm run test:e2e`                | Playwright; it starts the dev server itself                                    |
 | `npm run lint`                    | ESLint over `src/**/*.ts` and `src/**/*.html`                                  |
+| `npm run typecheck`               | `tsc` over the app, the unit tests and the Node code                           |
 | `npm run format` / `format:check` | Prettier write / check                                                         |
 | `npm test`                        | unit + e2e                                                                     |
 

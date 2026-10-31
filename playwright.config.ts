@@ -5,7 +5,7 @@ export default defineConfig({
   fullyParallel: true,
   // A flake in CI costs a whole deployment, so give it two more chances there; locally a
   // failure should stay a failure.
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env["CI"] ? 2 : 0,
   use: {
     baseURL: "http://127.0.0.1:4200",
     trace: "on-first-retry",
@@ -27,7 +27,7 @@ export default defineConfig({
   webServer: {
     command: "npm run start -- --port 4200 --host 127.0.0.1",
     url: "http://127.0.0.1:4200",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !process.env["CI"],
     timeout: 120_000,
   },
 });

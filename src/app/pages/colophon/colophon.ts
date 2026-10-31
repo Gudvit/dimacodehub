@@ -114,6 +114,11 @@ export const PIPELINE: readonly PipelineStep[] = [
     detail: "ESLint over TypeScript and templates, including the accessibility rules.",
   },
   {
+    step: "Type check",
+    detail:
+      "The app, the tests, the build scripts and the e2e specs, each under its own strict config.",
+  },
+  {
     step: "Unit tests with coverage",
     detail: `Vitest through the Angular builder, with a floor of ${COVERAGE_FLOOR.lines}% of lines and ${COVERAGE_FLOOR.functions}% of functions.`,
   },

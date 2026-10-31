@@ -60,6 +60,7 @@ contact form. Nothing else in `dependencies` is optional.
 | `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself                |
 | `npm run test:e2e:ui`             | Playwright in UI mode                                                          |
 | `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)                      |
+| `npm run typecheck`               | `tsc` over the app, the unit tests and the Node code (scripts, e2e, config)    |
 | `npm run format` / `format:check` | Prettier write / check                                                         |
 | `npm test`                        | `test:unit` + `test:e2e`                                                       |
 
@@ -198,7 +199,12 @@ bundle). Practical consequences:
 ## Quality
 
 - Before considering a task done, everything CI runs must be green:
-  `npm run format:check`, `npm run lint`, `npm run test:unit`, `npm run test:e2e`.
+  `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test:unit`,
+  `npm run test:e2e`.
+- TypeScript configs: `tsconfig.json` holds the shared options and checks no files itself;
+  `tsconfig.app.json` (the bundle), `tsconfig.spec.json` (unit tests) and
+  `tsconfig.node.json` (build scripts, e2e, Playwright config — `erasableSyntaxOnly`,
+  because Node runs the scripts by stripping types) do the checking.
 - The colophon page describes the repository, and `colophon.spec.ts` holds it to it: adding
   or renaming an ADR, renaming a CI step or moving the coverage floor fails the unit tests
   until `src/app/pages/colophon/colophon.ts` says the same.

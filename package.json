@@ -19,7 +19,8 @@
     "test:e2e:ui": "playwright test --ui",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit && tsc -p tsconfig.node.json"
   },
   "private": true,
   "packageManager": "npm@11.13.0",
