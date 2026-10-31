@@ -132,7 +132,7 @@ export const PIPELINE: readonly PipelineStep[] = [
   {
     step: "Lighthouse budgets",
     detail:
-      "Mobile Lighthouse on the home page, the blog, a post and this page: accessibility, best practices and SEO must score 100, performance at least 80.",
+      "Mobile Lighthouse on the home page, the blog, a post and this page: accessibility, best practices and SEO must score 100, performance at least 90.",
   },
   {
     step: "Deploy to GitHub Pages",

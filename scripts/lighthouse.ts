@@ -8,6 +8,7 @@
 import { createServer } from "node:http";
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, join } from "node:path";
+import { gzipSync } from "node:zlib";
 import type { AddressInfo } from "node:net";
 import lighthouse from "lighthouse";
 import { launch } from "chrome-launcher";
@@ -28,12 +29,11 @@ const PAGES = ["", "blog/", "blog/ai-frontend-engineering/", "colophon/"];
 
 /**
  * Minimum category scores, 0–100 (ADR 0021). Raise them as the site improves; never lower
- * one to get a red build through. Performance measures 85–88 locally on the content pages
- * (the entrance animations hold back Largest Contentful Paint) and 100 on the colophon; the
- * floor leaves room for a slower CI runner.
+ * one to get a red build through. Performance measures 95–100 locally; the floor leaves
+ * room for a slower CI runner.
  */
 const BUDGETS: LighthouseScores = {
-  performance: 80,
+  performance: 90,
   accessibility: 100,
   bestPractices: 100,
   seo: 100,
@@ -45,6 +45,9 @@ const CATEGORIES = {
   bestPractices: "best-practices",
   seo: "seo",
 } as const;
+
+/** What GitHub Pages compresses: text. Images and PDFs are compressed already. */
+const COMPRESSED = new Set([".html", ".js", ".css", ".json", ".svg", ".xml"]);
 
 const TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -61,7 +64,9 @@ const TYPES: Record<string, string> = {
 
 // The build is made for a subpath (`<base href="/dimacodehub/">`), so it is served under that
 // subpath, the way GitHub Pages does: a directory answers with its index.html, anything else
-// with 404.html.
+// with 404.html. Text is gzipped, as Pages does too — served raw, the JavaScript weighs four
+// times as much on Lighthouse's simulated mobile network and drags Largest Contentful Paint
+// a second and a half later than any visitor sees it.
 const base = /<base href="([^"]+)"/.exec(readFileSync(join(outDir, "index.html"), "utf8"))?.[1];
 if (!base) {
   throw new Error("No <base href> in the build's index.html");
@@ -75,10 +80,14 @@ const server = createServer((request, response) => {
   }
   const found = Boolean(file) && existsSync(file);
   const served = found ? file : join(outDir, "404.html");
+  const body = existsSync(served) ? readFileSync(served) : Buffer.alloc(0);
+  const gzip =
+    COMPRESSED.has(extname(served)) && /\bgzip\b/.test(request.headers["accept-encoding"] ?? "");
   response.writeHead(found ? 200 : 404, {
     "content-type": TYPES[extname(served)] ?? "application/octet-stream",
+    ...(gzip && { "content-encoding": "gzip" }),
   });
-  response.end(existsSync(served) ? readFileSync(served) : "");
+  response.end(gzip ? gzipSync(body) : body);
 });
 await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
 const origin = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
