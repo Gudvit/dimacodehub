@@ -174,3 +174,16 @@ test("a link to a heading opens the post at that heading", async ({ page }) => {
   await page.goto("/blog/ai-frontend-engineering#what-hasn-t-changed");
   await expect(page.getByRole("heading", { name: "What hasn't changed" })).toBeInViewport();
 });
+
+test("a post opened from far down the list starts at its top", async ({ page }) => {
+  await page.goto("/blog");
+  const lastCard = page.locator(".post-card__link").last();
+  await lastCard.scrollIntoViewIfNeeded();
+  await page.mouse.wheel(0, 2000);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(200);
+
+  await lastCard.click();
+  await expect(page).toHaveURL(/\/blog\/[^/?#]+$/);
+  await expect(page.getByRole("link", { name: "Back to blog" })).toBeInViewport();
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+});

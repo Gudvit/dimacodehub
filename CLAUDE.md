@@ -98,6 +98,7 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
     site.ts                   SITE_URL, pageUrl(), profiles, contact email, CV path — no runtime
                               imports (scripts/ uses it)
     analytics/page-views.ts   countPageViews(): a GoatCounter beacon per navigation, production only
+    navigation/scroll-to-top.ts  a new page opens at its top; #heading, ?tag= and Back keep the scroll
     seo/                      syncPageMeta(): per-page description/OG tags;
                               syncPageUrl(): og:url + canonical follow the route;
                               syncJsonLd(): schema.org data for the page

@@ -8,6 +8,7 @@ import {
 import { RouterOutlet } from "@angular/router";
 import { CommandPaletteComponent } from "./components/command-palette/command-palette.component";
 import { countPageViews } from "./analytics/page-views";
+import { scrollToTopOnPageChange } from "./navigation/scroll-to-top";
 import { syncPageUrl } from "./seo/page-url";
 
 @Component({
@@ -24,6 +25,7 @@ export class App {
   constructor() {
     syncPageUrl();
     countPageViews();
+    scrollToTopOnPageChange();
     afterNextRender(() => this.trackCursor());
   }
 
