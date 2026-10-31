@@ -125,7 +125,9 @@
   height: 14px;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: brand.ink(0.32);
+  // Opaque: the same tint as ink(0.32), but mixed into the paper rather than into
+  // transparency, so the timeline's line does not show through the dot.
+  background: color-mix(in srgb, var(--brand-ink) 32%, var(--brand-paper));
   box-shadow: 0 0 0 3px brand.paper(0.75);
   transition:
     transform 0.25s ease,
