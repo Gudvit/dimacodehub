@@ -1,9 +1,16 @@
 @use "brand";
 
 // The oversized, faded heading each home section opens with ("ABOUT ME", "EXPERIENCE",
-// "LET'S CONNECT"). The look is shared; size, spacing and stacking stay with each section,
-// since they differ on purpose.
-@mixin display-title($font-size) {
+// "WRITING", "LET'S CONNECT"). One size for all four, so the slides read as a set; spacing
+// and stacking stay with each section.
+//
+// The width term is set by the longest title: "LET'S CONNECT" is about 8.2 times its font
+// size wide, so 10vw keeps it on one line inside the section padding down to a 390px phone.
+// The height term shrinks all four together on short screens, where the contact form has
+// the least room to spare. Measure the contact section after changing either.
+$font-size: clamp(18px, min(10vw, 16vh), 220px);
+
+@mixin display-title {
   position: relative;
   margin: 0;
   text-align: center;

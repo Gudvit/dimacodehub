@@ -17,7 +17,7 @@
 }
 
 .about-hero__display-title {
-  @include display-title.display-title(clamp(18px, 12vw, 220px));
+  @include display-title.display-title;
   width: 100%;
   z-index: 0;
   margin-bottom: clamp(1.1rem, 3vw, 2rem);
