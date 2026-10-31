@@ -73,6 +73,8 @@ src/
   main.server.ts              the same bootstrap for prerendering (build time only)
   styles/_brand.scss          the palette for both themes + ink()/wine()/paper()/… helpers
   styles/_motion.scss         slide-reveal() / view-reveal(): scroll-driven entrances (ADR 0025)
+  styles/_layout.scss         page gutters and the text measure: pages run full width, text
+                              keeps ~75 characters
   styles.scss                 the theme custom properties, background effects, view-transition
                               rules for route changes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom

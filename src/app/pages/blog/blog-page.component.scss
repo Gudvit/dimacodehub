@@ -1,16 +1,17 @@
 @use "brand";
+@use "layout";
 
 .blog-page {
   min-height: calc(100vh - 82px);
 }
 
 .blog-hero {
-  padding: calc(82px + clamp(2rem, 5vw, 4rem)) 1.5rem clamp(2rem, 5vw, 3.5rem);
+  @include layout.gutters;
+  padding-top: calc(82px + clamp(2rem, 5vw, 4rem));
+  padding-bottom: clamp(2rem, 5vw, 3.5rem);
   border-bottom: 1px solid var(--brand-outline);
 
   &__inner {
-    max-width: 800px;
-    margin: 0 auto;
     animation: fadeUp 0.6s ease both;
   }
 
@@ -36,22 +37,20 @@
     font-size: clamp(1rem, 2vw, 1.2rem);
     color: var(--brand-muted);
     margin: 0;
-    max-width: 520px;
+    max-width: 52ch;
     line-height: 1.6;
   }
 }
 
 .blog-list {
-  padding: clamp(2.5rem, 6vw, 4rem) 1.5rem clamp(3rem, 8vw, 6rem);
+  @include layout.gutters;
+  padding-top: clamp(2.5rem, 6vw, 4rem);
+  padding-bottom: clamp(3rem, 8vw, 6rem);
 
-  &__inner {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
+  // As many columns as fit at 360px or more; one on a phone.
   &__posts {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
     gap: 1.5rem;
   }
 
@@ -67,6 +66,7 @@
   }
 
   &__empty {
+    grid-column: 1 / -1;
     margin: 0;
     color: var(--brand-muted);
 
@@ -131,7 +131,8 @@
 }
 
 .post-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
   position: relative;
   padding: 2rem 2.25rem;
   border: 1px solid var(--brand-outline);
@@ -213,7 +214,9 @@
     margin: 0 0 1.5rem;
   }
 
+  // At the bottom of the card, so the dates line up across a row of cards.
   &__meta {
+    margin-top: auto;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -238,6 +241,12 @@
   &:hover &__arrow {
     opacity: 1;
     transform: translateX(4px);
+  }
+}
+
+@media (max-width: 640px) {
+  .post-card {
+    padding: 1.5rem 1.4rem;
   }
 }
 

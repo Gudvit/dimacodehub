@@ -1,15 +1,22 @@
 @use "brand";
+@use "layout";
 
 .post-page {
-  padding: calc(82px + clamp(1.5rem, 3vw, 2.5rem)) 1.5rem clamp(3rem, 8vw, 6rem);
+  @include layout.gutters;
+  padding-top: calc(82px + clamp(1.5rem, 3vw, 2.5rem));
+  padding-bottom: clamp(3rem, 8vw, 6rem);
   // The article's scroll timeline, made visible to the progress bar outside it.
   timeline-scope: --post-article;
 
+  // Full width, starting at the gutter; the article itself keeps a readable measure, and
+  // the contents list takes the right-hand edge where there is room for it.
   &__inner {
     position: relative;
-    max-width: 720px;
-    margin: 0 auto;
     animation: fadeUp 0.5s ease both;
+
+    > * {
+      max-width: layout.$measure;
+    }
   }
 }
 
@@ -201,8 +208,8 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    left: calc(100% + 2.5rem);
-    width: 200px;
+    right: 0;
+    width: 220px;
     margin: 0;
     padding: 0;
     border: 0;

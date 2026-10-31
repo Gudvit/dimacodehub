@@ -1,0 +1,18 @@
+// The site's horizontal rhythm. Every page runs the full width of the window with the same
+// gutters as the header, so the content's left edge lines up with the logo on every page.
+// Only running text is held to a readable measure; cards, grids and code may use the width.
+
+$gutter: 2rem;
+$gutter-phone: 1.25rem;
+// About 75 characters of body text.
+$measure: 46rem;
+
+@mixin gutters {
+  padding-left: $gutter;
+  padding-right: $gutter;
+
+  @media (max-width: 640px) {
+    padding-left: $gutter-phone;
+    padding-right: $gutter-phone;
+  }
+}

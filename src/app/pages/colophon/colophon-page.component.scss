@@ -1,10 +1,11 @@
 @use "brand";
+@use "layout";
 @use "motion";
 
 .colophon {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: calc(82px + clamp(2rem, 5vw, 4rem)) 1.5rem clamp(3rem, 8vw, 6rem);
+  @include layout.gutters;
+  padding-top: calc(82px + clamp(2rem, 5vw, 4rem));
+  padding-bottom: clamp(3rem, 8vw, 6rem);
 }
 
 .colophon-hero {
@@ -61,6 +62,7 @@
 
   &__lead,
   &__note {
+    max-width: layout.$measure;
     color: var(--brand-muted);
     line-height: 1.65;
     margin: 0 0 1.5rem;
