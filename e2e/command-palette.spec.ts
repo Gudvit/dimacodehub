@@ -46,7 +46,7 @@ test("the palette opens a post and switches the theme", async ({ page }) => {
   await expect(page).toHaveURL(/\/blog\/state-management-production$/);
 
   await trigger.click();
-  await search.fill("dark");
+  await search.fill("switch dark");
   await page.keyboard.press("Enter");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });

@@ -9,6 +9,8 @@ import { CaseStudyService } from "./pages/projects/services/case-study.service";
  * There is no server at runtime: GitHub Pages serves the files.
  */
 export const serverRoutes: ServerRoute[] = [
+  // Drafts are filtered out by the services in a production build, so they are never
+  // written to disk.
   {
     path: "blog/:slug",
     renderMode: RenderMode.Prerender,
@@ -18,7 +20,6 @@ export const serverRoutes: ServerRoute[] = [
         .map(({ slug }) => ({ slug })),
   },
   {
-    // Drafts are filtered out in a production build, so they are never written to disk.
     path: "projects/:slug",
     renderMode: RenderMode.Prerender,
     getPrerenderParams: async () =>

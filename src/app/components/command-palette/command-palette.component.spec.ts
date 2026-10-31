@@ -107,7 +107,7 @@ describe("CommandPaletteComponent", () => {
   it("switches the theme and names the next switch", async () => {
     const themes = TestBed.inject(ThemeService);
     await open();
-    await type("theme");
+    await type("switch theme");
     expect(options()[0]!.textContent).toContain("Switch to dark theme");
 
     options()[0]!.click();
