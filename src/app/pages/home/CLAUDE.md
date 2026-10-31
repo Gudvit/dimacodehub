@@ -67,8 +67,11 @@ change there.
 
 ## The writing section
 
-It reads `BlogService.getLatest()` — the newest posts by `date`, not by array position —
-so it imports from `pages/blog/`. That pulls the posts into whatever chunk holds the
+It reads `BlogService.getLatest()` — the newest published posts by `date`, not by array
+position; the newest gets the large card on the left — and a row of topics, the tags of the
+published posts, each linking to `/blog?tag=`. The topics give way on a desktop screen
+under 760px tall, so the slide still fits one screen; measure it after adding anything. It
+imports from `pages/blog/`. That pulls the posts into whatever chunk holds the
 section, which is why `home-page.component.html` wraps it in
 `@defer (on viewport; prefetch on idle)`: the posts stay out of the initial bundle.
 

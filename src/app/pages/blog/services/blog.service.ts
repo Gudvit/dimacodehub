@@ -11,10 +11,14 @@ export class BlogService {
     return this.posts;
   }
 
+  /** Every post but the drafts, which the dev server shows too. */
+  getPublished(): readonly BlogPost[] {
+    return this.posts.filter((post) => !post.draft);
+  }
+
   /** The newest published posts first, by `date` — not by array position. */
   getLatest(count: number): readonly BlogPost[] {
-    return this.posts
-      .filter((post) => !post.draft)
+    return [...this.getPublished()]
       .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
       .slice(0, count);
   }

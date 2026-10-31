@@ -12,11 +12,7 @@ import { DatePipe } from "@angular/common";
 import { HeaderComponent } from "../../components/header/header.component";
 import { FooterComponent } from "../../components/footer/footer.component";
 import { BlogService } from "./services/blog.service";
-
-export interface TagCount {
-  readonly tag: string;
-  readonly count: number;
-}
+import { countTags, type TagCount } from "./tags";
 
 @Component({
   selector: "app-blog-page",
@@ -49,14 +45,4 @@ export class BlogPageComponent {
   constructor() {
     afterNextRender(() => this.hydrated.set(true));
   }
-}
-
-function countTags(tags: readonly string[]): TagCount[] {
-  const counts = new Map<string, number>();
-  for (const tag of tags) {
-    counts.set(tag, (counts.get(tag) ?? 0) + 1);
-  }
-  return [...counts]
-    .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
 }

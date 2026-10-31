@@ -119,6 +119,20 @@ test("the writing section lists the latest posts and links to the blog", async (
   await expect(page).toHaveURL(/\/blog$/);
 });
 
+test("the writing section's topics open the blog filtered", async ({ page }) => {
+  // The topics give way on a short desktop screen, which the default 720px viewport is.
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  await page.locator(".writing-placeholder").scrollIntoViewIfNeeded();
+
+  const topics = page.getByRole("navigation", { name: "Blog topics" });
+  await topics.getByRole("link", { name: "Posts tagged NgRx" }).click();
+  await expect(page).toHaveURL(/\/blog\?tag=NgRx$/);
+  await expect(page.getByRole("status").filter({ hasText: "tagged" })).toHaveText(
+    "2 posts tagged “NgRx”",
+  );
+});
+
 test("the home page names its author for search engines", async ({ page }) => {
   await page.goto("/");
 

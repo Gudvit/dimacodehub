@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import { RouterLink } from "@angular/router";
 import { BlogService } from "../../../blog/services/blog.service";
+import { countTags } from "../../../blog/tags";
 
 /** How many posts the home page teases; the rest live on `/blog`. */
 const LATEST_POSTS = 3;
@@ -14,5 +15,10 @@ const LATEST_POSTS = 3;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeWritingSectionComponent {
-  readonly posts = inject(BlogService).getLatest(LATEST_POSTS);
+  private readonly blog = inject(BlogService);
+
+  /** The newest first: it gets the large card. */
+  readonly posts = this.blog.getLatest(LATEST_POSTS);
+  /** Every tag of the published posts, each a way into the filtered blog list. */
+  readonly topics = countTags(this.blog.getPublished().flatMap((post) => post.tags));
 }

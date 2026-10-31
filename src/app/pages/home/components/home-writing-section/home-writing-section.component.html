@@ -1,17 +1,18 @@
 <section class="writing slide-section" id="writing">
   <h2 class="writing__display-title">WRITING</h2>
-
   <div class="writing__inner">
     <header class="writing__head">
       <h3 class="writing__headline">Notes from building frontends in production</h3>
       <a class="writing__all" routerLink="/blog">All posts <span aria-hidden="true">→</span></a>
     </header>
-
     <ul class="writing__list">
-      @for (post of posts; track post.slug) {
+      @for (post of posts; track post.slug; let first = $first) {
         <li>
-          <article class="writing-card">
+          <article class="writing-card" [class.writing-card--featured]="first">
             <p class="writing-card__meta">
+              @if (first) {
+                <span class="writing-card__badge">Latest</span>
+              }
               <time [attr.datetime]="post.date">{{ post.date | date: "MMM d, y" }}</time>
               · {{ post.readingTime }} min read
             </p>
@@ -19,9 +20,35 @@
               <a class="writing-card__link" [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
             </h4>
             <p class="writing-card__preview">{{ post.preview }}</p>
+            <div class="writing-card__footer">
+              @if (first) {
+                <p class="writing-card__tags">
+                  @for (tag of post.tags; track tag) {
+                    <span>{{ tag }}</span>
+                  }
+                </p>
+              }
+              <span class="writing-card__more" aria-hidden="true">Read <span>→</span></span>
+            </div>
           </article>
         </li>
       }
     </ul>
+    <nav class="writing__topics" aria-label="Blog topics">
+      <span class="writing__topics-label">Topics</span>
+      <ul>
+        @for (topic of topics; track topic.tag) {
+          <li>
+            <a
+              class="writing__topic"
+              routerLink="/blog"
+              [queryParams]="{ tag: topic.tag }"
+              [attr.aria-label]="'Posts tagged ' + topic.tag"
+              >{{ topic.tag }} <span aria-hidden="true">{{ topic.count }}</span></a
+            >
+          </li>
+        }
+      </ul>
+    </nav>
   </div>
 </section>
