@@ -1,1 +1,6 @@
 <router-outlet></router-outlet>
+
+<!-- ⌘K. Not part of any page and not needed for the first paint, so it loads when idle. -->
+@defer (on idle) {
+<app-command-palette />
+}

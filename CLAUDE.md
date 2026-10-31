@@ -85,14 +85,16 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
     app.routes.ts             root routes, lazy blog and projects, `**` → redirect to `/`
     app.routes.server.ts      which routes are prerendered, and the slugs for each
     app.config.server.ts      appConfig + server rendering
-    components/               reusable: header, footer, theme-toggle, animated-text, loader
+    components/               reusable: header, footer, theme-toggle (+ ThemeService),
+                              command-palette (⌘K, deferred in app.html), animated-text, loader
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
       colophon/               "How this site is built" (`/colophon`): stack, ADRs, CI, numbers
       projects/               "coming soon" list placeholder, case study page
                               (`/projects/:slug`), CaseStudyService
-    site.ts                   SITE_URL, pageUrl(), profiles — no runtime imports (scripts/ uses it)
+    site.ts                   SITE_URL, pageUrl(), profiles, contact email, CV path — no runtime
+                              imports (scripts/ uses it)
     analytics/page-views.ts   countPageViews(): a GoatCounter beacon per navigation, production only
     seo/                      syncPageMeta(): per-page description/OG tags;
                               syncPageUrl(): og:url + canonical follow the route;

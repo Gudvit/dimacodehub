@@ -32,3 +32,15 @@ test("following a link from the mobile menu closes it", async ({ page }) => {
   await expect(page).toHaveURL(/\/blog$/);
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
+
+// A phone has no ⌘K: the header button is the only way in, and a tap runs a command.
+test("the palette opens from the header button and runs a tapped command", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Search and commands" }).tap();
+  await expect(page.getByRole("dialog", { name: "Command palette" })).toBeVisible();
+  await page.getByRole("option", { name: /^Blog/ }).tap();
+
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(page.getByRole("dialog", { name: "Command palette" })).toBeHidden();
+});

@@ -6,12 +6,13 @@ import {
   inject,
 } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
+import { CommandPaletteComponent } from "./components/command-palette/command-palette.component";
 import { countPageViews } from "./analytics/page-views";
 import { syncPageUrl } from "./seo/page-url";
 
 @Component({
   selector: "app-root",
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CommandPaletteComponent],
   templateUrl: "./app.html",
   styleUrl: "./app.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

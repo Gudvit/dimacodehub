@@ -33,5 +33,19 @@
     <a routerLink="/blog" routerLinkActive="active" (click)="closeMenu()">Blog</a>
   </nav>
 
+  <button
+    class="palette-trigger"
+    type="button"
+    aria-label="Search and commands"
+    aria-keyshortcuts="Meta+K Control+K"
+    title="Search and commands (⌘K)"
+    (click)="openPalette()"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m20 20-4.4-4.4" />
+    </svg>
+  </button>
+
   <app-theme-toggle class="theme-slot"></app-theme-toggle>
 </header>

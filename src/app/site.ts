@@ -28,6 +28,14 @@ export function ogImagePath(route: string): string {
 
 export const SITE_AUTHOR = "Dmytro Huliaiev";
 
+// The contact details, written down once: the contact section and the command palette bind
+// to them, and the e2e specs assert what the pages render.
+export const CONTACT_EMAIL = "gudvitt@gmail.com";
+export const CONTACT_PHONE = "+48 577 68 22 99";
+
+/** The CV in `public/`, relative so it resolves under the base href. */
+export const CV_PATH = "dmytro_huliaiev_cv.pdf";
+
 export interface Profile {
   readonly label: string;
   readonly href: string;

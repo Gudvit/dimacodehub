@@ -30,7 +30,7 @@ cannot know the visitor's theme. And the CSP allows no inline script, so the usu
   black on the dark one, where a light glow would read as a border.
 - **The system decides until the visitor does.** Dark applies under
   `prefers-color-scheme: dark` unless `<html data-theme="light">`; `data-theme="dark"`
-  forces it. The header's `ThemeToggleComponent` pins the opposite of what is on screen,
+  forces it. The header's toggle (through `ThemeService`, which the command palette shares) pins the opposite of what is on screen,
   stores it in `localStorage` (`theme`) and cross-fades the page with a view transition.
   With nothing stored, it follows system changes live.
 - **The stored pick is applied before the first paint** by a five-line inline script

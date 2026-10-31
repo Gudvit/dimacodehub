@@ -127,7 +127,9 @@ test("the tag filter narrows the list and lives in the URL", async ({ page }) =>
 
   await filter.getByRole("link", { name: /^NgRx/ }).click();
   await expect(page).toHaveURL(/\/blog\?tag=NgRx$/);
-  await expect(page.getByRole("status")).toHaveText("2 posts tagged “NgRx”");
+  await expect(page.getByRole("status").filter({ hasText: "tagged" })).toHaveText(
+    "2 posts tagged “NgRx”",
+  );
   await expect(cards).toHaveCount(2);
   await expect(filter.getByRole("link", { name: /^NgRx/ })).toHaveAttribute("aria-current", "page");
 
@@ -148,7 +150,9 @@ test("a post's tags lead back to the list filtered by that tag", async ({ page }
   await page.goto("/blog/angular-architecture-patterns");
   await page.getByRole("link", { name: "More posts tagged NgRx" }).click();
   await expect(page).toHaveURL(/\/blog\?tag=NgRx$/);
-  await expect(page.getByRole("status")).toHaveText("2 posts tagged “NgRx”");
+  await expect(page.getByRole("status").filter({ hasText: "tagged" })).toHaveText(
+    "2 posts tagged “NgRx”",
+  );
 });
 
 test("the contents list jumps to a heading and marks it", async ({ page }) => {

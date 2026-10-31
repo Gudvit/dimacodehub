@@ -1,7 +1,8 @@
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { afterEach, describe, expect, it } from "vitest";
-import { THEME_STORAGE_KEY, ThemeToggleComponent } from "./theme-toggle.component";
+import { ThemeToggleComponent } from "./theme-toggle.component";
+import { THEME_STORAGE_KEY } from "./theme.service";
 
 describe("ThemeToggleComponent", () => {
   const root = document.documentElement;

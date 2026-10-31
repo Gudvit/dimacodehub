@@ -1,0 +1,63 @@
+<!-- The click closes on a backdrop click; the keyboard closes the dialog with Esc. -->
+<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+<dialog
+  #dialog
+  class="palette"
+  aria-label="Command palette"
+  (close)="onDialogClose()"
+  (click)="onDialogClick($event)"
+>
+  <div class="palette__panel">
+    <div class="palette__search">
+      <svg class="palette__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5" />
+        <path d="m20 20-4.4-4.4" />
+      </svg>
+      <input
+        class="palette__input"
+        type="text"
+        role="combobox"
+        aria-label="Search pages, posts and actions"
+        aria-autocomplete="list"
+        aria-expanded="true"
+        aria-controls="palette-results"
+        [attr.aria-activedescendant]="activeId()"
+        placeholder="Search pages, posts and actions…"
+        autocomplete="off"
+        spellcheck="false"
+        [value]="query()"
+        (input)="onInput($any($event.target).value)"
+        (keydown)="onKeydown($event)"
+      />
+    </div>
+
+    <ul class="palette__results" id="palette-results" role="listbox" aria-label="Results">
+      @for (command of results(); track command.id; let i = $index) {
+        <!-- The input keeps focus (aria-activedescendant); options are reached by arrow keys. -->
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+        <li
+          class="palette__option"
+          role="option"
+          [id]="command.id"
+          [class.is-active]="i === activeIndex()"
+          [attr.aria-selected]="i === activeIndex()"
+          (click)="run(command)"
+          (pointerenter)="activeIndex.set(i)"
+        >
+          <span class="palette__label">{{ command.label }}</span>
+          <span class="palette__group">{{ command.group }}</span>
+        </li>
+      } @empty {
+        <li class="palette__empty" role="presentation">Nothing matches “{{ query() }}”.</li>
+      }
+    </ul>
+
+    <p class="palette__hints" aria-hidden="true">
+      <span><kbd>↑</kbd><kbd>↓</kbd> to move</span>
+      <span><kbd>↵</kbd> to select</span>
+      <span><kbd>esc</kbd> to close</span>
+    </p>
+  </div>
+</dialog>
+
+<p class="palette-toast" role="status" [class.is-visible]="toast()">{{ toast() }}</p>
