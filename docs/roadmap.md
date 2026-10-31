@@ -89,7 +89,7 @@
 
 - [ ] **4.1 Страница `/now`** — чем занят сейчас 📥
 - [ ] **4.2 Страница `/uses`** — инструменты и сетап 📥
-- [ ] **4.3 План постов** — темы из собственных ADR.
+- [x] **4.3 План постов** — темы из собственных ADR: [docs/blog-plan.md](blog-plan.md).
 - [x] **4.4 Мажорные обновления** — vitest 5, jsdom 30, `@types/node` 24 (под Node 24),
       eslint 10.14, tslib 2.9. TypeScript 7 ждёт Angular: `@angular/compiler-cli` 22 и
       typescript-eslint требуют `typescript <6.1`. Обновить, когда выйдет Angular с его поддержкой.
