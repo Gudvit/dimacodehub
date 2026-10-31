@@ -49,6 +49,7 @@ test("the numbers come from the build that produced the page", async ({ page }) 
         prerenderedPages: 7,
         unitTests: 56,
         e2eTests: 33,
+        lighthouse: { performance: 87, accessibility: 100, bestPractices: 100, seo: 100 },
       },
     }),
   );
@@ -57,6 +58,7 @@ test("the numbers come from the build that produced the page", async ({ page }) 
   const numbers = page.getByRole("region", { name: "By the numbers" });
   await expect(numbers.getByText("128.9 kB")).toBeVisible();
   await expect(numbers.getByText("loaded on demand, in 5 chunks")).toBeVisible();
+  await expect(numbers.getByText("87")).toBeVisible();
   await expect(numbers.getByRole("link", { name: "commit 4a66f68" })).toHaveAttribute(
     "href",
     "https://github.com/Gudvit/dimacodehub/commit/4a66f68c0ffee",

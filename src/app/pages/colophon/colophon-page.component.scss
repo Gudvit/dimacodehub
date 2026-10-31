@@ -49,6 +49,15 @@
     margin: 0 0 1.25rem;
   }
 
+  &__subtitle {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+    margin: 1.5rem 0 0.75rem;
+  }
+
   &__lead,
   &__note {
     color: var(--brand-muted);
@@ -89,6 +98,10 @@
     font-weight: 800;
     color: var(--brand-wine);
     letter-spacing: -0.01em;
+  }
+
+  &--scores {
+    grid-template-columns: repeat(4, 1fr);
   }
 
   dt {
@@ -229,7 +242,8 @@
 }
 
 @media (max-width: 640px) {
-  .figures {
+  .figures,
+  .figures--scores {
     grid-template-columns: repeat(2, 1fr);
   }
 

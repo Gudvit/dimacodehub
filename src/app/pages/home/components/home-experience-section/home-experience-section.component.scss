@@ -366,17 +366,30 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0;
     margin-top: 0;
     padding-bottom: 0.1rem;
   }
 
+  // The button is a 24px touch target; the dot it shows is 9px. The negative block margin
+  // keeps the row as tall as the dots, so the section still fits one phone screen.
   .experience-mobile-nav__dot {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    margin-block: -7.5px;
+    border: 0;
+    padding: 0;
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .experience-mobile-nav__dot::before {
+    content: "";
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    border: 0;
-    padding: 0;
     background: brand.ink(0.24);
     transition:
       transform 0.2s ease,
@@ -384,7 +397,7 @@
       box-shadow 0.2s ease;
   }
 
-  .experience-mobile-nav__dot.is-active {
+  .experience-mobile-nav__dot.is-active::before {
     background: var(--brand-wine);
     transform: scale(1.18);
     box-shadow: 0 0 0 3px brand.wine(0.18);
@@ -392,7 +405,7 @@
 
   .experience-mobile-nav__dot:focus-visible {
     outline: 2px solid brand.wine(0.42);
-    outline-offset: 2px;
+    outline-offset: -4px;
   }
 }
 

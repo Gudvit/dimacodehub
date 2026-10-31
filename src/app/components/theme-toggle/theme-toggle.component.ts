@@ -10,7 +10,8 @@ import {
 
 export type Theme = "light" | "dark";
 
-// Shared with `public/theme-init.js`, which applies the stored choice before the first paint.
+// Shared with the inline `#theme-init` script in `index.html`, which applies the stored choice
+// before the first paint.
 export const THEME_STORAGE_KEY = "theme";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";

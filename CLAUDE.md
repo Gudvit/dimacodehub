@@ -54,6 +54,7 @@ contact form. Nothing else in `dependencies` is optional.
 | `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)       |
 | `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
 | `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page               |
+| `npm run lighthouse`              | Lighthouse budgets on the built site (after `build:gh`; CI runs it)            |
 | `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)              |
 | `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself                |
 | `npm run test:e2e:ui`             | Playwright in UI mode                                                          |
@@ -75,6 +76,7 @@ src/
 scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
 scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Playwright
 scripts/build-stats.ts        bundle sizes, page and test counts → build-stats.json
+scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → build-stats.json
   images/                     assets referenced only from SCSS (hashed by the bundler)
   app/
     app.ts / app.html / app.scss   root component: router-outlet + cursor spotlight
@@ -93,8 +95,7 @@ scripts/build-stats.ts        bundle sizes, page and test counts → build-stats
     seo/                      syncPageMeta(): per-page description/OG tags;
                               syncPageUrl(): og:url + canonical follow the route;
                               syncJsonLd(): schema.org data for the page
-public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg,
-                              theme-init.js (applies the stored theme before the first paint)
+public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg
 e2e/                          Playwright specs: home, blog, projects, contact, mobile
 docs/architecture/            ADRs and the architecture overview
 ```
@@ -125,8 +126,7 @@ is the exception: `app.ts` / class `App`.
 - Images needed only by CSS live in `src/images/` — the bundler hashes them.
   `public/` holds only what must be reachable at a stable URL: `favicon.ico`,
   the CV, `images/logo.svg` and `images/companies/*.svg` (loaded through `<img src>`),
-  `images/og-cover.jpg` (for OG tags), and `theme-init.js` (a classic script linked from
-  `index.html` — it must run before the first paint, which the bundled code cannot).
+  `images/og-cover.jpg` (for OG tags).
   The same file in both places is a duplicate in the deployment — don't do it.
 - Everything in `public/` ships in full. Do not put unused files or PNG sources there —
   only compressed images that are actually needed.
@@ -138,8 +138,10 @@ is the exception: `app.ts` / class `App`.
   prerendered home page now.
 - Code runs in Node during the build. Browser globals (`window`, `document`, observers)
   belong in `afterNextRender()`, which the server skips.
-- The CSP forbids inline scripts, so incremental hydration and critical-CSS inlining stay
-  off. Check the built HTML for a bare `<script>` after touching hydration or the build.
+- The CSP allows no inline script except the theme script in `index.html`, by its hash
+  (`index-html.spec.ts` keeps the two in step). So incremental hydration and critical-CSS
+  inlining stay off: their scripts are generated and could not be hashed. Check the built
+  HTML for any other bare `<script>` after touching hydration or the build.
 - The absolute URLs in the OG tags (`src/index.html`) are hardcoded to
   `https://gudvit.github.io/dimacodehub/`. Update them when moving to a custom domain.
 

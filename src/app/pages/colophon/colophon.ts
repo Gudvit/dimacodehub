@@ -90,6 +90,7 @@ export const ADRS: readonly Adr[] = [
   ["0018", "Dependency updates are deliberate and manual", "manual-dependency-updates"],
   ["0019", "Every route is prerendered at build time", "build-time-prerender"],
   ["0020", "A light and a dark theme from one set of tokens", "light-and-dark-theme"],
+  ["0021", "Lighthouse budgets in CI", "lighthouse-budgets"],
 ].map(([number, title, slug]) => ({ number, title, file: `${number}-${slug}.md` }));
 
 export interface PipelineStep {
@@ -123,6 +124,11 @@ export const PIPELINE: readonly PipelineStep[] = [
   {
     step: "Check the prerendered pages and feeds",
     detail: "Each post has its own HTML, sharing image and feed entry — or nothing deploys.",
+  },
+  {
+    step: "Lighthouse budgets",
+    detail:
+      "Mobile Lighthouse on the home page, the blog, a post and this page: accessibility, best practices and SEO must score 100, performance at least 80.",
   },
   {
     step: "Deploy to GitHub Pages",

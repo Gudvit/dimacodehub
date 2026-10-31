@@ -12,33 +12,40 @@
 
   <section class="colophon-section" aria-labelledby="colophon-numbers">
     <h2 class="colophon-section__title" id="colophon-numbers">By the numbers</h2>
-    @if (figures(); as figures) {
-      <dl class="figures">
-        @for (figure of figures; track figure.label) {
-          <div class="figures__item">
-            <dt>{{ figure.label }}</dt>
-            <dd>{{ figure.value }}</dd>
-          </div>
-        }
-      </dl>
-      @if (stats(); as stats) {
-        <p class="colophon-section__note">
-          Measured by the build that produced this page, {{ stats.builtAt | date: "MMMM d, y" }}
-          @if (commitUrl(); as commitUrl) {
-            ·
-            <a [href]="commitUrl" target="_blank" rel="noopener noreferrer"
-              >commit {{ stats.commit?.slice(0, 7) }}</a
-            >
-          }
-        </p>
+    <dl class="figures">
+      @for (figure of figures(); track $index) {
+        <div class="figures__item">
+          <dt>{{ figure.label }}</dt>
+          <dd>{{ figure.value }}</dd>
+        </div>
       }
-    } @else if (stats() === null) {
-      <p class="colophon-section__note">
+    </dl>
+
+    <h3 class="colophon-section__subtitle">Lighthouse, home page, mobile</h3>
+    <dl class="figures figures--scores">
+      @for (score of scores(); track score.label) {
+        <div class="figures__item">
+          <dt>{{ score.label }}</dt>
+          <dd>{{ score.value }}</dd>
+        </div>
+      }
+    </dl>
+
+    <p class="colophon-section__note">
+      @if (stats(); as stats) {
+        Measured by the build that produced this page, {{ stats.builtAt | date: "MMMM d, y" }}
+        @if (commitUrl(); as commitUrl) {
+          ·
+          <a [href]="commitUrl" target="_blank" rel="noopener noreferrer"
+            >commit {{ stats.commit?.slice(0, 7) }}</a
+          >
+        }
+      } @else if (stats() === null) {
         The production build measures these; the dev server has no numbers to show.
-      </p>
-    } @else {
-      <p class="colophon-section__note">Loading the numbers of this build…</p>
-    }
+      } @else {
+        Loading the numbers of this build…
+      }
+    </p>
   </section>
 
   <section class="colophon-section" aria-labelledby="colophon-stack">

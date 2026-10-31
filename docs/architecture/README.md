@@ -69,6 +69,7 @@ Cross-cutting facts that explain nearly every decision below:
 | [0018](0018-manual-dependency-updates.md)                   | Dependencies                     | coherent manual updates instead of Dependabot PRs                  |
 | [0019](0019-build-time-prerender.md)                        | Prerender                        | every route written to HTML at build time, hydrated in the browser |
 | [0020](0020-light-and-dark-theme.md)                        | Theme                            | light and dark tokens, system default, a toggle that remembers     |
+| [0021](0021-lighthouse-budgets.md)                          | Lighthouse                       | category budgets checked in CI, scores published on the colophon   |
 
 ## What the architecture deliberately does not solve
 

@@ -29,21 +29,30 @@ export class ColophonPageComponent {
 
   /** `undefined` while loading, `null` when the build left no numbers (the dev server). */
   readonly stats = signal<BuildStats | null | undefined>(undefined);
+  // Both grids are always there — with dashes until the numbers arrive, or where a build
+  // left none — so loading them never shifts the page.
   readonly figures = computed(() => {
     const stats = this.stats();
-    return (
-      stats && [
-        { value: formatKilobytes(stats.initialJs), label: "JavaScript on first load, gzipped" },
-        { value: formatKilobytes(stats.initialCss), label: "global CSS, gzipped" },
-        {
-          value: formatKilobytes(stats.lazyJs),
-          label: `loaded on demand, in ${stats.lazyChunks} chunks`,
-        },
-        { value: String(stats.prerenderedPages), label: "pages prerendered" },
-        { value: String(stats.unitTests), label: "unit and component tests" },
-        { value: String(stats.e2eTests), label: "end-to-end scenarios" },
-      ]
-    );
+    return [
+      { value: kilobytes(stats?.initialJs), label: "JavaScript on first load, gzipped" },
+      { value: kilobytes(stats?.initialCss), label: "global CSS, gzipped" },
+      {
+        value: kilobytes(stats?.lazyJs),
+        label: stats ? `loaded on demand, in ${stats.lazyChunks} chunks` : "loaded on demand",
+      },
+      { value: count(stats?.prerenderedPages), label: "pages prerendered" },
+      { value: count(stats?.unitTests), label: "unit and component tests" },
+      { value: count(stats?.e2eTests), label: "end-to-end scenarios" },
+    ];
+  });
+  readonly scores = computed(() => {
+    const scores = this.stats()?.lighthouse;
+    return [
+      { value: count(scores?.performance), label: "Performance" },
+      { value: count(scores?.accessibility), label: "Accessibility" },
+      { value: count(scores?.bestPractices), label: "Best practices" },
+      { value: count(scores?.seo), label: "SEO" },
+    ];
   });
   readonly commitUrl = computed(() => {
     const commit = this.stats()?.commit;
@@ -67,3 +76,7 @@ export class ColophonPageComponent {
     });
   }
 }
+
+const kilobytes = (bytes: number | undefined) =>
+  bytes === undefined ? "—" : formatKilobytes(bytes);
+const count = (value: number | undefined) => (value === undefined ? "—" : String(value));

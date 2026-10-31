@@ -27,6 +27,7 @@ npm start          # http://localhost:4200/
 | `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)       |
 | `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
 | `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page               |
+| `npm run lighthouse`              | Lighthouse budgets on the built site (after `build:gh`; CI runs it)            |
 | `npm run test:unit`               | `ng test`: Vitest + jsdom + TestBed (`test:unit:watch` to watch)               |
 | `npm run test:unit:coverage`      | unit tests plus the CI coverage floor                                          |
 | `npm run test:e2e`                | Playwright; it starts the dev server itself                                    |

@@ -18,6 +18,16 @@ export interface BuildStats {
   readonly prerenderedPages: number;
   readonly unitTests: number;
   readonly e2eTests: number;
+  /** The home page's Lighthouse scores, added by `scripts/lighthouse.ts` in CI. */
+  readonly lighthouse?: LighthouseScores;
+}
+
+/** Category scores, 0–100. */
+export interface LighthouseScores {
+  readonly performance: number;
+  readonly accessibility: number;
+  readonly bestPractices: number;
+  readonly seo: number;
 }
 
 export const BUILD_STATS_FILE = "build-stats.json";

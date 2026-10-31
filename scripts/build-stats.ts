@@ -26,9 +26,7 @@ const initialJs = [
   ...referenced(/<link rel="modulepreload" href="([^"]+\.js)"/g),
 ];
 const initialCss = referenced(/<link rel="stylesheet" href="([^"]+\.css)"/g);
-const lazyJs = globSync("*.js", { cwd: outDir }).filter(
-  (file) => !initialJs.includes(file) && file !== "theme-init.js",
-);
+const lazyJs = globSync("*.js", { cwd: outDir }).filter((file) => !initialJs.includes(file));
 
 // Declarations, not runs: each `it(` / `test(` is one scenario however many browsers run it.
 const countTests = (pattern: string, declaration: RegExp) =>

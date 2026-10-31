@@ -8,7 +8,7 @@
 
 // The theme. Light by default; dark when the system asks for it, unless the visitor picked
 // light with the header toggle. The pick is `data-theme` on `<html>`, set before the first
-// paint by `public/theme-init.js` and afterwards by `ThemeToggleComponent`.
+// paint by the inline `#theme-init` script in `index.html` and afterwards by `ThemeToggleComponent`.
 @mixin light-theme {
   color-scheme: light;
   --brand-ink: #{brand.$ink};
