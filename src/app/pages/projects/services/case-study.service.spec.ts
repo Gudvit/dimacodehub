@@ -39,6 +39,23 @@ describe("CaseStudyService", () => {
     }
   });
 
+  it("keeps covers, sites and highlights usable", () => {
+    for (const study of CASE_STUDIES) {
+      // Relative, or it ignores the base href and 404s on GitHub Pages.
+      if (study.cover) {
+        expect(study.cover.src).not.toMatch(/^\//);
+        expect(study.cover.alt.length).toBeGreaterThan(0);
+      }
+      if (study.site) {
+        expect(study.site).toMatch(/^https:\/\//);
+      }
+      for (const highlight of study.highlights ?? []) {
+        expect(highlight.title.length).toBeGreaterThan(0);
+        expect(highlight.text.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
   it("publishes no placeholders", () => {
     for (const study of CASE_STUDIES.filter((entry) => !entry.draft)) {
       expect(JSON.stringify(study), study.slug).not.toContain("[TODO");

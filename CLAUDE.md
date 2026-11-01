@@ -7,7 +7,7 @@ Vitest + Playwright, deployed to GitHub Pages from `main` via `.github/workflows
 
 A single-page portfolio for a frontend engineer (Dmytro Huliaiev) plus a blog section.
 Three areas: `/` (hero → about → experience → writing → contacts, a vertical slider),
-`/projects` (a "coming soon" placeholder, case studies at `/projects/:slug`), `/blog`
+`/projects` (case studies and side projects, each case study at `/projects/:slug`), `/blog`
 (post list and post page). Plus `/colophon`, "How this site is built", linked from the footer.
 
 The constraint that drives almost everything else: **there is no backend and none is
@@ -90,14 +90,14 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
     app.routes.server.ts      which routes are prerendered, and the slugs for each
     app.config.server.ts      appConfig + server rendering
     components/               reusable: header, footer, theme-toggle (+ ThemeService),
-                              command-palette (⌘K, deferred in app.html), animated-text, loader
+                              command-palette (⌘K, deferred in app.html), animated-text
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
       colophon/               "How this site is built" (`/colophon`): stack, ADRs, CI, numbers,
                               and signals-demo/ — a live signal graph with real run counters
-      projects/               "coming soon" list placeholder, case study page
-                              (`/projects/:slug`), CaseStudyService
+      projects/               case studies and side projects (`/projects`), case study page
+                              (`/projects/:slug`), CaseStudyService, SideProjectService
     site.ts                   SITE_URL, pageUrl(), profiles, contact email, CV path — no runtime
                               imports (scripts/ uses it)
     analytics/page-views.ts   countPageViews(): a GoatCounter beacon per navigation, production only
@@ -245,8 +245,9 @@ reason `@angular/forms` is a dependency.
 
 ## Known trade-offs
 
-- `public/shared-images/` holds four unused JPGs (~200 KB) for a future Projects section.
-  They ship in every deployment and are kept on purpose until that section exists.
+- `public/shared-images/` holds the side projects' pictures (`side-projects.ts`). While the
+  side projects are drafts, production shows none of them, yet the JPGs ship in every
+  deployment; `logo.png` there is used by nothing.
 - Component tests exist for the header, the experience gestures and the about reveal
   (ADR 0016). The home slider and the contact form itself are still verified through e2e
   alone.

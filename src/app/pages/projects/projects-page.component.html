@@ -1,14 +1,142 @@
 <app-header></app-header>
 
-<section class="projects-placeholder">
-  <div class="content">
-    <p class="subtitle">
-      I’m currently working on this section to showcase my projects. Stay tuned.
+<main class="projects-page">
+  <section class="projects-hero">
+    <p class="projects-hero__label">Projects</p>
+    <h1 class="projects-hero__title">Work, and how it was done</h1>
+    <p class="projects-hero__subtitle">
+      Case studies from client work — the problem, the constraints, the decisions and what they cost
+      — and the things I build for myself.
     </p>
-    <p class="status">Coming soon</p>
+  </section>
 
-    <app-loader></app-loader>
-  </div>
-</section>
+  @if (caseStudies.length) {
+    <section class="projects-section" aria-labelledby="case-studies-title">
+      <header class="projects-section__head">
+        <h2 class="projects-section__title" id="case-studies-title">Client work</h2>
+        <p class="projects-section__lead">
+          Products I built and still build, told from the decisions out.
+        </p>
+      </header>
+
+      <ul class="cases">
+        @for (study of caseStudies; track study.slug) {
+          <li>
+            <article class="case-card" [class.case-card--poster]="study.cover">
+              @if (study.cover; as cover) {
+                <img
+                  class="case-card__cover"
+                  [src]="cover.src"
+                  alt=""
+                  width="1600"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              }
+              <div class="case-card__body">
+                <p class="case-card__eyebrow">
+                  @if (study.draft) {
+                    <span class="case-card__draft">Draft</span>
+                  }
+                  {{ study.company }} · {{ study.period }}
+                </p>
+                <h3 class="case-card__title">
+                  <a class="case-card__link" [routerLink]="['/projects', study.slug]">{{
+                    study.title
+                  }}</a>
+                </h3>
+                @if (study.tagline) {
+                  <p class="case-card__tagline">{{ study.tagline }}</p>
+                }
+                <p class="case-card__summary">{{ study.summary }}</p>
+
+                <dl class="case-card__outcomes">
+                  @for (outcome of study.outcomes.slice(0, 3); track outcome.label) {
+                    <div>
+                      <dt>{{ outcome.label }}</dt>
+                      <dd>{{ outcome.value }}</dd>
+                    </div>
+                  }
+                </dl>
+
+                <ul class="case-card__stack" aria-label="Stack">
+                  @for (item of study.stack; track item) {
+                    <li>{{ item }}</li>
+                  }
+                </ul>
+                <span class="case-card__more" aria-hidden="true"
+                  >Open the project <span>→</span></span
+                >
+              </div>
+            </article>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (sideProjects.length) {
+    <section class="projects-section" aria-labelledby="side-projects-title">
+      <header class="projects-section__head">
+        <h2 class="projects-section__title" id="side-projects-title">Side projects</h2>
+        <p class="projects-section__lead">What I build when nobody asks me to.</p>
+      </header>
+
+      <ul class="side">
+        @for (project of sideProjects; track project.slug) {
+          <li>
+            <article class="side-card">
+              <img
+                class="side-card__image"
+                [src]="project.image"
+                alt=""
+                width="640"
+                height="400"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="side-card__body">
+                <p class="side-card__status">
+                  @if (project.draft) {
+                    <span class="case-card__draft">Draft</span>
+                  }
+                  {{ project.status }}
+                </p>
+                <h3 class="side-card__name">{{ project.name }}</h3>
+                <p class="side-card__tagline">{{ project.tagline }}</p>
+                <p class="side-card__description">{{ project.description }}</p>
+                <ul class="side-card__stack" aria-label="Stack">
+                  @for (item of project.stack; track item) {
+                    <li>{{ item }}</li>
+                  }
+                </ul>
+                @if (project.links.length) {
+                  <p class="side-card__links">
+                    @for (link of project.links; track link.url) {
+                      <a [href]="link.url" target="_blank" rel="noopener noreferrer"
+                        >{{ link.label }} <span aria-hidden="true">↗</span></a
+                      >
+                    }
+                  </p>
+                }
+              </div>
+            </article>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (!caseStudies.length && !sideProjects.length) {
+    <section class="projects-empty">
+      <p>
+        The case studies are being written. Until they are up, the
+        <a routerLink="/blog">blog</a> shows how I think, and
+        <a routerLink="/colophon">how this site is built</a> shows how I work.
+      </p>
+    </section>
+  }
+</main>
 
 <app-footer></app-footer>

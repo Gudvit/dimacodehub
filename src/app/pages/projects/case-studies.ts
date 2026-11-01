@@ -11,8 +11,15 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
   {
     // Roadmap 1.4. Built from the two frontend repositories of the platform — their
     // architecture docs, decision records and history. [TODO] marks what only the author knows.
-    slug: "telemedicine-platform-architecture",
-    title: "The frontend of a European telemedicine platform",
+    // The redesign and the e2e work, once case studies of their own, are its highlights.
+    slug: "apomeds",
+    title: "Apomeds",
+    tagline: "An online doctor and pharmacy for seven European countries",
+    cover: {
+      src: "images/projects/apomeds.webp",
+      alt: "The Apomeds website in a browser window: who the company is and how the service works.",
+    },
+    site: "https://apomeds.com",
     summary:
       "Nearly six years on the frontend of an online doctor-and-pharmacy platform: three brands, seven countries, server-rendered storefronts, an Angular checkout and consultation app, and one back office serving staff, partners and doctors — two Nx monorepos, taken from Angular 11 to 22.",
     company: "Apomedical",
@@ -75,114 +82,24 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
       "Staying on Angular 11 for four years turned a routine update into an eleven-step project. Upgrading every major as it lands is cheaper than any ladder.",
       "With no shared API schema, a renamed backend field surfaces only when someone opens the screen. A published schema or contract tests would have paid for themselves early. [TODO: confirm or replace with your own]",
     ],
-    draft: true,
-  },
-  {
-    // Roadmap 1.4. Built from the epic's decision record and its commit history; the
-    // numbers are the ones the record states. What only the author knows is marked [TODO].
-    slug: "category-page-redesign",
-    title: "Redesigning a live page, one block at a time",
-    summary:
-      "Led the redesign of the prescription category page of a European online pharmacy: built block by block by several developers while the old page kept serving every store, then switched seven stores over in a single release.",
-    company: "Apomedical",
-    role: "Senior Software Engineer · led the epic",
-    period: "Sep – Oct 2026",
-    stack: ["NestJS SSR", "Handlebars", "TypeScript", "SCSS", "Webpack", "Headless CMS"],
-    outcomes: [
-      { value: "7", label: "stores switched over in one release" },
-      { value: "9", label: "languages, copy written per locale" },
-      { value: "0", label: "edits to the live page while it was rebuilt" },
-      { value: "6 weeks", label: "from the decision record to release" },
-    ],
-    context: [
-      "The category page of a European online pharmacy: server-rendered, live in seven stores and nine languages, and earning money every hour of the redesign.",
-      "Earlier redesigns on the site — home, product, blog — had been big-bang swaps: the new template in and the old one deleted in a single commit. That works for one ticket. This one was an epic, split across several developers and sprints, and the repository had no feature-flag infrastructure at all.",
-      "The page was also five templates rather than one, and its copy came from two pipelines with different owners: page chrome from the CMS, category content from the catalog feed.",
-    ],
-    constraints: [
-      "The live page keeps serving traffic for the whole epic, and nothing built for the redesign may regress it.",
-      "A redesign has to stay cheap to throw away: another redesign on the same site had been rejected at user acceptance and deleted wholesale.",
-      "Several developers build the same page at the same time.",
-      "Seven stores and nine languages, German among them — copy cannot be glued together from fragments.",
-    ],
-    decisions: [
+    highlights: [
       {
-        title: "One gate, decided in one place",
-        choice:
-          "The new page got its own template and its own asset bundle, behind a single gate for demos and QA. The template and the bundle are resolved at different points of a request, so both consult one function instead of re-deriving the answer. Every page is served uncached, so a per-request switch cannot leak a variant to the wrong visitor.",
-        tradeoff:
-          "No store-by-store rollout: the epic shipped everywhere in one step, so every store's copy had to be verified by hand before the merge.",
+        // From the epic's decision record and its commit history.
+        title: "Redesigning a live page, one block at a time",
+        period: "Sep – Oct 2026",
+        text: [
+          "I led the redesign of the prescription category page: built block by block by several developers behind one gate while the old page kept serving every store, then switched seven stores and nine languages over in a single release — and deleted the old templates the same day.",
+          "Headlines are written whole for every category and language, never glued from fragments: German declines the condition differently after every preposition. A block whose copy has not arrived simply does not render. [TODO: what changed after release]",
+        ],
       },
       {
-        title: "The new page shows finished blocks only",
-        choice:
-          "It started as a copy of the live template, but carried-over blocks were dropped as soon as the first redesigned one landed: a page mixing old and new chrome cannot be reviewed — a designer cannot tell unfinished from broken. A block is one unit — markup, styles, view model and CMS copy — owned by one developer, and the shared files are lists with one line per block, so parallel work collides on different lines instead of shared structure.",
-        tradeoff:
-          "The preview was not the finished page until the last block landed, so SEO, analytics and the full-page design review all waited for the end of the epic.",
-      },
-      {
-        title: "Headlines are written whole, per category",
-        choice:
-          "The code never assembles a headline from a category name and a CMS word. A placeholder was tried twice: filled from the full name it read “Treating Erectile dysfunction treatments”; filled from a short name it broke German, which declines the condition differently after every preposition. The copywriter writes the sentence, and it lives on the catalog category.",
-        tradeoff:
-          "The sentence is retyped for every category in every store, and one new category field touches three repositories — catalog service, feed adapter, website — before it reaches the page.",
-      },
-      {
-        title: "Missing copy means no block",
-        choice:
-          "Each block's view model returns nothing when its copy is missing, so a store whose content has not arrived renders fewer blocks — never an empty heading, never another category's text. The product list is the exception: it loses only its heading, because hiding it would take the products off the page.",
-        tradeoff:
-          "A half-filled store is silent by design: nothing reports it, so checking it stays a manual step.",
+        title: "Making payment flows safe to change",
+        period: "[TODO: when]",
+        text: [
+          "Introduced Playwright end-to-end tests for the critical user and payment flows, so changes to them could ship without fear. [TODO: which flows, how they run in CI, what changed for the team]",
+        ],
       },
     ],
-    results: [
-      "On release day the gate was removed: the new page became the only prescription category page in every store at once, and the legacy templates — with the view-model fields only they used — were deleted, so the codebase did not keep two versions of the page.",
-      "[TODO: what changed after release — conversion, bounce rate, page weight, bugs in the first weeks?]",
-    ],
-    lessons: [
-      "[TODO: your hindsight — e.g. a report of half-filled stores would have replaced the manual check before the merge]",
-    ],
-    draft: true,
-  },
-  {
-    // Roadmap 1.5. Built only from what the site already says about this work; every
-    // number and detail still to confirm is marked [TODO].
-    slug: "payment-flows-e2e",
-    title: "Making payment flows safe to change",
-    summary:
-      "Introduced Playwright end-to-end tests for the critical user and payment flows of a healthcare platform, so the team could ship changes to them without fear. [TODO: the result in one line]",
-    company: "Apomedical",
-    role: "Senior Software Engineer",
-    period: "[TODO: when] · Dec 2021 – present",
-    stack: ["Angular", "Playwright", "NgRx", "CI"],
-    outcomes: [
-      { value: "[TODO]", label: "critical flows covered" },
-      { value: "[TODO]", label: "production incidents in those flows" },
-      { value: "[TODO]", label: "release frequency" },
-    ],
-    context: [
-      "A business-critical Angular platform used by tens of thousands of people across Europe, where checkout and payments carry the revenue.",
-      "[TODO: what was wrong before — manual regression? bugs reaching production? fear of touching the code?]",
-    ],
-    constraints: [
-      "[TODO: e.g. no dedicated QA team]",
-      "[TODO: e.g. third-party payment provider in the loop]",
-      "[TODO: e.g. tests must run in CI under N minutes]",
-    ],
-    decisions: [
-      {
-        title: "Playwright over [TODO: the alternative]",
-        choice: "[TODO: why Playwright]",
-        tradeoff: "[TODO: what it cost]",
-      },
-      {
-        title: "[TODO: e.g. which flows first]",
-        choice: "[TODO]",
-        tradeoff: "[TODO]",
-      },
-    ],
-    results: ["[TODO: what changed for the team and the product]"],
-    lessons: ["[TODO: what you would do differently]"],
     draft: true,
   },
 ];

@@ -13,6 +13,20 @@ export interface CaseStudyDecision {
   readonly tradeoff: string;
 }
 
+/** The project's poster: a picture of the product, shown on its card and atop its page. */
+export interface CaseStudyCover {
+  /** A relative path into `public/`, so it resolves under the base href. */
+  readonly src: string;
+  readonly alt: string;
+}
+
+/** A piece of work inside the project worth its own few lines. */
+export interface CaseStudyHighlight {
+  readonly title: string;
+  readonly period?: string;
+  readonly text: readonly string[];
+}
+
 /**
  * A case study. The fields follow the order a reviewer reads in: the result first, then the
  * problem, the constraints, the decisions and their trade-offs, and only then the details.
@@ -21,8 +35,13 @@ export interface CaseStudyDecision {
 export interface CaseStudy {
   readonly slug: string;
   readonly title: string;
+  /** What the product is, in a few words: the line under the title on the card. */
+  readonly tagline?: string;
   /** The result in one sentence. It is the page lead and the sharing description. */
   readonly summary: string;
+  readonly cover?: CaseStudyCover;
+  /** The live product, when it can be visited. */
+  readonly site?: string;
   readonly company: string;
   readonly role: string;
   readonly period: string;
@@ -38,6 +57,8 @@ export interface CaseStudy {
   readonly results: readonly string[];
   /** Hindsight. Optional, but it is what reads as senior. */
   readonly lessons?: readonly string[];
+  /** Smaller pieces of work inside the project, each told in a few lines. */
+  readonly highlights?: readonly CaseStudyHighlight[];
   /**
    * Work in progress. Shown by the dev server only, so a case can be built and reviewed in
    * the real page without ever reaching production.

@@ -17,6 +17,9 @@
       <header class="case-header">
         <p class="case-header__eyebrow">{{ study.company }} · {{ study.period }}</p>
         <h1 class="case-header__title">{{ study.title }}</h1>
+        @if (study.tagline) {
+          <p class="case-header__tagline">{{ study.tagline }}</p>
+        }
         <p class="case-header__summary">{{ study.summary }}</p>
 
         <dl class="case-facts">
@@ -24,6 +27,20 @@
             <dt>Role</dt>
             <dd>{{ study.role }}</dd>
           </div>
+          @if (study.site) {
+            <div>
+              <dt>Site</dt>
+              <dd>
+                <a
+                  class="case-facts__site"
+                  [href]="study.site"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >{{ siteHost() }} <span aria-hidden="true">↗</span></a
+                >
+              </dd>
+            </div>
+          }
           <div>
             <dt>Stack</dt>
             <dd>
@@ -36,6 +53,17 @@
           </div>
         </dl>
       </header>
+
+      @if (study.cover; as cover) {
+        <img
+          class="case-cover"
+          [src]="cover.src"
+          [alt]="cover.alt"
+          width="1600"
+          height="900"
+          fetchpriority="high"
+        />
+      }
 
       <dl class="case-outcomes" aria-label="Outcomes">
         @for (outcome of study.outcomes; track outcome.label) {
@@ -84,9 +112,33 @@
         </ol>
       </section>
 
+      @if (study.highlights?.length) {
+        <section class="case-section" aria-labelledby="case-highlights">
+          <h2 class="case-section__heading" id="case-highlights">
+            <span class="case-section__index" aria-hidden="true">04</span> Highlights
+          </h2>
+          <ul class="case-highlights">
+            @for (highlight of study.highlights; track highlight.title) {
+              <li class="case-highlight">
+                <h3 class="case-highlight__title">{{ highlight.title }}</h3>
+                @if (highlight.period) {
+                  <p class="case-highlight__period">{{ highlight.period }}</p>
+                }
+                @for (paragraph of highlight.text; track $index) {
+                  <p class="case-highlight__text">{{ paragraph }}</p>
+                }
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
       <section class="case-section" aria-labelledby="case-results">
         <h2 class="case-section__heading" id="case-results">
-          <span class="case-section__index" aria-hidden="true">04</span> Results
+          <span class="case-section__index" aria-hidden="true">{{
+            study.highlights?.length ? "05" : "04"
+          }}</span>
+          Results
         </h2>
         @for (paragraph of study.results; track $index) {
           <p class="case-section__para">{{ paragraph }}</p>
@@ -96,7 +148,10 @@
       @if (study.lessons?.length) {
         <section class="case-section" aria-labelledby="case-lessons">
           <h2 class="case-section__heading" id="case-lessons">
-            <span class="case-section__index" aria-hidden="true">05</span> What I'd do differently
+            <span class="case-section__index" aria-hidden="true">{{
+              study.highlights?.length ? "06" : "05"
+            }}</span>
+            What I'd do differently
           </h2>
           @for (paragraph of study.lessons; track $index) {
             <p class="case-section__para">{{ paragraph }}</p>

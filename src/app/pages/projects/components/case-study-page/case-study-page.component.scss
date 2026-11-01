@@ -69,6 +69,14 @@
     max-width: 28ch;
   }
 
+  &__tagline {
+    max-width: layout.$measure;
+    margin: -0.5rem 0 1.25rem;
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 600;
+    color: var(--brand-muted);
+  }
+
   &__summary {
     max-width: layout.$measure;
     font-size: clamp(1.05rem, 1.8vw, 1.2rem);
@@ -105,6 +113,18 @@
     color: var(--brand-ink);
   }
 
+  &__site {
+    font-weight: 700;
+    color: var(--brand-wine);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
   &__stack {
     display: flex;
     flex-wrap: wrap;
@@ -121,6 +141,57 @@
       padding: 0.2rem 0.6rem;
       border-radius: 4px;
     }
+  }
+}
+
+// The poster, as wide as the page.
+.case-cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin: 0 0 2rem;
+  border-radius: 20px;
+  border: 1px solid var(--brand-outline);
+}
+
+.case-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case-highlight {
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border: 1px solid var(--brand-outline);
+  border-radius: 16px;
+  background: brand.paper(0.6);
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+    line-height: 1.3;
+    color: var(--brand-ink);
+  }
+
+  &__period {
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-wine);
+  }
+
+  &__text {
+    margin: 0.85rem 0 0;
+    line-height: 1.7;
+    color: var(--brand-ink);
+    opacity: 0.85;
   }
 }
 

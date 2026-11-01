@@ -21,6 +21,12 @@ export class CaseStudyPageComponent {
 
   readonly study = computed(() => this.caseStudies.getBySlug(this.slug()));
 
+  /** The live site's address without the scheme, as the link text. */
+  readonly siteHost = computed(() => {
+    const site = this.study()?.site;
+    return site ? new URL(site).host : "";
+  });
+
   constructor() {
     syncPageMeta(() => {
       const study = this.study();
