@@ -52,9 +52,15 @@ export class ThemeService {
       // Storage can be off (private mode, blocked cookies); the switch still works for the visit.
     }
 
-    // Cross-fade the whole page instead of repainting it colour by colour.
+    // Cross-fade the whole page instead of repainting it colour by colour. `data-theme-switch`
+    // gives this transition its own animation in `styles.scss`: the new colours fade in over
+    // the old ones in place, without the lift a route change has.
     if (document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      document.startViewTransition(apply);
+      const root = document.documentElement;
+      root.dataset["themeSwitch"] = "";
+      document
+        .startViewTransition(apply)
+        .finished.finally(() => delete root.dataset["themeSwitch"]);
     } else {
       apply();
     }
