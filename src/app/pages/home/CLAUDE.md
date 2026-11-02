@@ -112,7 +112,7 @@ here:
 
 - `trackCurrentSection()` keeps `current` on the slide in view (measured on a
   `requestAnimationFrame`-coalesced `scroll` of the slider, because the deferred slides
-  arrive late). The header puts its dot there; off the home page it marks Projects on a case
+  arrive late). The header underlines it; off the home page it marks Projects on a case
   study and Writing on the blog.
 - A click on a link whose fragment is already in the URL is a navigation the router ignores,
   so the header also sends `request(id)` while on `/`, and this page scrolls on it.

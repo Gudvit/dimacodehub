@@ -152,7 +152,8 @@
   margin-left: 0.5rem;
 }
 
-// The current page is marked by a dot under its name; the others brighten on hover.
+// The slide in view is underlined. The line draws in from the left, like a progress bar
+// filling, and leaves to the right, so moving down the menu reads as one line travelling on.
 .nav a {
   position: relative;
   padding: 0.35rem 0;
@@ -163,14 +164,15 @@
   &::after {
     content: "";
     position: absolute;
-    left: 50%;
-    bottom: -0.35rem;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
+    left: 0;
+    right: 0;
+    bottom: -0.15rem;
+    height: 2px;
+    border-radius: 999px;
     background: var(--brand-wine);
-    transform: translateX(-50%) scale(0);
-    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
   }
 
   &:hover {
@@ -188,7 +190,9 @@
   color: var(--brand-ink);
 
   &::after {
-    transform: translateX(-50%) scale(1);
+    transform: scaleX(1);
+    transform-origin: left center;
+    transition-duration: 0.7s;
   }
 }
 
@@ -240,19 +244,7 @@
 
   .nav a {
     width: fit-content;
-    padding: 0.1rem 0 0.1rem 1rem;
-
-    // Beside the name in the column, not under it.
-    &::after {
-      left: 0;
-      top: 50%;
-      bottom: auto;
-      transform: translateY(-50%) scale(0);
-    }
-  }
-
-  .nav a.active::after {
-    transform: translateY(-50%) scale(1);
+    padding: 0.1rem 0;
   }
 }
 

@@ -23,7 +23,7 @@
 
   <nav class="nav" id="site-nav" aria-label="Main" [class.is-open]="menuOpen()">
     <!-- The home slides. Each link scrolls the home page to its slide (from any page); the
-         dot marks the slide in view, or the section the current page belongs to. -->
+         underline marks the slide in view, or the section the current page belongs to. -->
     @for (section of sections; track section.id) {
       <a
         routerLink="/"
