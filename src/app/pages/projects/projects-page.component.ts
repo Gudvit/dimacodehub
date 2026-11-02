@@ -4,7 +4,6 @@ import { RouterLink } from "@angular/router";
 import { HeaderComponent } from "../../components/header/header.component";
 import { FooterComponent } from "../../components/footer/footer.component";
 import { CaseStudyService } from "./services/case-study.service";
-import { SideProjectService } from "./services/side-project.service";
 
 @Component({
   selector: "app-projects-page",
@@ -18,7 +17,6 @@ export class ProjectsPageComponent {
 
   /** Client work, as posters. */
   readonly caseStudies = this.projects.filter((study) => study.kind !== "side");
-  /** My own projects with a page of their own, as posters at the top of Side projects. */
-  readonly sidePosters = this.projects.filter((study) => study.kind === "side");
-  readonly sideProjects = inject(SideProjectService).getAll();
+  /** My own projects, as the same posters. */
+  readonly sideProjects = this.projects.filter((study) => study.kind === "side");
 }

@@ -74,9 +74,7 @@
 }
 
 .cases,
-.side,
-.case-card__stack,
-.side-card__stack {
+.case-card__stack {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -85,10 +83,6 @@
 .cases {
   display: grid;
   gap: 1.5rem;
-
-  &--side {
-    margin-bottom: 1.5rem;
-  }
 
   > li {
     @include motion.view-reveal;
@@ -259,8 +253,7 @@
   }
 }
 
-.case-card__stack,
-.side-card__stack {
+.case-card__stack {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
@@ -271,95 +264,6 @@
     border-radius: 999px;
     font-size: 0.8rem;
     color: var(--brand-muted);
-  }
-}
-
-.side {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
-  gap: 1.5rem;
-
-  > li {
-    @include motion.view-reveal;
-  }
-}
-
-.side-card {
-  height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--brand-outline);
-  border-radius: 20px;
-  background: brand.paper(0.6);
-
-  &__image {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-    border-bottom: 1px solid var(--brand-outline);
-  }
-
-  &__body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    padding: clamp(1.25rem, 2vw, 1.75rem);
-  }
-
-  &__status {
-    margin: 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--brand-muted);
-  }
-
-  &__name {
-    margin: 0;
-    font-size: clamp(1.25rem, 1.6vw, 1.6rem);
-    line-height: 1.2;
-    color: var(--brand-ink);
-  }
-
-  &__tagline {
-    margin: 0;
-    font-weight: 600;
-    color: var(--brand-ink);
-  }
-
-  &__description {
-    margin: 0 0 0.4rem;
-    line-height: 1.6;
-    color: var(--brand-muted);
-  }
-
-  &__stack {
-    margin-top: auto;
-  }
-
-  &__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.25rem;
-    margin: 0.4rem 0 0;
-
-    a {
-      font-weight: 700;
-      color: var(--brand-wine);
-      text-decoration: none;
-
-      &:hover,
-      &:focus-visible {
-        text-decoration: underline;
-        text-underline-offset: 0.2em;
-      }
-    }
   }
 }
 

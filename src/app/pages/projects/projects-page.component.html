@@ -29,69 +29,24 @@
     </section>
   }
 
-  @if (sidePosters.length || sideProjects.length) {
+  @if (sideProjects.length) {
     <section class="projects-section" aria-labelledby="side-projects-title">
       <header class="projects-section__head">
         <h2 class="projects-section__title" id="side-projects-title">Side projects</h2>
         <p class="projects-section__lead">What I build when nobody asks me to.</p>
       </header>
 
-      @if (sidePosters.length) {
-        <ul class="cases cases--side">
-          @for (study of sidePosters; track study.slug) {
-            <li>
-              <ng-container *ngTemplateOutlet="poster; context: { $implicit: study }" />
-            </li>
-          }
-        </ul>
-      }
-
-      <ul class="side">
-        @for (project of sideProjects; track project.slug) {
+      <ul class="cases">
+        @for (study of sideProjects; track study.slug) {
           <li>
-            <article class="side-card">
-              <img
-                class="side-card__image"
-                [src]="project.image"
-                alt=""
-                width="640"
-                height="400"
-                loading="lazy"
-                decoding="async"
-              />
-              <div class="side-card__body">
-                <p class="side-card__status">
-                  @if (project.draft) {
-                    <span class="case-card__draft">Draft</span>
-                  }
-                  {{ project.status }}
-                </p>
-                <h3 class="side-card__name">{{ project.name }}</h3>
-                <p class="side-card__tagline">{{ project.tagline }}</p>
-                <p class="side-card__description">{{ project.description }}</p>
-                <ul class="side-card__stack" aria-label="Stack">
-                  @for (item of project.stack; track item) {
-                    <li>{{ item }}</li>
-                  }
-                </ul>
-                @if (project.links.length) {
-                  <p class="side-card__links">
-                    @for (link of project.links; track link.url) {
-                      <a [href]="link.url" target="_blank" rel="noopener noreferrer"
-                        >{{ link.label }} <span aria-hidden="true">↗</span></a
-                      >
-                    }
-                  </p>
-                }
-              </div>
-            </article>
+            <ng-container *ngTemplateOutlet="poster; context: { $implicit: study }" />
           </li>
         }
       </ul>
     </section>
   }
 
-  @if (!caseStudies.length && !sidePosters.length && !sideProjects.length) {
+  @if (!caseStudies.length && !sideProjects.length) {
     <section class="projects-empty">
       <p>
         The case studies are being written. Until they are up, the

@@ -97,7 +97,8 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
       colophon/               "How this site is built" (`/colophon`): stack, ADRs, CI, numbers,
                               and signals-demo/ — a live signal graph with real run counters
       projects/               case studies and side projects (`/projects`), case study page
-                              (`/projects/:slug`), CaseStudyService, SideProjectService
+                              (`/projects/:slug`), CaseStudyService — side projects are
+                              case studies with `kind: "side"`
     site.ts                   SITE_URL, pageUrl(), profiles, contact email, CV path — no runtime
                               imports (scripts/ uses it)
     analytics/page-views.ts   countPageViews(): a GoatCounter beacon per navigation, production only
@@ -245,9 +246,12 @@ reason `@angular/forms` is a dependency.
 
 ## Known trade-offs
 
-- `public/shared-images/` holds the side projects' pictures (`side-projects.ts`). While the
-  side projects are drafts, production shows none of them, yet the JPGs ship in every
-  deployment; `logo.png` there is used by nothing.
+- `public/shared-images/` holds the side projects' posters (`kind: "side"` in
+  `case-studies.ts`). While they are drafts, production shows none of them, yet the JPGs ship
+  in every deployment; `logo.png` there is used by nothing. `lingua.jpg` is used by nothing on
+  the site, but the LingoPath bot loads it as its share-card image straight from `main`
+  (`raw.githubusercontent.com/Gudvit/dimacodehub/main/public/shared-images/lingua.jpg`) —
+  do not delete or rename it.
 - Component tests exist for the header, the experience gestures and the about reveal
   (ADR 0016). The home slider and the contact form itself are still verified through e2e
   alone.

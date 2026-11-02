@@ -4,6 +4,9 @@ import type { CaseStudy } from "./models/case-study.model";
  * Content lives in code — see docs/architecture/0005-content-in-code.md. Array order is page
  * order. `case-study.service.spec.ts` validates every entry.
  *
+ * A side project is a case study with `kind: "side"`: the same poster on the projects page and
+ * the same page, listed under Side projects.
+ *
  * Drafts are visible on the dev server only. Placeholders in a draft are written as
  * `[TODO: …]` so they are easy to find and impossible to miss on the page.
  */
@@ -181,6 +184,79 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     results: [
       "[TODO: is the bot live for everyone? users, weekly readers, events published per week]",
       "The repository is run like a team's: a written architecture, an ADR for every decision, strict TypeScript, CI on every pull request and a reviewer agent that holds changes to the principles.",
+    ],
+    lessons: ["[TODO: what you would do differently]"],
+    draft: true,
+  },
+  {
+    // Built from the productivity-bot repository: README, ROADMAP, CHANGELOG and its ADRs.
+    // [TODO] marks what only the author knows. Lingua was its early name and is not listed;
+    // its picture stays in public/ because the bot's share card loads it from main.
+    slug: "lingopath",
+    kind: "side",
+    title: "LingoPath",
+    tagline: "Learn Polish and English in a Telegram bot",
+    cover: {
+      src: "shared-images/lingopath.jpg",
+      alt: "LingoPath: London and Kraków joined by a glowing path of flashcards, under the words Learn Polish & English.",
+    },
+    site: "https://t.me/LingoPathBot",
+    summary:
+      "A Telegram bot for a few minutes of Polish or English a day: spaced repetition over 7,600 words graded by CEFR level, a 30-day English course, short Polish grammar tips and a streak that forgives one missed day. Built alone, from the word lists to the deployment.",
+    company: "Personal project",
+    role: "Author · product, content, backend and deployment",
+    period: "May 2026 – present",
+    stack: ["Node.js", "TypeScript", "Telegraf", "SQLite", "Luxon", "Docker", "GitHub Actions"],
+    outcomes: [
+      { value: "7,600+", label: "words in two languages, graded A1 to C2" },
+      { value: "30", label: "days in the English course: words, reading, writing, video" },
+      { value: "4", label: "interface languages: English, Polish, Ukrainian, Russian" },
+      { value: "41", label: "architecture decisions written down" },
+    ],
+    context: [
+      "A language sticks when it is practised a little every day, and the place people already open every day is a messenger. LingoPath lives in Telegram: a reminder at the hour you choose, in your own time zone, then a short session of words — each one known, hard or new, and brought back on a spaced-repetition schedule.",
+      "Learning English, you also get a 30-day course: words, idioms and phrasal verbs, practice, a short article to read, sentences to write and a video, with a weekly test and a final exam. Learning Polish, you get grammar hacks and common mistakes, and every word can be heard aloud.",
+      "[TODO: why you started it, and who it is for — newcomers to Poland, the Ukrainian community?]",
+    ],
+    constraints: [
+      "One developer: product, word lists, copy in four languages, backend and operations.",
+      "A free Oracle Cloud VM with 1 GB of RAM, and no paid APIs at run time.",
+      "Telegram is the whole interface: buttons, inline keyboards and messages — a button label cannot run past 28 characters.",
+      "A streak is a promise: a reminder must never arrive twice, and a day must never be counted that nobody studied.",
+    ],
+    decisions: [
+      {
+        title: "One process, one SQLite file",
+        choice:
+          "A modular monolith on Telegraf: the bot handlers and a minute-by-minute scheduler share one Node.js process, and everything is stored in SQLite in WAL mode. Delivery is made idempotent by markers in the database, so a missed tick sends a reminder late but never twice. Schema migrations run at startup.",
+        tradeoff:
+          "One machine is one failure domain: when the bot is down, so is the scheduler — and the database cannot grow past a single node.",
+      },
+      {
+        title: "Content is reviewed by hand, not generated",
+        choice:
+          "The word lists, the 30 course days and the grammar tips are JSON files in the repository, checked before they ship. Pronunciation is generated once — about 2,100 Polish clips — and committed, so the bot plays it without calling anything at run time.",
+        tradeoff:
+          "Every new word is a commit, a fresh batch of audio and a deploy — and the Polish voice is synthetic, because there is no free human-recorded source.",
+      },
+      {
+        title: "A streak is derived, not stored",
+        choice:
+          "The streak is counted from the days a person actually studied, in their own time zone. A Streak Freeze protects one missed day within a three-day window without ever recording it as studied, and the rewards — a freeze at 25, 50 and 100 days, a card to share every ten — are worked out when a session is recorded, not by a job at midnight, so a redeploy overnight cannot lose one.",
+        tradeoff:
+          "Two missed days in a row are still a break. It costs some users their run, and keeps the number honest.",
+      },
+      {
+        title: "The interface language is not the learning language",
+        choice:
+          "What you read the bot in (English, Polish, Ukrainian or Russian) and what you learn (Polish or English) are two separate settings, chosen at the first start. A Ukrainian speaker learns Polish with buttons in Ukrainian.",
+        tradeoff:
+          "Every message and button exists four times over, and a validator holds each label to Telegram's length.",
+      },
+    ],
+    results: [
+      "[TODO: how many people use it, how many study daily, the longest streak]",
+      "The repository is run like a team's: an ADR for every decision, a changelog for operators, CI on every pull request and sixty smoke-test files, over 228 commits in four months.",
     ],
     lessons: ["[TODO: what you would do differently]"],
     draft: true,
