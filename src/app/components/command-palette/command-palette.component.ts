@@ -53,7 +53,7 @@ export class CommandPaletteComponent {
       label: "Projects",
       group: "Pages",
       keywords: "case studies work",
-      run: () => this.go("/projects"),
+      run: () => this.go("/#projects"),
     },
     {
       id: "page-blog",

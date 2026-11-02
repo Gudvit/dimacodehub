@@ -16,6 +16,7 @@ home-page.component.*                     slider container, owns #homeSlider
 components/home-hero-section/             first screen, header lives inside it
 components/home-about-section/            "about", revealed by IntersectionObserver
 components/home-experience-section/       role timeline: clicks, swipes, wheel
+components/home-projects-section/         the projects as pictures, loaded through @defer
 components/home-writing-section/          the latest blog posts, loaded through @defer
 components/home-contact-section/          contacts + working message form + footer
 ```
@@ -80,6 +81,41 @@ The placeholder (`.writing-placeholder`) carries `.slide-section` and the same
 has not loaded yet, and a placeholder of another height would move the contacts out from
 under the scroll when the posts arrive. For the same reason `#writing` is not a usable deep
 link — the element does not exist until the section loads.
+
+## The projects section
+
+The slide between experience and writing, and the site's only list of projects: `/projects`
+redirects to `/#projects`, and the header, footer, palette and the case pages' "All projects"
+link all point here. The grid and its tiles are `ProjectGridComponent` and
+`ProjectTileComponent` in `pages/projects/components/`. The placeholder carries
+`id="projects"` too, so the fragment has a target before the section loads. It is deferred and has a
+`.projects-placeholder` for the same reasons as the writing section, with the same
+`min-height`. On a desktop screen at least 1024×640 the slide is exactly one screen tall and
+the grid fills what the heading leaves; below that the grid is `compact` — two columns of
+short tiles under a wide first one — which keeps five projects inside one screen down to
+390×664. Measure the slide after changing the number of projects or the heading.
+
+With no published project the component renders nothing, so the slide disappears; until
+the section loads, its placeholder still holds a screen, and a `/#contacts` jump made in that
+moment would land one screen short. That only matters while every case study is a draft.
+
+## The header menu
+
+The header's links are the slides themselves — Home, About, Experience, Projects, Writing,
+Contact (`HOME_SECTIONS` in `src/app/navigation/home-sections.ts`) — each `routerLink="/"`
+with the slide's id as fragment, so they work from any page. Every slide's section carries
+that id (`home`, `about`, `experience`, `projects`, `writing`, `contacts`); the two deferred
+ones put it on their placeholder too.
+
+`HomeSectionsService` is the only thing the header and this page share, and scrolling stays
+here:
+
+- `trackCurrentSection()` keeps `current` on the slide in view (measured on a
+  `requestAnimationFrame`-coalesced `scroll` of the slider, because the deferred slides
+  arrive late). The header puts its dot there; off the home page it marks Projects on a case
+  study and Writing on the blog.
+- A click on a link whose fragment is already in the URL is a navigation the router ignores,
+  so the header also sends `request(id)` while on `/`, and this page scrolls on it.
 
 ## Fragment deep links
 

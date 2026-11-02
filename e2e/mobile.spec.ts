@@ -6,20 +6,20 @@ test("mobile menu toggles open and closed", async ({ page }) => {
   await page.goto("/");
 
   const toggle = page.getByRole("button", { name: "Toggle navigation menu" });
-  const blogLink = page
+  const aboutLink = page
     .getByRole("navigation", { name: "Main" })
-    .getByRole("link", { name: "Blog" });
+    .getByRole("link", { name: "About" });
 
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
-  await expect(blogLink).toBeHidden();
+  await expect(aboutLink).toBeHidden();
 
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  await expect(blogLink).toBeVisible();
+  await expect(aboutLink).toBeVisible();
 
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
-  await expect(blogLink).toBeHidden();
+  await expect(aboutLink).toBeHidden();
 });
 
 test("following a link from the mobile menu closes it", async ({ page }) => {
@@ -27,9 +27,9 @@ test("following a link from the mobile menu closes it", async ({ page }) => {
 
   const toggle = page.getByRole("button", { name: "Toggle navigation menu" });
   await toggle.click();
-  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Blog" }).click();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "About" }).click();
 
-  await expect(page).toHaveURL(/\/blog$/);
+  await expect(page).toHaveURL(/\/#about$/);
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
 

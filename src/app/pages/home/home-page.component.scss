@@ -11,8 +11,9 @@
   overscroll-behavior: contain;
 }
 
-// Holds the writing section's place until `@defer` loads it — the same height, so a jump
-// to `#contacts` lands where the contacts will still be once the posts arrive.
+// Hold the projects' and the writing section's places until `@defer` loads them — the same
+// height, so a jump to `#contacts` lands where the contacts will still be once they arrive.
+.projects-placeholder,
 .writing-placeholder {
   min-height: 100vh;
   min-height: 100svh;

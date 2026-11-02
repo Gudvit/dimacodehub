@@ -6,7 +6,8 @@ Vitest + Playwright, deployed to GitHub Pages from `main` via `.github/workflows
 ## What this project is
 
 A single-page portfolio for a frontend engineer (Dmytro Huliaiev) plus a blog section.
-Three areas: `/` (hero → about → experience → writing → contacts, a vertical slider),
+Three areas: `/` (hero → about → experience → projects → writing → contacts, a vertical
+slider),
 `/projects` (case studies and side projects, each case study at `/projects/:slug`), `/blog`
 (post list and post page). Plus `/colophon`, "How this site is built", linked from the footer.
 
@@ -100,13 +101,17 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
       colophon/               "How this site is built" (`/colophon`): stack, ADRs, CI, numbers,
                               and signals-demo/ — a live signal graph with real run counters
-      projects/               case studies and side projects (`/projects`), case study page
+      projects/               case studies and side projects, listed on the home slide (`/projects`
+                              redirects to `/#projects`), project-grid/ and
+                              project-tile/ (the grid of pictures, reused by the home slide), case study page
                               (`/projects/:slug`), CaseStudyService — side projects are
                               case studies with `kind: "side"`
     site.ts                   SITE_URL, pageUrl(), profiles, contact email, CV path — no runtime
                               imports (scripts/ uses it)
     analytics/page-views.ts   countPageViews(): a GoatCounter beacon per navigation, production only
     navigation/scroll-to-top.ts  a new page opens at its top; #heading, ?tag= and Back keep the scroll
+    navigation/home-sections.ts  the header menu = the home slides (Home … Contact); the slide in
+                              view and "scroll there" requests between header and home page
     seo/                      syncPageMeta(): per-page description/OG tags;
                               syncPageUrl(): og:url + canonical follow the route;
                               syncJsonLd(): schema.org data for the page
@@ -145,7 +150,7 @@ is the exception: `app.ts` / class `App`.
   The same file in both places is a duplicate in the deployment — don't do it.
 - Everything in `public/` ships in full. Do not put unused files or PNG sources there —
   only compressed images that are actually needed.
-- Every route is prerendered at build time (ADR 0019): `/`, `/blog`, `/projects` and each
+- Every route is prerendered at build time (ADR 0019): `/`, `/blog` and each
   post and case study get their own `index.html` with their own meta tags. The list lives
   in `src/app/app.routes.server.ts`; slugs come from the services, so a new post needs no
   extra step. Anything else falls through to `404.html`, a workflow-made copy of

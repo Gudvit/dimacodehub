@@ -1,0 +1,147 @@
+@use "layout";
+@use "motion";
+
+$tablet-up: 720px;
+// Wide and tall enough for the one-screen composition.
+$fit: "(min-width: 1024px) and (min-height: 640px)";
+
+:host {
+  display: block;
+  min-height: 0;
+}
+
+// A phone: one column. A tablet: two, the first project across both.
+.works {
+  display: grid;
+  gap: 2.5rem layout.$column-gap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: $tablet-up) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.works__item {
+  min-width: 0;
+  aspect-ratio: 4 / 3;
+
+  &:first-child {
+    aspect-ratio: 16 / 10;
+
+    @media (min-width: $tablet-up) {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+// Below the one-screen size: two columns of short tiles under a wide first one,
+// so five projects and the slide's heading share one screen on a phone or a tablet.
+@media (max-width: 1023px), (max-height: 639px) {
+  :host {
+    .works {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.6rem;
+    }
+
+    .works__item {
+      aspect-ratio: 16 / 10;
+    }
+
+    .works__item:first-child {
+      grid-column: 1 / -1;
+      aspect-ratio: 21 / 9;
+    }
+  }
+}
+
+// The tiles rise in with the home slide's timeline (ADR 0025): `view()` inside a slide would
+// watch the slide, which never scrolls.
+@for $i from 1 through 6 {
+  .works__item:nth-child(#{$i}) {
+    @include motion.slide-reveal(1 + $i);
+  }
+}
+
+// ── One screen ──────────────────────────────────────────────────────────────────────────
+//
+// Twelve columns and two rows filling the host's height. The first project spans both rows;
+// the others divide the columns beside it according to how many there are. Seven or more no
+// longer fit, and the grid falls back to rows of a fixed height.
+
+@media #{$fit} {
+  :host {
+    height: 100%;
+  }
+
+  .works {
+    grid-template-columns: repeat(layout.$columns, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 2vw, 1.75rem) layout.$column-gap;
+    height: 100%;
+  }
+
+  .works__item,
+  .works__item:first-child {
+    grid-column: span 3;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+
+  .works > .works__item:first-child {
+    grid-column: 1 / span 6;
+    grid-row: 1 / span 2;
+  }
+
+  // One project: the whole width.
+  .works:has(> :first-child:last-child) > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  // Two: side by side, the first a little wider.
+  .works:has(> :nth-child(2):last-child) {
+    > :first-child {
+      grid-column: 1 / span 7;
+    }
+
+    > :nth-child(2) {
+      grid-column: span 5;
+      grid-row: 1 / span 2;
+    }
+  }
+
+  // Three: the first, and two stacked beside it.
+  .works:has(> :nth-child(3):last-child) {
+    > :first-child {
+      grid-column: 1 / span 7;
+    }
+
+    > :not(:first-child) {
+      grid-column: span 5;
+    }
+  }
+
+  // Four: a wide tile over two small ones.
+  .works:has(> :nth-child(4):last-child) > :nth-child(2) {
+    grid-column: span 6;
+  }
+
+  // Five is the default: a two-by-two block beside the first.
+
+  // Six: three small tiles over two.
+  .works:has(> :nth-child(6):last-child) > :nth-child(-n + 4):not(:first-child) {
+    grid-column: span 2;
+  }
+
+  // Seven or more: rows that scroll.
+  :host(.is-overflowing) {
+    height: auto;
+
+    .works {
+      grid-template-rows: none;
+      grid-auto-rows: 20rem;
+      height: auto;
+    }
+  }
+}

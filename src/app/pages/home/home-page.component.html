@@ -8,11 +8,20 @@
 
   <app-home-experience-section></app-home-experience-section>
 
+  <!-- Deferred so the case studies stay out of the initial bundle, like the posts below. -->
+  @defer (on viewport; prefetch on idle) {
+    <app-home-projects-section></app-home-projects-section>
+  } @placeholder {
+    <!-- Carries the section's id, so `/#projects` lands here before the section loads. -->
+    <div class="projects-placeholder slide-section" id="projects" aria-hidden="true"></div>
+  }
+
   <!-- Deferred so the posts stay out of the initial bundle; see the local CLAUDE.md. -->
   @defer (on viewport; prefetch on idle) {
     <app-home-writing-section></app-home-writing-section>
   } @placeholder {
-    <div class="writing-placeholder slide-section" aria-hidden="true"></div>
+    <!-- Carries the section's id, so `/#writing` lands here before the section loads. -->
+    <div class="writing-placeholder slide-section" id="writing" aria-hidden="true"></div>
   }
 
   <app-home-contact-section (backToTop)="scrollToTop()"></app-home-contact-section>

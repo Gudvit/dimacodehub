@@ -3,7 +3,7 @@
 @if (study(); as study) {
   <main class="case">
     <div class="case__inner">
-      <a class="case-back" routerLink="/projects">
+      <a class="case-back" routerLink="/" fragment="projects">
         <span class="case-back__arrow" aria-hidden="true">←</span>
         All projects
       </a>
@@ -168,7 +168,7 @@
 } @else {
   <main class="case-not-found">
     <p>Project not found.</p>
-    <a routerLink="/projects">← All projects</a>
+    <a routerLink="/" fragment="projects">← All projects</a>
   </main>
 }
 

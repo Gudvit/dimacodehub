@@ -1,10 +1,15 @@
 import { expect, type Locator, test } from "@playwright/test";
 
-test("header navigates to the blog and sets the page title", async ({ page }) => {
+test("the header's Writing link leads through the home slide to the blog", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle("Dmytro Huliaiev - Senior Frontend Engineer");
 
-  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Blog" }).click();
+  await page
+    .getByRole("navigation", { name: "Main" })
+    .getByRole("link", { name: "Writing" })
+    .click();
+  await expect(page).toHaveURL(/\/#writing$/);
+  await page.getByRole("link", { name: "All posts" }).click();
   await expect(page).toHaveURL(/\/blog$/);
   await expect(page).toHaveTitle("Blog - Dmytro Huliaiev");
   await expect(

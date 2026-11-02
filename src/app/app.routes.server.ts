@@ -36,10 +36,6 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
   {
-    path: "projects",
-    renderMode: RenderMode.Prerender,
-  },
-  {
     path: "colophon",
     renderMode: RenderMode.Prerender,
   },

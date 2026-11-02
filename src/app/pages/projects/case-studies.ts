@@ -4,7 +4,7 @@ import type { CaseStudy } from "./models/case-study.model";
  * Content lives in code — see docs/architecture/0005-content-in-code.md. Array order is page
  * order. `case-study.service.spec.ts` validates every entry.
  *
- * A side project is a case study with `kind: "side"`: the same poster on the projects page and
+ * A side project is a case study with `kind: "side"`: the same tile on the home slide and
  * the same page, listed under Side projects.
  *
  * Drafts are visible on the dev server only. Placeholders in a draft are written as

@@ -192,7 +192,9 @@
   }
 }
 
-@media (max-width: 600px) {
+// Six section links and two buttons need about 900px; below that the menu folds into the
+// toggle.
+@media (max-width: 900px) {
   .site-header {
     padding: 1rem 1rem;
     display: grid;

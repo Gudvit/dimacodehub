@@ -89,6 +89,56 @@ test.describe("with reduced motion", () => {
   });
 });
 
+test("the header marks the slide in view and scrolls to it again on a second click", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "Main" });
+
+  await nav.getByRole("link", { name: "Experience" }).click();
+  await expect(page).toHaveURL(/\/#experience$/);
+  await expect(nav.getByRole("link", { name: "Experience" })).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+
+  // Away from the slide by hand, then the same link again: the URL does not change.
+  await page.locator(".home-slider").evaluate((slider) => slider.scrollTo({ top: 0 }));
+  await expect(nav.getByRole("link", { name: "Experience" })).not.toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  await nav.getByRole("link", { name: "Experience" }).click();
+  await expect(nav.getByRole("link", { name: "Experience" })).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+});
+
+// The dev server shows drafts, so the draft case studies double as fixtures here.
+test("the projects slide shows the projects as pictures and links to each", async ({ page }) => {
+  await page.goto("/");
+
+  // Deferred until it nears the viewport, like the writing section below it.
+  await page.locator(".projects-placeholder").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading", { name: "PROJECTS" })).toBeVisible();
+  await expect(page.locator("app-project-tile").first()).toBeVisible();
+
+  await page.getByRole("link", { name: "Apomeds", exact: true }).click();
+  await expect(page).toHaveURL(/\/projects\/apomeds$/);
+});
+
+test("the header's Projects link scrolls the home page to the projects slide", async ({ page }) => {
+  await page.goto("/blog");
+  await page
+    .getByRole("navigation", { name: "Main" })
+    .getByRole("link", { name: "Projects" })
+    .click();
+
+  await expect(page).toHaveURL(/\/#projects$/);
+  await expect(page.getByRole("heading", { name: "PROJECTS" })).toBeInViewport();
+});
+
 test("the writing section lists the latest posts and links to the blog", async ({ page }) => {
   await page.goto("/");
 

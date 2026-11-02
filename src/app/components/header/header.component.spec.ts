@@ -49,8 +49,9 @@ describe("HeaderComponent", () => {
     toggle().click();
     await fixture.whenStable();
 
-    const blogLink: HTMLAnchorElement = fixture.nativeElement.querySelector('.nav a[href="/blog"]');
-    blogLink.click();
+    const aboutLink: HTMLAnchorElement =
+      fixture.nativeElement.querySelector('.nav a[href="/#about"]');
+    aboutLink.click();
     await fixture.whenStable();
 
     expect(toggle().getAttribute("aria-expanded")).toBe("false");

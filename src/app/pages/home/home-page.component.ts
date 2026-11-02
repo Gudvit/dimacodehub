@@ -9,11 +9,13 @@ import {
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActivatedRoute } from "@angular/router";
+import { HomeSectionsService } from "../../navigation/home-sections";
 import { PERSON, syncJsonLd } from "../../seo/json-ld";
 import { HomeAboutSectionComponent } from "./components/home-about-section/home-about-section.component";
 import { HomeContactSectionComponent } from "./components/home-contact-section/home-contact-section.component";
 import { HomeExperienceSectionComponent } from "./components/home-experience-section/home-experience-section.component";
 import { HomeHeroSectionComponent } from "./components/home-hero-section/home-hero-section.component";
+import { HomeProjectsSectionComponent } from "./components/home-projects-section/home-projects-section.component";
 import { HomeWritingSectionComponent } from "./components/home-writing-section/home-writing-section.component";
 
 @Component({
@@ -24,6 +26,7 @@ import { HomeWritingSectionComponent } from "./components/home-writing-section/h
     HomeHeroSectionComponent,
     HomeAboutSectionComponent,
     HomeExperienceSectionComponent,
+    HomeProjectsSectionComponent,
     HomeWritingSectionComponent,
     HomeContactSectionComponent,
   ],
@@ -34,6 +37,7 @@ export class HomePageComponent {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
+  private readonly sections = inject(HomeSectionsService);
 
   constructor() {
     syncJsonLd(() => PERSON);
@@ -43,6 +47,11 @@ export class HomePageComponent {
       this.route.fragment
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((fragment) => this.scrollToFragment(fragment, "auto"));
+      // The header's menu: a click on the link of the slide already in the URL still scrolls.
+      this.sections.requests
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((id) => this.scrollToFragment(id, "smooth"));
+      this.trackCurrentSection();
     });
   }
 
@@ -102,6 +111,44 @@ export class HomePageComponent {
     slider.scrollTo({
       top: Math.max(0, target.offsetTop - this.getHeaderOffset()),
       behavior,
+    });
+  }
+
+  /**
+   * Keeps `HomeSectionsService.current` on the slide in view, for the header's menu. The
+   * slide in view is the last one whose top has passed a line a third of the way down the
+   * visible part of the slider. The deferred slides arrive later, which is why this measures
+   * on scroll instead of observing a fixed set. `scroll` fires per frame, so it is coalesced
+   * through `requestAnimationFrame` and kept out of the template (root CLAUDE.md, Zoneless).
+   */
+  private trackCurrentSection(): void {
+    const slider = this.homeSliderRef()?.nativeElement;
+    if (!slider) {
+      return;
+    }
+
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const header = this.getHeaderOffset();
+      const line = slider.scrollTop + header + (slider.clientHeight - header) / 3;
+      const passed = Array.from(slider.querySelectorAll<HTMLElement>(".slide-section")).filter(
+        (section) => section.offsetTop <= line,
+      );
+      this.sections.current.set(passed.at(-1)?.id || null);
+    };
+    const onScroll = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(measure);
+      }
+    };
+
+    measure();
+    slider.addEventListener("scroll", onScroll, { passive: true });
+    this.destroyRef.onDestroy(() => {
+      slider.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+      this.sections.current.set(null);
     });
   }
 
