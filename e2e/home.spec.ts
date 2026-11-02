@@ -115,6 +115,27 @@ test("the header marks the slide in view and scrolls to it again on a second cli
   );
 });
 
+test("the logo always leads back to the first slide", async ({ page }) => {
+  await page.goto("/#experience");
+  const nav = page.getByRole("navigation", { name: "Main" });
+  const logo = page.getByRole("link", { name: "Dmytro Huliaiev - home" });
+
+  // On the home page: the slider scrolls back to the hero.
+  await expect(nav.getByRole("link", { name: "Experience" })).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  await logo.click();
+  await expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "location");
+  await expect.poll(() => page.locator(".home-slider").evaluate((s) => s.scrollTop)).toBe(0);
+
+  // From another page: the home page opens at its first slide.
+  await page.goto("/blog");
+  await logo.click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "location");
+});
+
 // The dev server shows drafts, so the draft case studies double as fixtures here.
 test("the projects slide shows the projects as pictures and links to each", async ({ page }) => {
   await page.goto("/");
