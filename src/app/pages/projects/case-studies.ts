@@ -106,6 +106,68 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     draft: true,
   },
   {
+    // Built from the Agendo-Booking-Widget repository: its code and its history (my commits
+    // run Oct 2019 – Aug 2021, through IdeaSoft). [TODO] marks what only the author knows.
+    slug: "agendo",
+    title: "Agendo",
+    tagline: "An online booking widget any business can put on its own website",
+    cover: {
+      src: "images/projects/agendo.webp",
+      alt: "The Agendo website: four kinds of booking — a meeting room by the hour, a storage unit by the month, a time with a specialist and a group course with its schedule.",
+    },
+    summary:
+      "Two years on the booking widget of a Swedish scheduling platform: one script tag puts a book button on a business's own website, and the booking — service, resource, time, sign-in and payment — runs in an Angular app inside an iframe. I took over a codebase begun in 2016 and added several buttons per page, branded buttons, payment links and a rework of how the widget learns its language.",
+    company: "Agendo · via IdeaSoft",
+    role: "Angular Developer",
+    period: "Oct 2019 – Aug 2021",
+    stack: ["Angular", "NgRx", "RxJS", "TypeScript", "postMessage", "Angular Material"],
+    outcomes: [
+      { value: "1", label: "script tag puts booking on any website" },
+      { value: "5", label: "steps from choosing a service to paying" },
+      { value: "2016", label: "the year the codebase I took over was started" },
+      { value: "270+", label: "of my commits over two years" },
+    ],
+    context: [
+      "Agendo sells online booking to businesses in Sweden, and the booking is not only of appointments: a meeting room by the hour, a storage unit by the month until cancelled, a time with a specialist, a group course with a schedule and a waiting list. [TODO: who the clients are — and whether all of this already existed in 2019–2021] Their customers book on the business's own website, not on Agendo's.",
+      "The widget is what makes that work: a small loader script adds a book button to the page, and pressing it opens the booking itself — choose a service or a course, a resource, a time, sign in or sign up, confirm and pay — in an Angular app running inside an iframe.",
+      "[TODO: what the state of the widget was when you joined, and what the business needed from it]",
+    ],
+    constraints: [
+      "The widget lives on websites nobody on the team controls: any CSS, any scripts, any CMS.",
+      "A codebase begun in 2016 by other developers, on Angular and NgRx, with the built bundle committed to the repository.",
+      "Booking and payment had to work inside an iframe on phones, where mobile browsers are least forgiving.",
+      "[TODO: team size, deadlines, how releases happened]",
+    ],
+    decisions: [
+      {
+        title: "An iframe, not a script on the page",
+        choice:
+          "The loader only creates an iframe and the button; the whole booking runs in its own document. The host page's styles cannot break the widget, the widget's cannot break the page, and the two talk only through a small event protocol over postMessage.",
+        tradeoff:
+          "Everything that crosses the boundary has to be a message, and mobile browsers treat iframes their own way — the payment step needed fixes for phones that a plain page would not have.",
+      },
+      {
+        title: "Many buttons, one widget",
+        choice:
+          "One loader on a page serves every element that matches its selector, so a business can put a book button next to each service. The button's look comes from the business's profile, fetched by the site's domain; if that request fails, a plain button in the page's language is shown, so booking never disappears.",
+        tradeoff:
+          "Every page view costs a request before the button appears, and a business is recognised by its domain — a site moved to a new domain loses its styling until the profile is updated.",
+      },
+      {
+        title: "Pay later, from a link",
+        choice:
+          "A booking can be paid from a link that carries a hash. The widget fetches the booking by that hash and rebuilds its state — the customer, the appointment, the time, the quantity — then opens straight at the payment step, on any device.",
+        tradeoff:
+          "Every step's store had to accept being entered in the middle, not only in order, and the link works only while the booking it points to is still payable.",
+      },
+    ],
+    results: [
+      "[TODO: what changed for the business — bookings, payments through links, support load]",
+    ],
+    lessons: ["[TODO: what you would do differently]"],
+    draft: true,
+  },
+  {
     // Built from the krakow-now-api repository: README, PROJECT_VISION, ARCHITECTURE (its
     // ADRs) and DEPLOYMENT. [TODO] marks what only the author knows. The repository and the
     // code call it Kraków Now; in production the bot is Kraków Events.
