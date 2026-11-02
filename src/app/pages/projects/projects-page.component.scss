@@ -44,33 +44,7 @@
 .projects-section {
   @include layout.gutters;
   padding-top: clamp(2.5rem, 6vw, 4rem);
-
-  &:last-of-type {
-    padding-bottom: clamp(3rem, 8vw, 6rem);
-  }
-
-  &__head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.25rem 1.5rem;
-    margin-bottom: 1.5rem;
-    @include motion.view-reveal;
-  }
-
-  &__title {
-    margin: 0;
-    font-size: clamp(1.4rem, 2.6vw, 2.2rem);
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: var(--brand-ink);
-  }
-
-  &__lead {
-    margin: 0;
-    color: var(--brand-muted);
-  }
+  padding-bottom: clamp(3rem, 8vw, 6rem);
 }
 
 .cases,
@@ -80,20 +54,25 @@
   list-style: none;
 }
 
+// Cards in a grid: three across on a wide screen, one on a phone.
 .cases {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
   gap: 1.5rem;
 
   > li {
+    display: flex;
     @include motion.view-reveal;
   }
 }
 
-// One project per row: the poster on the left, the story on the right. One real link on
-// the title, stretched across the card (the blog's pattern).
+// The picture on top, the story below. One real link on the title, stretched across the
+// card (the blog's pattern).
 .case-card {
   position: relative;
-  display: grid;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--brand-outline);
   border-radius: 24px;
@@ -104,10 +83,6 @@
     box-shadow 0.22s ease,
     border-color 0.22s ease;
 
-  &--poster {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  }
-
   &:hover,
   &:has(.case-card__link:focus-visible) {
     transform: translateY(-3px);
@@ -115,14 +90,55 @@
     border-color: brand.wine(0.3);
   }
 
+  // The picture and, on its corner, whose project it is.
+  &__media {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--brand-outline);
+  }
+
+  &__kind {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-paper);
+    background: var(--brand-wine);
+    box-shadow: 0 4px 14px brand.shadow(0.18);
+
+    &--side {
+      color: var(--brand-wine);
+      background: var(--brand-paper);
+    }
+  }
+
   &__cover {
     display: block;
     width: 100%;
-    height: 100%;
-    min-height: 100%;
-    aspect-ratio: 16 / 9;
+    height: auto;
+    aspect-ratio: 16 / 10;
     object-fit: cover;
     transition: transform 0.6s ease;
+
+    &--placeholder {
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 20% 15%, brand.wine(0.35), transparent 60%),
+        radial-gradient(circle at 85% 90%, brand.wine(0.2), transparent 55%), brand.wine(0.08);
+
+      span {
+        font-size: clamp(3rem, 6vw, 4.5rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: brand.wine(0.55);
+      }
+    }
   }
 
   &:hover &__cover {
@@ -132,8 +148,9 @@
   &__body {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    padding: clamp(1.5rem, 3vw, 2.75rem);
+    flex: 1;
+    gap: 0.65rem;
+    padding: clamp(1.25rem, 2vw, 1.75rem);
   }
 
   &__eyebrow {
@@ -158,8 +175,8 @@
 
   &__title {
     margin: 0;
-    font-size: clamp(1.8rem, 3.4vw, 3.2rem);
-    line-height: 1.05;
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    line-height: 1.1;
     letter-spacing: -0.03em;
     color: var(--brand-ink);
   }
@@ -184,7 +201,7 @@
 
   &__tagline {
     margin: 0;
-    font-size: clamp(1.05rem, 1.3vw, 1.3rem);
+    font-size: 1rem;
     font-weight: 600;
     color: var(--brand-ink);
   }
@@ -196,8 +213,8 @@
     color: var(--brand-muted);
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    line-clamp: 4;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     overflow: hidden;
   }
 
@@ -213,7 +230,7 @@
       flex-direction: column-reverse;
       justify-content: flex-end;
       gap: 0.25rem;
-      padding: 0.75rem 0.85rem;
+      padding: 0.6rem 0.65rem;
       border: 1px solid brand.ink(0.08);
       border-radius: 12px;
       background: brand.paper(0.7);
@@ -221,7 +238,7 @@
 
     dd {
       margin: 0;
-      font-size: clamp(1.15rem, 1.6vw, 1.6rem);
+      font-size: 1.15rem;
       font-weight: 800;
       line-height: 1.1;
       letter-spacing: -0.01em;
@@ -229,7 +246,7 @@
     }
 
     dt {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       line-height: 1.35;
       color: var(--brand-muted);
     }
@@ -283,23 +300,6 @@
   a {
     color: var(--brand-wine);
     font-weight: 600;
-  }
-}
-
-// One column: the poster above the story.
-@media (max-width: 1000px) {
-  .case-card--poster {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .case-card__cover {
-    height: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .case-card__outcomes {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 

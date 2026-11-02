@@ -246,12 +246,10 @@ reason `@angular/forms` is a dependency.
 
 ## Known trade-offs
 
-- `public/shared-images/` holds the side projects' posters (`kind: "side"` in
-  `case-studies.ts`). While they are drafts, production shows none of them, yet the JPGs ship
-  in every deployment; `logo.png` there is used by nothing. `lingua.jpg` is used by nothing on
-  the site, but the LingoPath bot loads it as its share-card image straight from `main`
-  (`raw.githubusercontent.com/Gudvit/dimacodehub/main/public/shared-images/lingua.jpg`) —
-  do not delete or rename it.
+- `public/shared-images/` holds two files the site does not use. `logo.png` is used by
+  nothing. `lingua.jpg` is loaded by the LingoPath bot as its share-card image straight from
+  `main` (`raw.githubusercontent.com/Gudvit/dimacodehub/main/public/shared-images/lingua.jpg`)
+  — do not delete or rename it. Project covers live in `public/images/projects/`.
 - Component tests exist for the header, the experience gestures and the about reveal
   (ADR 0016). The home slider and the contact form itself are still verified through e2e
   alone.

@@ -145,9 +145,12 @@
 }
 
 // The poster, as wide as the page.
+// As wide as the text, not the window: a poster is a picture of the product, not a banner,
+// and the side projects' pictures are only 512–640px wide.
 .case-cover {
   display: block;
   width: 100%;
+  max-width: layout.$measure;
   height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;

@@ -7,9 +7,12 @@ test("the projects page lists the case studies and the side projects", async ({ 
   await expect(
     page.getByRole("heading", { level: 1, name: "Work, and how it was done" }),
   ).toBeVisible();
-  await expect(page.getByRole("heading", { level: 2, name: "Client work" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 2, name: "Side projects" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 3, name: "Kraków Events" })).toBeVisible();
+  // One grid: each card says whether it is client work or a side project.
+  const apomeds = page.getByRole("article").filter({ hasText: "Apomeds" });
+  await expect(apomeds.getByText("Client work", { exact: true })).toBeVisible();
+  const krakow = page.getByRole("article").filter({ hasText: "Kraków Events" });
+  await expect(krakow.getByRole("heading", { level: 2, name: "Kraków Events" })).toBeVisible();
+  await expect(krakow.getByText("Side project", { exact: true })).toBeVisible();
 
   await page.getByRole("link", { name: "Apomeds", exact: true }).click();
   await expect(page).toHaveURL(/\/projects\/apomeds$/);

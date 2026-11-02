@@ -89,14 +89,6 @@ test.describe("with reduced motion", () => {
   });
 });
 
-test("the projects page shows the placeholder", async ({ page }) => {
-  await page.goto("/projects");
-
-  await expect(page).toHaveTitle("Projects - Dmytro Huliaiev");
-  await expect(page.getByText("Coming soon")).toBeVisible();
-  await expect(page.locator("app-loader svg")).toBeVisible();
-});
-
 test("the writing section lists the latest posts and links to the blog", async ({ page }) => {
   await page.goto("/");
 

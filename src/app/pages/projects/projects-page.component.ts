@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
-import { NgTemplateOutlet } from "@angular/common";
 import { RouterLink } from "@angular/router";
 import { HeaderComponent } from "../../components/header/header.component";
 import { FooterComponent } from "../../components/footer/footer.component";
@@ -9,14 +8,19 @@ import { CaseStudyService } from "./services/case-study.service";
   selector: "app-projects-page",
   templateUrl: "./projects-page.component.html",
   styleUrl: "./projects-page.component.scss",
-  imports: [HeaderComponent, FooterComponent, RouterLink, NgTemplateOutlet],
+  imports: [HeaderComponent, FooterComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsPageComponent {
-  private readonly projects = inject(CaseStudyService).getAll();
+  /** Client work and side projects in one grid, in the order of `case-studies.ts`. */
+  readonly projects = inject(CaseStudyService).getAll();
 
-  /** Client work, as posters. */
-  readonly caseStudies = this.projects.filter((study) => study.kind !== "side");
-  /** My own projects, as the same posters. */
-  readonly sideProjects = this.projects.filter((study) => study.kind === "side");
+  /** The stand-in for a missing cover: `Document Vault` → `DV`, `Apomeds` → `A`. */
+  initials(title: string): string {
+    return title
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((word) => word.charAt(0).toUpperCase())
+      .join("");
+  }
 }

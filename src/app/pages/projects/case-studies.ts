@@ -176,9 +176,8 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     title: "Kraków Events",
     tagline: "A curated guide to what is on in Kraków, in a Telegram bot",
     cover: {
-      // [TODO: replace with a poster made from screenshots of the bot and the admin panel]
-      src: "shared-images/krakow-events.jpg",
-      alt: "Kraków Events: the city's landmarks at night, a concert crowd and a meetup.",
+      src: "images/projects/krakow-events.webp",
+      alt: "Kraków Events: St Mary's Basilica at night between a concert crowd, a painter at her easel and friends at a meetup, under the word events.",
     },
     site: "https://t.me/KrakowEventsBot",
     summary:
@@ -259,8 +258,8 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     title: "LingoPath",
     tagline: "Learn Polish and English in a Telegram bot",
     cover: {
-      src: "shared-images/lingopath.jpg",
-      alt: "LingoPath: London and Kraków joined by a glowing path of flashcards, under the words Learn Polish & English.",
+      src: "images/projects/lingopath.webp",
+      alt: "LingoPath: Big Ben and Kraków's Cloth Hall on either side of a river at sunset, with flashcards rising from an open book.",
     },
     site: "https://t.me/LingoPathBot",
     summary:
