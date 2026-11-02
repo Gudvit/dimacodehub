@@ -34,6 +34,8 @@ export interface CaseStudyHighlight {
  */
 export interface CaseStudy {
   readonly slug: string;
+  /** Client work (the default) or a project of my own; the projects page groups by it. */
+  readonly kind?: "client" | "side";
   readonly title: string;
   /** What the product is, in a few words: the line under the title on the card. */
   readonly tagline?: string;

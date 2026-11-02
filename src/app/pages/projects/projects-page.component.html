@@ -22,66 +22,29 @@
       <ul class="cases">
         @for (study of caseStudies; track study.slug) {
           <li>
-            <article class="case-card" [class.case-card--poster]="study.cover">
-              @if (study.cover; as cover) {
-                <img
-                  class="case-card__cover"
-                  [src]="cover.src"
-                  alt=""
-                  width="1600"
-                  height="900"
-                  loading="lazy"
-                  decoding="async"
-                />
-              }
-              <div class="case-card__body">
-                <p class="case-card__eyebrow">
-                  @if (study.draft) {
-                    <span class="case-card__draft">Draft</span>
-                  }
-                  {{ study.company }} · {{ study.period }}
-                </p>
-                <h3 class="case-card__title">
-                  <a class="case-card__link" [routerLink]="['/projects', study.slug]">{{
-                    study.title
-                  }}</a>
-                </h3>
-                @if (study.tagline) {
-                  <p class="case-card__tagline">{{ study.tagline }}</p>
-                }
-                <p class="case-card__summary">{{ study.summary }}</p>
-
-                <dl class="case-card__outcomes">
-                  @for (outcome of study.outcomes.slice(0, 3); track outcome.label) {
-                    <div>
-                      <dt>{{ outcome.label }}</dt>
-                      <dd>{{ outcome.value }}</dd>
-                    </div>
-                  }
-                </dl>
-
-                <ul class="case-card__stack" aria-label="Stack">
-                  @for (item of study.stack; track item) {
-                    <li>{{ item }}</li>
-                  }
-                </ul>
-                <span class="case-card__more" aria-hidden="true"
-                  >Open the project <span>→</span></span
-                >
-              </div>
-            </article>
+            <ng-container *ngTemplateOutlet="poster; context: { $implicit: study }" />
           </li>
         }
       </ul>
     </section>
   }
 
-  @if (sideProjects.length) {
+  @if (sidePosters.length || sideProjects.length) {
     <section class="projects-section" aria-labelledby="side-projects-title">
       <header class="projects-section__head">
         <h2 class="projects-section__title" id="side-projects-title">Side projects</h2>
         <p class="projects-section__lead">What I build when nobody asks me to.</p>
       </header>
+
+      @if (sidePosters.length) {
+        <ul class="cases cases--side">
+          @for (study of sidePosters; track study.slug) {
+            <li>
+              <ng-container *ngTemplateOutlet="poster; context: { $implicit: study }" />
+            </li>
+          }
+        </ul>
+      }
 
       <ul class="side">
         @for (project of sideProjects; track project.slug) {
@@ -128,7 +91,7 @@
     </section>
   }
 
-  @if (!caseStudies.length && !sideProjects.length) {
+  @if (!caseStudies.length && !sidePosters.length && !sideProjects.length) {
     <section class="projects-empty">
       <p>
         The case studies are being written. Until they are up, the
@@ -138,5 +101,54 @@
     </section>
   }
 </main>
+
+<!-- A project with a page of its own, as a poster: the client work and the side projects
+     share it. One real link on the title, stretched across the card. -->
+<ng-template #poster let-study>
+  <article class="case-card" [class.case-card--poster]="study.cover">
+    @if (study.cover; as cover) {
+      <img
+        class="case-card__cover"
+        [src]="cover.src"
+        alt=""
+        width="1600"
+        height="900"
+        loading="lazy"
+        decoding="async"
+      />
+    }
+    <div class="case-card__body">
+      <p class="case-card__eyebrow">
+        @if (study.draft) {
+          <span class="case-card__draft">Draft</span>
+        }
+        {{ study.company }} · {{ study.period }}
+      </p>
+      <h3 class="case-card__title">
+        <a class="case-card__link" [routerLink]="['/projects', study.slug]">{{ study.title }}</a>
+      </h3>
+      @if (study.tagline) {
+        <p class="case-card__tagline">{{ study.tagline }}</p>
+      }
+      <p class="case-card__summary">{{ study.summary }}</p>
+
+      <dl class="case-card__outcomes">
+        @for (outcome of study.outcomes.slice(0, 3); track outcome.label) {
+          <div>
+            <dt>{{ outcome.label }}</dt>
+            <dd>{{ outcome.value }}</dd>
+          </div>
+        }
+      </dl>
+
+      <ul class="case-card__stack" aria-label="Stack">
+        @for (item of study.stack; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+      <span class="case-card__more" aria-hidden="true">Open the project <span>→</span></span>
+    </div>
+  </article>
+</ng-template>
 
 <app-footer></app-footer>

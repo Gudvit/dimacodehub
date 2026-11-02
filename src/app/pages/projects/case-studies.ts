@@ -102,4 +102,87 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     ],
     draft: true,
   },
+  {
+    // Built from the krakow-now-api repository: README, PROJECT_VISION, ARCHITECTURE (its
+    // ADRs) and DEPLOYMENT. [TODO] marks what only the author knows. The repository and the
+    // code call it Kraków Now; in production the bot is Kraków Events.
+    slug: "krakow-events",
+    kind: "side",
+    title: "Kraków Events",
+    tagline: "A curated guide to what is on in Kraków, in a Telegram bot",
+    cover: {
+      // [TODO: replace with a poster made from screenshots of the bot and the admin panel]
+      src: "shared-images/krakow-events.jpg",
+      alt: "Kraków Events: the city's landmarks at night, a concert crowd and a meetup.",
+    },
+    site: "https://t.me/KrakowEventsBot",
+    summary:
+      "A curator, not an aggregator: a thousand events a week come in from seventeen sources, are cleaned, de-duplicated and scored by AI, and a human picks the twenty or thirty worth an evening — delivered by a Telegram bot. Built alone, from the pipeline to the admin panel.",
+    company: "Personal project",
+    role: "Author · product, architecture, backend and admin panel",
+    period: "Jun 2026 – present",
+    stack: [
+      "NestJS",
+      "TypeScript",
+      "PostgreSQL",
+      "Prisma",
+      "Gemini",
+      "Telegraf",
+      "Next.js",
+      "Docker",
+    ],
+    outcomes: [
+      { value: "17", label: "event sources behind one connector interface" },
+      { value: "141", label: "architecture decisions written down" },
+      { value: "1 GB", label: "of RAM runs the API, the bot and the database" },
+      { value: "150", label: "test files" },
+    ],
+    context: [
+      "Kraków has more events than anyone can read about: listings, theatres, clubs, meetups, the city's own calendar. Newcomers, the Ukrainian community and people who want to practise a language need a short list they can trust, not a search engine over a thousand entries.",
+      "Kraków Events collects everything and publishes only what is worth a person's evening. The target ratio is a thousand events collected a week, twenty to thirty approved and five to ten featured — and a list short enough to read in under a minute.",
+      "[TODO: why you started it, and who uses it today]",
+    ],
+    constraints: [
+      "One developer: product, backend, admin panel, deployment and the copy in the bot.",
+      "A free Oracle Cloud VM with one CPU and 1 GB of RAM hosts everything.",
+      "Every source speaks its own format — iCal feeds, a public GraphQL API, HTML pages — and any of them can change or vanish without notice.",
+      "Trust is the product: one wrong date or a duplicate costs more than ten missing events.",
+    ],
+    decisions: [
+      {
+        title: "A modular monolith shaped as a pipeline",
+        choice:
+          "One NestJS application, with a module per stage — sources, ingestion, normalisation, de-duplication, scoring, moderation, publishing — each owning one step and talking to its neighbours through a typed contract. The Telegram bot and the admin panel are consumers of the same publishing service, never of the database.",
+        tradeoff:
+          "No queue between the stages: a long import runs in-process, so every outbound call needed a timeout and every run a way to be cancelled before a stuck source could hang the pipeline.",
+      },
+      {
+        title: "Sources are plugins",
+        choice:
+          "A source is one connector behind a SourceConnector port, and raw payloads are stored verbatim, so re-importing never duplicates an event or loses a moderator's decision. Adding Resident Advisor or Kraków.travel touched nothing downstream.",
+        tradeoff:
+          "Seventeen connectors are seventeen things that break on someone else's schedule; filtering a national feed down to Kraków happens in each connector, not in one place.",
+      },
+      {
+        title: "AI proposes, a human disposes",
+        choice:
+          "Gemini scores every event from one to ten, picks its category and writes a blurb, behind a ScoringProvider port with its reasoning and confidence stored on the event. A moderator approves, rejects or features; the bot never shows an event nobody has reviewed. Without an API key the pipeline still runs — events just wait unscored.",
+        tradeoff:
+          "Publishing is never fully automatic, so the list is only as fresh as the moderation queue. [TODO: how long moderation takes you a week]",
+      },
+      {
+        title: "Long polling on a free VM",
+        choice:
+          "The bot polls Telegram instead of receiving webhooks, so production needs no domain and no TLS: Docker Compose runs PostgreSQL, a one-shot migration and the app. CI builds the image and pushes it to GHCR; the server only pulls it, because building on 1 GB of RAM took swap and patience.",
+        tradeoff:
+          "One small machine is one point of failure — a dead-man's-switch health check reports when the database or the bot stops answering.",
+      },
+    ],
+    results: [
+      "[TODO: is the bot live for everyone? users, weekly readers, events published per week]",
+      "The repository is run like a team's: a written architecture, an ADR for every decision, strict TypeScript, CI on every pull request and a reviewer agent that holds changes to the principles.",
+    ],
+    lessons: ["[TODO: what you would do differently]"],
+    draft: true,
+  },
 ];

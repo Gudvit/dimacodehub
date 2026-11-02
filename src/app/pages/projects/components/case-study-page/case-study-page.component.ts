@@ -21,10 +21,14 @@ export class CaseStudyPageComponent {
 
   readonly study = computed(() => this.caseStudies.getBySlug(this.slug()));
 
-  /** The live site's address without the scheme, as the link text. */
+  /** The live site's address without the scheme, as the link text: `t.me/KrakowEventsBot`. */
   readonly siteHost = computed(() => {
     const site = this.study()?.site;
-    return site ? new URL(site).host : "";
+    if (!site) {
+      return "";
+    }
+    const url = new URL(site);
+    return (url.host + url.pathname).replace(/\/$/, "");
   });
 
   constructor() {

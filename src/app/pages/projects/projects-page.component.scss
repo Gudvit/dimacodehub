@@ -86,6 +86,10 @@
   display: grid;
   gap: 1.5rem;
 
+  &--side {
+    margin-bottom: 1.5rem;
+  }
+
   > li {
     @include motion.view-reveal;
   }
