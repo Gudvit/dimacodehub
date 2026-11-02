@@ -34,7 +34,8 @@ before any large architectural change — they record why things are the way the
   `#fff` or other literal colours in component styles. There is a light and a dark theme
   (ADR 0020): every `--brand-*` property has a value per theme, and the helpers mix the
   property, so a component that sticks to them works in both without knowing which is on.
-  `--brand-paper` is the layer above the page (white in light). Code in posts is coloured
+  `--brand-paper` is the layer above the page (white in light); `--brand-on-image` /
+  `brand.on-image()` is text over a darkened picture, light in both themes. Code in posts is coloured
   by `--code-*`, defined per theme next to the brand properties. The hero is the exception:
   it sits on a photo in both themes and keeps its literal whites and `brand.fixed-ink()`.
 - **Vitest 5** (jsdom 30) for unit tests; **Playwright** for e2e.
@@ -54,6 +55,7 @@ contact form. Nothing else in `dependencies` is optional.
 | `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs              |
 | `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)       |
 | `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
+| `npm run build:cover -- …`        | renders a project cover from a screenshot (see `scripts/build-cover.ts`)       |
 | `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page               |
 | `npm run lighthouse`              | Lighthouse budgets on the built site (after `build:gh`; CI runs it)            |
 | `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)              |
@@ -73,13 +75,15 @@ src/
   main.server.ts              the same bootstrap for prerendering (build time only)
   styles/_brand.scss          the palette for both themes + ink()/wine()/paper()/… helpers
   styles/_motion.scss         slide-reveal() / view-reveal(): scroll-driven entrances (ADR 0025)
-  styles/_layout.scss         page gutters and the text measure: pages run full width, text
-                              keeps ~75 characters
+  styles/_layout.scss         page gutters and the text measure (pages run full width, text
+                              keeps ~75 characters), the 12-column grid()
+  styles/_type.scss           the type scale in Urbanist: page-title(), label()
   styles.scss                 the theme custom properties, background effects, view-transition
                               rules for route changes, `.slide-section` snap rules
   vitest.setup.ts             matchMedia polyfill for jsdom
 scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
 scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Playwright
+scripts/build-cover.ts        a 1600×900 project cover: screenshot in a tilted browser on a gradient
 scripts/build-stats.ts        bundle sizes, page and test counts → build-stats.json
 scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → build-stats.json
   images/                     assets referenced only from SCSS (hashed by the bundler)

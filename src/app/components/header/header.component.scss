@@ -14,8 +14,10 @@
   justify-content: space-between;
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--brand-outline);
-  background: var(--brand-paper);
-  opacity: 0.87;
+  // Frosted rather than faded: the page shows through the bar, the bar's own text stays
+  // fully opaque.
+  background: brand.paper(0.86);
+  backdrop-filter: blur(16px) saturate(1.4);
 }
 
 .menu-toggle {
@@ -97,9 +99,12 @@
 
 .nav {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
   margin-left: auto;
-  font-size: 0.95rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 // The palette button matches the theme toggle beside it.
@@ -147,16 +152,44 @@
   margin-left: 0.5rem;
 }
 
+// The current page is marked by a dot under its name; the others brighten on hover.
 .nav a {
+  position: relative;
+  padding: 0.35rem 0;
   color: var(--brand-muted);
   text-decoration: none;
-  padding-bottom: 0.2rem;
-  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -0.35rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--brand-wine);
+    transform: translateX(-50%) scale(0);
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  &:hover {
+    color: var(--brand-ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-wine);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
 }
 
 .nav a.active {
   color: var(--brand-ink);
-  border-color: var(--brand-wine);
+
+  &::after {
+    transform: translateX(-50%) scale(1);
+  }
 }
 
 @media (max-width: 600px) {
@@ -205,6 +238,25 @@
 
   .nav a {
     width: fit-content;
-    padding-bottom: 0.1rem;
+    padding: 0.1rem 0 0.1rem 1rem;
+
+    // Beside the name in the column, not under it.
+    &::after {
+      left: 0;
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%) scale(0);
+    }
+  }
+
+  .nav a.active::after {
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav a,
+  .nav a::after {
+    transition: none;
   }
 }

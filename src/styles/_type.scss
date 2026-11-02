@@ -1,0 +1,33 @@
+// The type scale. One typeface, Urbanist (Google Fonts, `src/index.html`): contrast comes
+// from size and weight, not from a second family.
+// Reached as `@use "type"` through `stylePreprocessorOptions.includePaths`.
+
+$sans: "Urbanist", "Segoe UI", sans-serif;
+
+// A page's opening line: very large, tight, bold. An `<em>` inside is set in the accent
+// colour, lighter — the one flourish a title gets.
+@mixin page-title {
+  margin: 0;
+  font-family: $sans;
+  font-size: clamp(3rem, 8.5vw, 9rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  color: var(--brand-ink);
+
+  em {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--brand-wine);
+  }
+}
+
+// Small capitals for metadata: indexes, kinds, dates, section labels.
+@mixin label {
+  font-family: $sans;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}

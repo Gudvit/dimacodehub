@@ -14,6 +14,9 @@ $muted: #6a6d7a;
 // Cards, panels and the header — the layer above the page.
 $paper: #fff;
 $danger: #9e2a2b;
+// Text and lines over a darkened picture: light in both themes, because the scrim under it
+// is dark in both.
+$on-image: #fff;
 
 // Syntax colours for code in posts; comments and keywords reuse muted and wine.
 $code-string: #2f6b3b;
@@ -54,6 +57,11 @@ $code-function-dark: #c9a3ef;
 // The page colour, for gradients that fade a panel into the page.
 @function surface($alpha) {
   @return -mix(--brand-surface, $alpha);
+}
+
+// Over a darkened picture: a project tile's hover, for instance.
+@function on-image($alpha) {
+  @return -mix(--brand-on-image, $alpha);
 }
 
 // Box shadows: ink on the light page, black on the dark one, where a light glow would read

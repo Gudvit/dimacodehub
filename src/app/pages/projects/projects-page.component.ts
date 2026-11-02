@@ -14,7 +14,6 @@ import { CaseStudyService } from "./services/case-study.service";
 export class ProjectsPageComponent {
   /** Client work and side projects in one grid, in the order of `case-studies.ts`. */
   readonly projects = inject(CaseStudyService).getAll();
-
   /** The stand-in for a missing cover: `Document Vault` → `DV`, `Apomeds` → `A`. */
   initials(title: string): string {
     return title

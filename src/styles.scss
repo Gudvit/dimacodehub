@@ -17,6 +17,7 @@
   --brand-muted: #{brand.$muted};
   --brand-paper: #{brand.$paper};
   --brand-danger: #{brand.$danger};
+  --brand-on-image: #{brand.$on-image};
   --brand-shadow: #{brand.$ink};
   --brand-outline: #{brand.ink(0.12)};
   --code-string: #{brand.$code-string};
@@ -35,6 +36,7 @@
   --brand-muted: #{brand.$muted-dark};
   --brand-paper: #{brand.$paper-dark};
   --brand-danger: #{brand.$danger-dark};
+  --brand-on-image: #{brand.$on-image};
   --brand-shadow: #000;
   --brand-outline: #{brand.ink(0.14)};
   --code-string: #{brand.$code-string-dark};

@@ -16,3 +16,17 @@ $measure: 46rem;
     padding-right: $gutter-phone;
   }
 }
+
+// The editorial grid: twelve columns with a gap that breathes with the window. Pages that
+// compose rather than stack (the projects index) place their pieces on it.
+$columns: 12;
+$column-gap: clamp(1rem, 2.5vw, 2.5rem);
+
+// Media corners: smaller than a card's, so a picture reads as a print, not a widget.
+$radius-media: 10px;
+
+@mixin grid {
+  display: grid;
+  grid-template-columns: repeat($columns, minmax(0, 1fr));
+  column-gap: $column-gap;
+}
