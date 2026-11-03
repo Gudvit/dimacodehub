@@ -1,5 +1,6 @@
 @use "brand";
 @use "layout";
+@use "type";
 
 .blog-page {
   min-height: calc(100vh - 82px);
@@ -40,6 +41,10 @@
     max-width: 52ch;
     line-height: 1.6;
   }
+}
+
+.blog-back {
+  @include type.back-link;
 }
 
 .blog-list {

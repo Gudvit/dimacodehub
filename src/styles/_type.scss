@@ -31,3 +31,30 @@ $sans: "Urbanist", "Segoe UI", sans-serif;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
+
+// The "← Back to home" link above a page's title, with its arrow in `&__arrow`. A comfortable
+// tap: on a phone this is the quick way out of the page.
+@mixin back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--brand-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--brand-ink);
+  }
+
+  &__arrow {
+    transition: transform 0.2s ease;
+  }
+
+  &:hover &__arrow {
+    transform: translateX(-4px);
+  }
+}

@@ -1,11 +1,16 @@
 @use "brand";
 @use "layout";
 @use "motion";
+@use "type";
 
 .colophon {
   @include layout.gutters;
   padding-top: calc(82px + clamp(2rem, 5vw, 4rem));
   padding-bottom: clamp(3rem, 8vw, 6rem);
+}
+
+.colophon-back {
+  @include type.back-link;
 }
 
 .colophon-hero {

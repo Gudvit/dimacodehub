@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
 
+test("the colophon leads back to the home page", async ({ page }) => {
+  await page.goto("/colophon");
+
+  await page.getByRole("link", { name: "Back to home" }).click();
+
+  await expect(page.getByRole("heading", { level: 1, name: "Dmytro Huliaiev" })).toBeInViewport();
+});
+
 test("the footer leads to the page about how the site is built", async ({ page }) => {
   await page.goto("/blog");
   await page
