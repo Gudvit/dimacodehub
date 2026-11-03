@@ -31,7 +31,7 @@
         [class.active]="activeSection() === section.id"
         [attr.aria-current]="activeSection() === section.id ? 'location' : null"
         (click)="goToSection(section.id)"
-        >{{ section.label }}</a
+        ><span class="nav__label">{{ section.label }}</span></a
       >
     }
   </nav>
