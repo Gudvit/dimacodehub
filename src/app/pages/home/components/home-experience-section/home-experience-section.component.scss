@@ -326,7 +326,8 @@
   letter-spacing: 0.05em;
 }
 
-.experience-mobile-nav {
+.experience-mobile-nav,
+.focus-panel__next {
   display: none;
 }
 
@@ -441,14 +442,62 @@
     outline: 2px solid brand.wine(0.42);
     outline-offset: -4px;
   }
+
+  // One arrow for a thumb, on the right edge halfway down the card: the next role, wrapping
+  // round after the last, like the swipe. A bare chevron drawn by two borders; the button
+  // around it is the touch target, and the bullets keep clear of it.
+  .focus-panel {
+    position: relative;
+  }
+
+  .focus-panel__bullets {
+    padding-right: 1.6rem;
+  }
+
+  .focus-panel__next {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 44px;
+    height: 64px;
+    transform: translateY(-50%);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: brand.ink(0.55);
+    cursor: pointer;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 16px;
+      height: 16px;
+      border-right: 2.5px solid currentColor;
+      border-top: 2.5px solid currentColor;
+      transform: translate(-70%, -50%) rotate(45deg);
+    }
+
+    &:active {
+      color: var(--brand-wine);
+    }
+
+    &:focus-visible {
+      outline: 2px solid brand.wine(0.42);
+      outline-offset: -6px;
+      border-radius: 8px;
+    }
+  }
 }
 
 @media (max-width: 640px) {
   .experience {
     padding-left: 1.4rem;
     padding-right: 1.4rem;
-    padding-top: clamp(2.4rem, 6.6svh, 3.2rem);
-    padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
+    padding-top: display-title.$phone-padding-top;
+    padding-bottom: display-title.$phone-padding-bottom;
   }
 
   .experience::before {

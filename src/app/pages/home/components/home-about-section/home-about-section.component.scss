@@ -208,6 +208,8 @@
 
 @media (max-width: 640px) {
   .about-hero {
+    padding-top: display-title.$phone-padding-top;
+    padding-bottom: display-title.$phone-padding-bottom;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
   }
@@ -226,10 +228,12 @@
 
   .about-hero__body p {
     font-size: 1rem;
+    line-height: 1.5;
   }
 }
 
-@media (max-width: 640px) and (max-height: 700px) {
+// The pills give way until the screen is tall enough for them and the arrow at the foot.
+@media (max-width: 640px) and (max-height: 800px) {
   .about-hero__pills {
     display: none;
   }

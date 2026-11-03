@@ -59,8 +59,22 @@
   min-height: 0;
 }
 
+// A short phone screen (Chrome on an iPhone leaves about 620px): the spacing around the
+// heading gives way, so the five tiles still fit.
+@media (max-width: 640px) and (max-height: 720px) {
+  .projects__display-title {
+    margin-bottom: 0.6rem;
+  }
+
+  .projects__inner {
+    gap: 0.75rem;
+  }
+}
+
 @media (max-width: 640px) {
   .projects {
+    padding-top: display-title.$phone-padding-top;
+    padding-bottom: display-title.$phone-padding-bottom;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
   }

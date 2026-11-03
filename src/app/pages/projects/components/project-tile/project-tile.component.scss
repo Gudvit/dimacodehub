@@ -112,19 +112,34 @@
     transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) 0.05s;
   }
 
-  &:hover &__image,
   &:has(.work__link:focus-visible) &__image {
     transform: scale(1.05);
     filter: saturate(1.05);
   }
 
-  &:hover &__overlay,
   &:has(.work__link:focus-visible) &__overlay {
     opacity: 1;
   }
 
-  &:hover &__name,
   &:has(.work__link:focus-visible) &__name {
+    transform: none;
+  }
+}
+
+// Hover only where there is a pointer that hovers. On a phone a tap sets `:hover` too, and
+// iOS WebKit (every browser on an iPhone) can spend the first tap on that hover change
+// instead of following the link — the tile then opened only on the second tap.
+@media (hover: hover) {
+  .work:hover .work__image {
+    transform: scale(1.05);
+    filter: saturate(1.05);
+  }
+
+  .work:hover .work__overlay {
+    opacity: 1;
+  }
+
+  .work:hover .work__name {
     transform: none;
   }
 }

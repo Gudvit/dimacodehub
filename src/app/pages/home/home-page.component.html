@@ -26,3 +26,16 @@
 
   <app-home-contact-section (backToTop)="scrollToTop()"></app-home-contact-section>
 </main>
+
+<!-- A phone's way through the slides: next while going down, previous once turned back. -->
+<button
+  class="slide-step"
+  type="button"
+  [class.is-visible]="stepVisible()"
+  [class.is-up]="stepDirection() === 'up'"
+  [class.is-raised]="stepRaised()"
+  [attr.aria-label]="stepDirection() === 'up' ? 'Previous section' : 'Next section'"
+  [attr.tabindex]="stepVisible() ? null : -1"
+  [attr.aria-hidden]="stepVisible() ? null : 'true'"
+  (click)="step()"
+></button>

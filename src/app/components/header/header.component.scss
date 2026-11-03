@@ -169,26 +169,14 @@
 
 // The slide in view is underlined. The line draws in from the left, like a progress bar
 // filling, and leaves to the right, so moving down the menu reads as one line travelling on.
+// It hangs off the label, not the link, so it is as long as the word even where the link is
+// a full-width row (the mobile menu).
 .nav a {
   position: relative;
   padding: 0.35rem 0;
   color: var(--brand-muted);
   text-decoration: none;
   transition: color 0.2s ease;
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -0.15rem;
-    height: 2px;
-    border-radius: 999px;
-    background: var(--brand-wine);
-    transform: scaleX(0);
-    transform-origin: right center;
-    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
-  }
 
   &:hover {
     color: var(--brand-ink);
@@ -201,10 +189,29 @@
   }
 }
 
+.nav__label {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    // The letter-spacing trails the last letter too; the line stops at the letter itself.
+    right: 0.14em;
+    bottom: -0.5rem;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--brand-wine);
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+}
+
 .nav a.active {
   color: var(--brand-ink);
 
-  &::after {
+  .nav__label::after {
     transform: scaleX(1);
     transform-origin: left center;
     transition-duration: 0.7s;
@@ -248,25 +255,34 @@
     grid-column: 1 / -1;
     width: 100%;
     flex-direction: column;
-    gap: 0.8rem;
-    padding: 0.75rem 0 0.25rem;
+    gap: 0;
+    padding: 0.25rem 0;
     border-top: 1px solid brand.ink(0.08);
+    font-size: 1rem;
   }
 
   .nav.is-open {
     display: flex;
   }
 
+  // A finger needs a row, not a word: each link is the full width and at least 48px tall.
+  // The underline stays the length of the word (it hangs off `.nav__label`).
   .nav a {
-    width: fit-content;
-    padding: 0.1rem 0;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0.5rem 0;
+  }
+
+  .nav__label::after {
+    bottom: -0.35rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .brand img,
   .nav a,
-  .nav a::after {
+  .nav__label::after {
     transition: none;
   }
 }
