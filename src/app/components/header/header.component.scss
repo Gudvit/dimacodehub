@@ -248,18 +248,29 @@
     grid-column: 1 / -1;
     width: 100%;
     flex-direction: column;
-    gap: 0.8rem;
-    padding: 0.75rem 0 0.25rem;
+    gap: 0;
+    padding: 0.25rem 0;
     border-top: 1px solid brand.ink(0.08);
+    font-size: 1rem;
   }
 
   .nav.is-open {
     display: flex;
   }
 
+  // A finger needs a row, not a word: each link is the full width and at least 48px tall.
+  // A full-width underline would cross the screen, so the slide in view gets a short one.
   .nav a {
-    width: fit-content;
-    padding: 0.1rem 0;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0.5rem 0;
+
+    &::after {
+      right: auto;
+      bottom: 0.45rem;
+      width: 1.75rem;
+    }
   }
 }
 
