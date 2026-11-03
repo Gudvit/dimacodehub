@@ -43,7 +43,9 @@ What scrolls is **`.home-slider`, not `window`** (`overflow-y: auto` + `scroll-s
   the section is always visible.
 
 Each `.slide-section` is also a scroll-driven view timeline, `--slide`: its title, copy
-and cards rise in as the slide comes up, through `motion.slide-reveal($order)` (ADR 0025).
+and cards rise in as the slide comes up, through `motion.slide-reveal($order)` (ADR 0025) —
+except the contact cards: the form must never depend on a scroll timeline (see the
+section's SCSS).
 Use that mixin rather than `view()` inside a section — the sections clip their overflow,
 so `view()` would follow the section, which never scrolls, and silently do nothing.
 
@@ -134,7 +136,10 @@ here:
 
 `/#contacts` is handled in `HomePageComponent`: a subscription to `route.fragment` inside
 `afterNextRender()` (the slider is not in the DOM before the first render) and a scroll
-with `behavior: "auto"`. The anchor is an `id` on the section element (`id="contacts"`).
+with `behavior: "instant"` on the first emission — before the first paint, so `/#projects`
+opens on the projects rather than on the hero and then gliding down (the slider's CSS
+`scroll-behavior: smooth` would turn `"auto"` into that glide). Back to a bare `/` returns to
+`HomeSectionsService.lastSection`, the slide the page was left from. The anchor is an `id` on the section element (`id="contacts"`).
 Angular's `withInMemoryScrolling`/`anchorScrolling` is useless here for the same reason
 `window.scrollTo` is.
 
