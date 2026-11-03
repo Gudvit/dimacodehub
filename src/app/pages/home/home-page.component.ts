@@ -44,15 +44,15 @@ export class HomePageComponent {
   /**
    * The phone's floating arrow (`.slide-step`): which way the reader is going. It points down
    * while they scroll down and up once they turn back; on the last slide it can only go up.
-   * Hidden on the first slide, which has its own arrow.
    */
   readonly stepDirection = signal<"down" | "up">("down");
   /** On the last slide the arrow moves aside, clear of the footer's links. */
   readonly stepRaised = computed(() => this.sections.current() === "contacts");
-  readonly stepVisible = computed(() => {
-    const current = this.sections.current();
-    return current !== null && current !== "home";
-  });
+  /**
+   * The first slide has its own arrow, which scrolls away with it. This one waits until the
+   * hero has gone under the header, so the two are never on screen together.
+   */
+  readonly stepVisible = signal(false);
 
   constructor() {
     syncJsonLd(() => PERSON);
@@ -228,10 +228,10 @@ export class HomePageComponent {
       lastTop = top;
       const header = this.getHeaderOffset();
       const line = slider.scrollTop + header + (slider.clientHeight - header) / 3;
-      const passed = Array.from(slider.querySelectorAll<HTMLElement>(".slide-section")).filter(
-        (section) => section.offsetTop <= line,
-      );
+      const slides = this.slideSections(slider);
+      const passed = slides.filter((section) => section.offsetTop <= line);
       this.sections.current.set(passed.at(-1)?.id || null);
+      this.stepVisible.set(slides.length > 1 && slides[1].offsetTop - top <= header);
     };
     const onScroll = () => {
       if (!frame) {

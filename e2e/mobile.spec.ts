@@ -79,6 +79,32 @@ async function settle(page: Page): Promise<void> {
 
 // The phone's arrow at the foot of the slides: down while going down, up on the last slide
 // and on the way back. The first slide has its own arrow, so this one waits until the second.
+test("the hero's arrow and the slide arrow are never on screen together", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await settle(page);
+
+  const heroArrow = page.getByRole("button", { name: "Scroll to next section" });
+  const slideArrow = page.locator(".slide-step");
+  await expect(heroArrow).toBeInViewport();
+  await expect(slideArrow).not.toHaveClass(/is-visible/);
+
+  // A slow scroll stopped halfway: the next slide is in view, the hero's arrow still is too.
+  await page.locator(".home-slider").evaluate((slider) => {
+    slider.scrollTo({ top: slider.clientHeight * 0.75, behavior: "instant" });
+  });
+  await expect(page.locator("#about")).toBeInViewport();
+  await expect(heroArrow).toBeInViewport();
+  await expect(slideArrow).not.toHaveClass(/is-visible/);
+
+  await page.locator(".home-slider").evaluate((slider) => {
+    const about = slider.querySelector<HTMLElement>("#about");
+    slider.scrollTo({ top: about?.offsetTop, behavior: "instant" });
+  });
+  await expect(heroArrow).not.toBeInViewport();
+  await expect(slideArrow).toHaveClass(/is-visible/);
+});
+
 test("the slide arrow steps down the slides and back up", async ({ page }) => {
   // The bounce never settles, and Playwright only taps what holds still.
   await page.emulateMedia({ reducedMotion: "reduce" });

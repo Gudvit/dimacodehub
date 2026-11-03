@@ -6,6 +6,7 @@ import {
   signal,
 } from "@angular/core";
 import { DatePipe } from "@angular/common";
+import { RouterLink } from "@angular/router";
 import { HeaderComponent } from "../../components/header/header.component";
 import { FooterComponent } from "../../components/footer/footer.component";
 import { syncPageMeta } from "../../seo/page-meta";
@@ -17,7 +18,7 @@ import { SignalsDemoComponent } from "./signals-demo/signals-demo.component";
   selector: "app-colophon-page",
   templateUrl: "./colophon-page.component.html",
   styleUrl: "./colophon-page.component.scss",
-  imports: [HeaderComponent, FooterComponent, DatePipe, SignalsDemoComponent],
+  imports: [HeaderComponent, FooterComponent, DatePipe, RouterLink, SignalsDemoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ColophonPageComponent {

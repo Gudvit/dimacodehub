@@ -17,6 +17,15 @@ test("the header's Writing link leads through the home slide to the blog", async
   ).toBeVisible();
 });
 
+test("the blog list leads back to the home page", async ({ page }) => {
+  await page.goto("/blog");
+
+  await page.getByRole("link", { name: "Back to home" }).click();
+
+  await expect(page).toHaveURL(/\/#writing$/);
+  await expect(page.getByRole("heading", { name: "WRITING" })).toBeInViewport();
+});
+
 test("blog cards are reachable with the keyboard", async ({ page }) => {
   await page.goto("/blog");
   const firstPost = page.getByRole("link", {
