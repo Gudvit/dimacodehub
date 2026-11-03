@@ -10,7 +10,7 @@ import {
   viewChild,
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { HomeSectionsService } from "../../navigation/home-sections";
 import { PERSON, syncJsonLd } from "../../seo/json-ld";
 import { HomeAboutSectionComponent } from "./components/home-about-section/home-about-section.component";
@@ -57,11 +57,25 @@ export class HomePageComponent {
   constructor() {
     syncJsonLd(() => PERSON);
 
-    // The slider must exist before a fragment can be scrolled into view.
+    // Read now: by the first render the navigation that opened the page is over.
+    const cameBack = inject(Router).currentNavigation()?.trigger === "popstate";
+
+    // The slider must exist before a fragment can be scrolled into view. The first jump is
+    // `instant`: it lands before the page is painted, so `/#projects` opens on the projects
+    // instead of showing the hero and then gliding down (the slider's CSS is
+    // `scroll-behavior: smooth`, which `auto` would follow). Later fragment changes glide.
     afterNextRender(() => {
-      this.route.fragment
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((fragment) => this.scrollToFragment(fragment, "auto"));
+      let first = true;
+      this.route.fragment.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((fragment) => {
+        const behavior = first ? "instant" : "smooth";
+        first = false;
+        // Back to a bare `/` returns to the slide the reader left from.
+        const target = fragment ?? (cameBack ? this.sections.lastSection : null);
+        this.scrollToFragment(target, behavior);
+        if (behavior === "instant" && target) {
+          this.holdLanding(target);
+        }
+      });
       // The header's menu: a click on the link of the slide already in the URL still scrolls.
       this.sections.requests
         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -140,6 +154,38 @@ export class HomePageComponent {
     slider.scrollTo({ top: this.landingTop(target), behavior });
   }
 
+  /**
+   * Keeps an instant jump on its slide while the deferred slides arrive. A jump lands in the
+   * viewport of a `@defer` block, which then swaps its placeholder for the section; on a
+   * desktop the slider's mandatory snapping loses the slide it was snapped to and re-snaps to
+   * the next one. So for a moment every change to the slider's children lands again — until
+   * the reader does anything at all, or the moment is over.
+   */
+  private holdLanding(id: string): void {
+    const slider = this.homeSliderRef()?.nativeElement;
+    if (!slider || typeof MutationObserver === "undefined") {
+      return;
+    }
+
+    const observer = new MutationObserver(() => this.scrollToFragment(id, "instant"));
+    const release = () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      for (const type of userInput) {
+        window.removeEventListener(type, release, true);
+      }
+    };
+    // Anywhere on the page: the phone's arrow, the header and the palette sit outside the slider.
+    const userInput = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+    const timer = setTimeout(release, 3000);
+
+    observer.observe(slider, { childList: true });
+    for (const type of userInput) {
+      window.addEventListener(type, release, { capture: true, passive: true });
+    }
+    this.destroyRef.onDestroy(release);
+  }
+
   private slideSections(slider: HTMLElement): HTMLElement[] {
     return Array.from(slider.querySelectorAll<HTMLElement>(".slide-section"));
   }
@@ -198,6 +244,7 @@ export class HomePageComponent {
     this.destroyRef.onDestroy(() => {
       slider.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(frame);
+      this.sections.lastSection = this.sections.current();
       this.sections.current.set(null);
     });
   }
