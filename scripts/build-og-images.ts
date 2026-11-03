@@ -55,7 +55,8 @@ const dataUri = (path: string, type: string) =>
   `data:${type};base64,${readFileSync(path).toString("base64")}`;
 
 const logo = dataUri("public/images/logo.svg", "image/svg+xml");
-const photo = dataUri("public/images/og-cover.jpg", "image/jpeg");
+// The hero's cut-out portrait; the avatar crops its face.
+const photo = dataUri("src/images/portrait.webp", "image/webp");
 const host = SITE_URL.replace(/^https:\/\//, "").replace(/\/$/, "");
 
 // The palette repeats src/styles/_brand.scss; the card is a standalone page, not the app.
@@ -96,7 +97,7 @@ const html = (card: Card) => `<!doctype html>
   }
   .avatar {
     width: 64px; height: 64px; border-radius: 50%;
-    background: url("${photo}") 61% 30% / 330% no-repeat;
+    background: url("${photo}") 50% 36% / 150% no-repeat, #11131f;
   }
   .who { display: grid; gap: 2px; }
   .who strong { font-size: 26px; font-weight: 800; }

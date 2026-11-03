@@ -59,6 +59,7 @@ contact form. Nothing else in `dependencies` is optional.
 | `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
 | `npm run build:cover -- …`        | renders a project cover from a screenshot (see `scripts/build-cover.ts`)       |
 | `npm run build:icons`             | renders the home-screen icons from `logo.svg` into `public/images/icons/`      |
+| `npm run build:og-cover`          | renders the site's sharing image `og-cover.jpg` from the hero portrait         |
 | `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page               |
 | `npm run lighthouse`              | Lighthouse budgets on the built site (after `build:gh`; CI runs it)            |
 | `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)              |
@@ -88,6 +89,7 @@ scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng bui
 scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Playwright
 scripts/build-cover.ts        a 1600×900 project cover: screenshot in a tilted browser on a gradient
 scripts/build-icons.ts        the manifest's and iOS's home-screen icons, from logo.svg
+scripts/build-og-cover.ts     the site's own 1200×630 sharing image, from the hero portrait
 scripts/build-stats.ts        bundle sizes, page and test counts → build-stats.json
 scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → build-stats.json
   images/                     assets referenced only from SCSS (hashed by the bundler)

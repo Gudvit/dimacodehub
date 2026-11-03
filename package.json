@@ -10,6 +10,7 @@
     "build:og": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-og-images.ts dist/dimacodehub/browser",
     "build:cover": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-cover.ts",
     "build:icons": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-icons.ts",
+    "build:og-cover": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-og-cover.ts",
     "lighthouse": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/lighthouse.ts dist/dimacodehub/browser",
     "build:stats": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-stats.ts dist/dimacodehub/browser",
     "watch": "ng build --watch --configuration development",
