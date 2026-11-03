@@ -95,6 +95,7 @@ export const ADRS: readonly Adr[] = [
   ["0023", "Blog reading aids without libraries", "blog-reading-aids"],
   ["0024", "A command palette on ⌘K", "command-palette"],
   ["0025", "Scroll-driven entrances", "scroll-driven-entrances"],
+  ["0026", "A web manifest without a service worker", "web-manifest-without-service-worker"],
 ].map(([number, title, slug]) => ({ number, title, file: `${number}-${slug}.md` }));
 
 export interface PipelineStep {

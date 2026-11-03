@@ -65,6 +65,10 @@
     <meta name="twitter:image" content="https://gudvit.github.io/dimacodehub/images/og-cover.jpg" />
 
     <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+    <!-- Home-screen icons. A manifest and no service worker: nothing is cached, so a deploy
+         is never hidden behind an old copy (ADR 0026). -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png" />
     <link
       rel="alternate"
       type="application/rss+xml"

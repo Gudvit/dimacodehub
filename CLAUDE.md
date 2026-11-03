@@ -57,6 +57,7 @@ contact form. Nothing else in `dependencies` is optional.
 | `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)       |
 | `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
 | `npm run build:cover -- …`        | renders a project cover from a screenshot (see `scripts/build-cover.ts`)       |
+| `npm run build:icons`             | renders the home-screen icons from `logo.svg` into `public/images/icons/`      |
 | `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page               |
 | `npm run lighthouse`              | Lighthouse budgets on the built site (after `build:gh`; CI runs it)            |
 | `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)              |
@@ -85,6 +86,7 @@ src/
 scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
 scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Playwright
 scripts/build-cover.ts        a 1600×900 project cover: screenshot in a tilted browser on a gradient
+scripts/build-icons.ts        the manifest's and iOS's home-screen icons, from logo.svg
 scripts/build-stats.ts        bundle sizes, page and test counts → build-stats.json
 scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → build-stats.json
   images/                     assets referenced only from SCSS (hashed by the bundler)
@@ -115,7 +117,8 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
     seo/                      syncPageMeta(): per-page description/OG tags;
                               syncPageUrl(): og:url + canonical follow the route;
                               syncJsonLd(): schema.org data for the page
-public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg
+public/                       copied into the build verbatim: favicon, CV, logo.svg, og-cover.jpg,
+                              manifest.webmanifest + images/icons/ (no service worker, ADR 0026)
 e2e/                          Playwright specs: home, blog, projects, contact, mobile
 docs/architecture/            ADRs and the architecture overview
 ```
@@ -146,6 +149,7 @@ is the exception: `app.ts` / class `App`.
 - Images needed only by CSS live in `src/images/` — the bundler hashes them.
   `public/` holds only what must be reachable at a stable URL: `favicon.ico`,
   the CV, `images/logo.svg` and `images/companies/*.svg` (loaded through `<img src>`),
+  `manifest.webmanifest` and the home-screen icons in `images/icons/`,
   `images/og-cover.jpg` (for OG tags).
   The same file in both places is a duplicate in the deployment — don't do it.
 - Everything in `public/` ships in full. Do not put unused files or PNG sources there —
