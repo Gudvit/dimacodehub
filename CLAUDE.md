@@ -100,7 +100,8 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
     app.routes.server.ts      which routes are prerendered, and the slugs for each
     app.config.server.ts      appConfig + server rendering
     components/               reusable: header, footer, theme-toggle (+ ThemeService),
-                              command-palette (⌘K, deferred in app.html), animated-text
+                              command-palette (⌘K, deferred in app.html), animated-text,
+                              loader (the spinning brand mark)
     pages/
       home/                   home slider + 4 sections   (has its own CLAUDE.md)
       blog/                   post list, post page, BlogService (has its own CLAUDE.md)
@@ -110,7 +111,9 @@ scripts/lighthouse.ts         Lighthouse budgets on the built site; scores → b
                               redirects to `/#projects`), project-grid/ and
                               project-tile/ (the grid of pictures, reused by the home slide), case study page
                               (`/projects/:slug`), CaseStudyService — side projects are
-                              case studies with `kind: "side"`
+                              case studies with `kind: "side"`; a `comingSoon` case is listed
+                              with a "Coming soon" page (the brand loader) while its text is
+                              a draft, shown on the dev server at `?draft`
     site.ts                   SITE_URL, pageUrl(), profiles, contact email, CV path — no runtime
                               imports (scripts/ uses it)
     analytics/page-views.ts   countPageViews(): a GoatCounter beacon per navigation, production only

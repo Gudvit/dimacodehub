@@ -9,6 +9,9 @@ import type { CaseStudy } from "./models/case-study.model";
  *
  * Drafts are visible on the dev server only. Placeholders in a draft are written as
  * `[TODO: …]` so they are easy to find and impossible to miss on the page.
+ *
+ * `comingSoon` publishes a draft's tile with a "Coming soon" page; the text stays here until
+ * the case is finished, then both flags go and the case is published whole.
  */
 export const CASE_STUDIES: readonly CaseStudy[] = [
   {
@@ -104,6 +107,7 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
       },
     ],
     draft: true,
+    comingSoon: true,
   },
   {
     // Built from the krakow-now-api repository: README, PROJECT_VISION, ARCHITECTURE (its
@@ -186,6 +190,7 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     ],
     lessons: ["[TODO: what you would do differently]"],
     draft: true,
+    comingSoon: true,
   },
   {
     // Built from the Agendo-Booking-Widget repository: its code and its history (my commits
@@ -248,6 +253,7 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     ],
     lessons: ["[TODO: what you would do differently]"],
     draft: true,
+    comingSoon: true,
   },
   {
     // [TODO] The cover is from modniy-ostrov.com; the text is to be written by the author.
@@ -280,6 +286,7 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     ],
     results: ["[TODO: what happened]"],
     draft: true,
+    comingSoon: true,
   },
   {
     // Built from the vault-document repository: README and its ADRs. [TODO] marks what only
@@ -353,6 +360,7 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     ],
     lessons: ["[TODO: what you would do differently]"],
     draft: true,
+    comingSoon: true,
   },
 ];
 

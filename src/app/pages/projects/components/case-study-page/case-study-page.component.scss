@@ -399,3 +399,56 @@
     transition: none;
   }
 }
+
+// A case listed but not written up yet: its name, a line and the spinning brand mark, in the
+// middle of the screen.
+.case-soon {
+  min-height: calc(100svh - var(--header-height) - 12rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 0;
+  animation: case-soon-in 0.8s ease both;
+
+  &__title {
+    margin: 0 0 1rem;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--brand-ink);
+  }
+
+  &__text {
+    max-width: 600px;
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    color: brand.ink(0.7);
+  }
+
+  &__status {
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: brand.ink(0.5);
+  }
+
+  &__loader {
+    margin-top: 5rem;
+  }
+}
+
+@keyframes case-soon-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-soon {
+    animation: none;
+  }
+}

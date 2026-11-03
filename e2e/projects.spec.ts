@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-// The dev server shows drafts, so the draft case studies double as fixtures. The list of
-// projects is a slide of the home page (`home.spec.ts`); `/projects` only redirects there.
+// The dev server shows drafts, so the draft case studies double as fixtures. Every listed
+// case is "coming soon" for now: its page is a placeholder, and the dev server shows the
+// draft text at `?draft`. The list of projects is a slide of the home page (`home.spec.ts`);
+// `/projects` only redirects there.
 test("the old projects address lands on the home slide", async ({ page }) => {
   await page.goto("/projects");
 
@@ -9,8 +11,22 @@ test("the old projects address lands on the home slide", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "PROJECTS" })).toBeInViewport();
 });
 
-test("a case study deep link renders the template and its metadata", async ({ page }) => {
+test("a case that is coming soon shows the placeholder, not its draft", async ({ page }) => {
   await page.goto("/projects/apomeds");
+
+  await expect(page.getByRole("heading", { level: 1, name: "Apomeds" })).toBeVisible();
+  await expect(page.getByText("Coming soon", { exact: true })).toBeVisible();
+  await expect(page).toHaveTitle(/^Apomeds - /);
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "An online doctor and pharmacy for seven European countries",
+  );
+  await expect(page.getByRole("heading", { level: 2, name: "Context" })).toHaveCount(0);
+  await expect(page.getByText("[TODO", { exact: false })).toHaveCount(0);
+});
+
+test("a case study deep link renders the template and its metadata", async ({ page }) => {
+  await page.goto("/projects/apomeds?draft");
 
   await expect(page.getByRole("heading", { level: 1, name: "Apomeds" })).toBeVisible();
   await expect(page).toHaveTitle(/^Apomeds - /);
@@ -26,7 +42,7 @@ test("a case study deep link renders the template and its metadata", async ({ pa
 });
 
 test("a case study leads back to the projects list and to the contact form", async ({ page }) => {
-  await page.goto("/projects/apomeds");
+  await page.goto("/projects/apomeds?draft");
 
   await page.getByRole("link", { name: "Discuss a project" }).click();
   await expect(page).toHaveURL(/\/#contacts$/);
@@ -44,10 +60,7 @@ test("a side project opens from its tile on the home slide", async ({ page }) =>
 
   await expect(page).toHaveURL(/\/projects\/krakow-events$/);
   await expect(page.getByRole("heading", { level: 1, name: "Kraków Events" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /t\.me\/KrakowEventsBot/ })).toHaveAttribute(
-    "href",
-    "https://t.me/KrakowEventsBot",
-  );
+  await expect(page.getByText("Coming soon", { exact: true })).toBeVisible();
 });
 
 test("unknown case study slug shows the not-found state", async ({ page }) => {

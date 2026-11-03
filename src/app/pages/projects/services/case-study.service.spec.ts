@@ -10,6 +10,16 @@ describe("CaseStudyService", () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
+  it("lists a case as coming soon only while it is a draft with a tagline", () => {
+    // The placeholder page describes a case by its tagline; a published case has no use
+    // for the flag.
+    for (const study of CASE_STUDIES.filter((entry) => entry.comingSoon)) {
+      expect(study.draft, study.slug).toBe(true);
+      expect(study.tagline, study.slug).toBeTruthy();
+      expect(study.tagline, study.slug).not.toContain("[TODO");
+    }
+  });
+
   it("resolves a case study by slug", () => {
     for (const study of service.getAll()) {
       expect(service.getBySlug(study.slug)).toBe(study);

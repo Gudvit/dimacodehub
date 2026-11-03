@@ -97,7 +97,8 @@ short tiles under a wide first one — which keeps five projects inside one scre
 
 With no published project the component renders nothing, so the slide disappears; until
 the section loads, its placeholder still holds a screen, and a `/#contacts` jump made in that
-moment would land one screen short. That only matters while every case study is a draft.
+moment would land one screen short. A case marked `comingSoon` counts as published here: its
+tile shows, and its page is a placeholder until the case is written up.
 
 ## The header menu
 

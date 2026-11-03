@@ -68,4 +68,10 @@ export interface CaseStudy {
    * the real page without ever reaching production.
    */
   readonly draft?: boolean;
+  /**
+   * Listed, but not written up yet: the tile is published (even while `draft`), and the page
+   * says "Coming soon" instead of the text, which stays here to be finished. The dev server
+   * shows the draft text at `?draft`.
+   */
+  readonly comingSoon?: boolean;
 }
