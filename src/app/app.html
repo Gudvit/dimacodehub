@@ -1,3 +1,6 @@
-<div class="route-container" [class.route-enabled]="routeAnimationsEnabled()">
-  <router-outlet></router-outlet>
-</div>
+<router-outlet></router-outlet>
+
+<!-- ⌘K. Not part of any page and not needed for the first paint, so it loads when idle. -->
+@defer (on idle) {
+<app-command-palette />
+}

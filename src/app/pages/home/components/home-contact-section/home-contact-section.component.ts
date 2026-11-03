@@ -9,12 +9,8 @@ import {
 } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { FooterComponent } from "../../../../components/footer/footer.component";
+import { CONTACT_EMAIL, CONTACT_PHONE } from "../../../../site";
 import { ContactFormService } from "./contact-form.service";
-
-// The only place the contact details are written down. The template binds to them; the
-// e2e specs assert what the template renders, so a change here cannot pass unnoticed.
-const CONTACT_EMAIL = "gudvitt@gmail.com";
-const CONTACT_PHONE = "+48 577 68 22 99";
 
 type SendStatus = "idle" | "sending" | "sent" | "error";
 

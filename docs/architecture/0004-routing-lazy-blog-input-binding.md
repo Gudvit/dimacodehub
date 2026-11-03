@@ -17,9 +17,9 @@ A separate question is how the post page receives `:slug` and how `<title>` gets
 
 `src/app/app.routes.ts`:
 
-- `/` and `/projects` are plain component routes (home is needed immediately, projects is
-  a tiny placeholder).
-- `/blog` uses `loadChildren` for `BLOG_ROUTES`: the only lazily loaded chunk.
+- `/` is a plain component route: home is needed immediately.
+- `/blog` uses `loadChildren` for `BLOG_ROUTES`, and `/projects` for `PROJECTS_ROUTES`
+  (the list and the case study page, `/projects/:slug`) — both are lazy chunks.
 - `**` redirects to `/`. The application has no dedicated 404 page.
 
 `src/app/app.config.ts`: `provideRouter(routes, withComponentInputBinding())` — route

@@ -4,9 +4,9 @@ The personal portfolio of Dmytro Huliaiev: a single-page home (hero → about �
 contacts), a blog and a Projects placeholder. Angular 22 — standalone, signals, zoneless —
 built to static files and served from GitHub Pages.
 
-There is no backend and none is planned. The only outbound request the app makes is the
-contact form, which posts straight to Web3Forms; everything else is bundled content and
-outbound links.
+There is no backend and none is planned. The app makes two kinds of outbound request: the
+contact form, which posts straight to Web3Forms, and a cookie-free page-view beacon to
+GoatCounter on the deployed site. Everything else is bundled content and outbound links.
 
 ## Getting started
 
@@ -19,17 +19,22 @@ npm start          # http://localhost:4200/
 
 ## Commands
 
-| Command                           | What it does                                                     |
-| --------------------------------- | ---------------------------------------------------------------- |
-| `npm start`                       | dev server                                                       |
-| `npm run build`                   | production build into `dist/dimacodehub/browser`                 |
-| `npm run build:gh`                | the same with `--base-href /dimacodehub/` — what CI deploys      |
-| `npm run test:unit`               | `ng test`: Vitest + jsdom + TestBed (`test:unit:watch` to watch) |
-| `npm run test:unit:coverage`      | unit tests plus the CI coverage floor                            |
-| `npm run test:e2e`                | Playwright; it starts the dev server itself                      |
-| `npm run lint`                    | ESLint over `src/**/*.ts` and `src/**/*.html`                    |
-| `npm run format` / `format:check` | Prettier write / check                                           |
-| `npm test`                        | unit + e2e                                                       |
+| Command                           | What it does                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| `npm start`                       | dev server                                                                     |
+| `npm run build`                   | production build into `dist/dimacodehub/browser`                               |
+| `npm run build:gh`                | the same with `--base-href /dimacodehub/` — what CI deploys                    |
+| `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)       |
+| `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
+| `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page               |
+| `npm run lighthouse`              | Lighthouse budgets on the built site (after `build:gh`; CI runs it)            |
+| `npm run test:unit`               | `ng test`: Vitest + jsdom + TestBed (`test:unit:watch` to watch)               |
+| `npm run test:unit:coverage`      | unit tests plus the CI coverage floor                                          |
+| `npm run test:e2e`                | Playwright; it starts the dev server itself                                    |
+| `npm run lint`                    | ESLint over `src/**/*.ts` and `src/**/*.html`                                  |
+| `npm run typecheck`               | `tsc` over the app, the unit tests and the Node code                           |
+| `npm run format` / `format:check` | Prettier write / check                                                         |
+| `npm test`                        | unit + e2e                                                                     |
 
 Playwright needs its browser once: `npx playwright install chromium`.
 
@@ -50,8 +55,9 @@ E2E assert on real page copy: change the wording in a template and update the sp
 
 `.github/workflows/deploy.yml` runs on a push to any branch: audit → format → lint → unit →
 e2e → build. A branch gets the verdict; only `main` continues to the deploy job, which
-publishes to GitHub Pages. Pages has no SPA rewrite, so the workflow copies `index.html` to
-`404.html` — without it, a direct link to `/blog/:slug` 404s.
+publishes to GitHub Pages. Every route is prerendered at build time (ADR 0019), so each post
+is its own HTML file with its own preview tags. Pages has no SPA rewrite, so the workflow
+copies the client shell `index.csr.html` to `404.html` for any other URL.
 
 The Web3Forms account owner must keep the production origin
 `https://gudvit.github.io` in the access key's domain allowlist. This is a dashboard-only

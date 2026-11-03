@@ -1,0 +1,17 @@
+/* The code that runs in Node rather than in the browser bundle: the build scripts, which
+   Node runs straight from TypeScript by stripping the types, the e2e specs and the
+   Playwright config. The scripts import some app files (the posts, `site.ts`); they are
+   checked here too, under the same constraint. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/node",
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "types": ["node"]
+  },
+  "include": ["scripts/**/*.ts", "e2e/**/*.ts", "playwright.config.ts"]
+}

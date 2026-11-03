@@ -1,0 +1,7 @@
+<ol class="works">
+  @for (study of projects(); track study.slug; let first = $first) {
+    <li class="works__item">
+      <app-project-tile [study]="study" [featured]="first" />
+    </li>
+  }
+</ol>

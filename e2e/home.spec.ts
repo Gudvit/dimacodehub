@@ -4,7 +4,10 @@ test("home hero renders the primary actions", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Dmytro Huliaiev", level: 1 })).toBeVisible();
   await expect(page.getByRole("link", { name: "Download CV" }).first()).toBeVisible();
-  await expect(page.getByRole("button", { name: "Contact me" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Discuss a project" })).toBeVisible();
+  // The proof strip: the agreed numbers and the company logos, named for screen readers.
+  await expect(page.getByText("100K+", { exact: true })).toBeVisible();
+  await expect(page.getByRole("img", { name: "IdeaSoft" })).toBeVisible();
 });
 
 test("cv link stays relative so it survives the base href", async ({ page }) => {
@@ -23,10 +26,10 @@ test("the scroll hint moves down the slider from the keyboard", async ({ page })
   await expect(page.getByRole("heading", { name: "ABOUT ME" })).toBeInViewport();
 });
 
-test("contact me jumps to the contact section and back to top returns", async ({ page }) => {
+test("discuss a project jumps to the contact section and back to top returns", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Contact me" }).click();
+  await page.getByRole("button", { name: "Discuss a project" }).click();
   await expect(page.getByRole("heading", { name: "LET'S CONNECT" })).toBeInViewport();
 
   await page.getByRole("button", { name: "Back to top" }).click();
@@ -86,10 +89,120 @@ test.describe("with reduced motion", () => {
   });
 });
 
-test("the projects page shows the placeholder", async ({ page }) => {
-  await page.goto("/projects");
+test("the header marks the slide in view and scrolls to it again on a second click", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "Main" });
 
-  await expect(page).toHaveTitle("Projects - Dmytro Huliaiev");
-  await expect(page.getByText("Coming soon")).toBeVisible();
-  await expect(page.locator("app-loader svg")).toBeVisible();
+  await nav.getByRole("link", { name: "Experience" }).click();
+  await expect(page).toHaveURL(/\/#experience$/);
+  await expect(nav.getByRole("link", { name: "Experience" })).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+
+  // Away from the slide by hand, then the same link again: the URL does not change.
+  await page.locator(".home-slider").evaluate((slider) => slider.scrollTo({ top: 0 }));
+  await expect(nav.getByRole("link", { name: "Experience" })).not.toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  await nav.getByRole("link", { name: "Experience" }).click();
+  await expect(nav.getByRole("link", { name: "Experience" })).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+});
+
+test("the logo always leads back to the first slide", async ({ page }) => {
+  await page.goto("/#experience");
+  const nav = page.getByRole("navigation", { name: "Main" });
+  const logo = page.getByRole("link", { name: "Dmytro Huliaiev - home" });
+
+  // On the home page: the slider scrolls back to the hero.
+  await expect(nav.getByRole("link", { name: "Experience" })).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  await logo.click();
+  await expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "location");
+  await expect.poll(() => page.locator(".home-slider").evaluate((s) => s.scrollTop)).toBe(0);
+
+  // From another page: the home page opens at its first slide.
+  await page.goto("/blog");
+  await logo.click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "location");
+});
+
+// The dev server shows drafts, so the draft case studies double as fixtures here.
+test("the projects slide shows the projects as pictures and links to each", async ({ page }) => {
+  await page.goto("/");
+
+  // Deferred until it nears the viewport, like the writing section below it.
+  await page.locator(".projects-placeholder").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading", { name: "PROJECTS" })).toBeVisible();
+  await expect(page.locator("app-project-tile").first()).toBeVisible();
+
+  await page.getByRole("link", { name: "Apomeds", exact: true }).click();
+  await expect(page).toHaveURL(/\/projects\/apomeds$/);
+});
+
+test("the header's Projects link scrolls the home page to the projects slide", async ({ page }) => {
+  await page.goto("/blog");
+  await page
+    .getByRole("navigation", { name: "Main" })
+    .getByRole("link", { name: "Projects" })
+    .click();
+
+  await expect(page).toHaveURL(/\/#projects$/);
+  await expect(page.getByRole("heading", { name: "PROJECTS" })).toBeInViewport();
+});
+
+test("the writing section lists the latest posts and links to the blog", async ({ page }) => {
+  await page.goto("/");
+
+  // Deferred until it nears the viewport: the placeholder holds its place until then.
+  await page.locator(".writing-placeholder").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading", { name: "WRITING" })).toBeVisible();
+
+  const cards = page.locator(".writing-card");
+  await expect(cards).toHaveCount(3);
+  await expect(cards.first()).toContainText("What AI Actually Changes About Frontend Engineering");
+
+  await page
+    .getByRole("link", { name: "What AI Actually Changes About Frontend Engineering" })
+    .click();
+  await expect(page).toHaveURL(/\/blog\/ai-frontend-engineering$/);
+
+  await page.goto("/");
+  await page.locator(".writing-placeholder").scrollIntoViewIfNeeded();
+  await page.getByRole("link", { name: "All posts" }).click();
+  await expect(page).toHaveURL(/\/blog$/);
+});
+
+test("the writing section's topics open the blog filtered", async ({ page }) => {
+  // The topics give way on a short desktop screen, which the default 720px viewport is.
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  await page.locator(".writing-placeholder").scrollIntoViewIfNeeded();
+
+  const topics = page.getByRole("navigation", { name: "Blog topics" });
+  await topics.getByRole("link", { name: "Posts tagged NgRx" }).click();
+  await expect(page).toHaveURL(/\/blog\?tag=NgRx$/);
+  await expect(page.getByRole("status").filter({ hasText: "tagged" })).toHaveText(
+    "2 posts tagged “NgRx”",
+  );
+});
+
+test("the home page names its author for search engines", async ({ page }) => {
+  await page.goto("/");
+
+  const data = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
+  );
+  expect(data["@type"]).toBe("Person");
+  expect(data.name).toBe("Dmytro Huliaiev");
+  expect(data.sameAs).toContain("https://github.com/Gudvit");
 });

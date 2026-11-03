@@ -16,6 +16,8 @@ home-page.component.*                     slider container, owns #homeSlider
 components/home-hero-section/             first screen, header lives inside it
 components/home-about-section/            "about", revealed by IntersectionObserver
 components/home-experience-section/       role timeline: clicks, swipes, wheel
+components/home-projects-section/         the projects as pictures, loaded through @defer
+components/home-writing-section/          the latest blog posts, loaded through @defer
 components/home-contact-section/          contacts + working message form + footer
 ```
 
@@ -38,6 +40,11 @@ What scrolls is **`.home-slider`, not `window`** (`overflow-y: auto` + `scroll-s
   `root: null` (the viewport) it would never fire — as far as the document is concerned,
   the section is always visible.
 
+Each `.slide-section` is also a scroll-driven view timeline, `--slide`: its title, copy
+and cards rise in as the slide comes up, through `motion.slide-reveal($order)` (ADR 0025).
+Use that mixin rather than `view()` inside a section — the sections clip their overflow,
+so `view()` would follow the section, which never scrolls, and silently do nothing.
+
 The sections `scrollToNextSection()` walks through are found by the `.slide-section`
 class. A new section without that class will be skipped by the "down" arrow — and will
 not snap, because that class is also what carries `scroll-snap-align`.
@@ -51,6 +58,65 @@ the hero is a grid — so do not pull those into the global rule.
 `scroll-snap-type: y mandatory` is desktop-only: at `max-width: 768px` snapping,
 `scroll-snap-align` and `overscroll-behavior: contain` are all turned off, otherwise
 sections stick on mobile and the page becomes impossible to scroll properly.
+
+Without snapping, a phone still reads the page as slides: **every section fits one
+screen**, checked down to 390×664 (the visible height of Safari on a 390px iPhone). The
+hero pins its copy to the bottom over the darkened photo; the contact section puts the
+form first and shrinks the contact card to a strip of fallbacks. Adding content to a
+section on a phone means taking something out — measure the section heights after any
+change there.
+
+## The writing section
+
+It reads `BlogService.getLatest()` — the newest published posts by `date`, not by array
+position; the newest gets the large card on the left — and a row of topics, the tags of the
+published posts, each linking to `/blog?tag=`. The topics give way on a desktop screen
+under 760px tall, so the slide still fits one screen; measure it after adding anything. It
+imports from `pages/blog/`. That pulls the posts into whatever chunk holds the
+section, which is why `home-page.component.html` wraps it in
+`@defer (on viewport; prefetch on idle)`: the posts stay out of the initial bundle.
+
+The placeholder (`.writing-placeholder`) carries `.slide-section` and the same
+`min-height` as the section. Keep the two equal: `/#contacts` scrolls past a section that
+has not loaded yet, and a placeholder of another height would move the contacts out from
+under the scroll when the posts arrive. For the same reason `#writing` is not a usable deep
+link — the element does not exist until the section loads.
+
+## The projects section
+
+The slide between experience and writing, and the site's only list of projects: `/projects`
+redirects to `/#projects`, and the header, footer, palette and the case pages' "All projects"
+link all point here. The grid and its tiles are `ProjectGridComponent` and
+`ProjectTileComponent` in `pages/projects/components/`. The placeholder carries
+`id="projects"` too, so the fragment has a target before the section loads. It is deferred and has a
+`.projects-placeholder` for the same reasons as the writing section, with the same
+`min-height`. On a desktop screen at least 1024×640 the slide is exactly one screen tall and
+the grid fills what the heading leaves; below that the grid is `compact` — two columns of
+short tiles under a wide first one — which keeps five projects inside one screen down to
+390×664. Measure the slide after changing the number of projects or the heading.
+
+With no published project the component renders nothing, so the slide disappears; until
+the section loads, its placeholder still holds a screen, and a `/#contacts` jump made in that
+moment would land one screen short. A case marked `comingSoon` counts as published here: its
+tile shows, and its page is a placeholder until the case is written up.
+
+## The header menu
+
+The header's links are the slides themselves — Home, About, Experience, Projects, Writing,
+Contact (`HOME_SECTIONS` in `src/app/navigation/home-sections.ts`) — each `routerLink="/"`
+with the slide's id as fragment, so they work from any page. Every slide's section carries
+that id (`home`, `about`, `experience`, `projects`, `writing`, `contacts`); the two deferred
+ones put it on their placeholder too.
+
+`HomeSectionsService` is the only thing the header and this page share, and scrolling stays
+here:
+
+- `trackCurrentSection()` keeps `current` on the slide in view (measured on a
+  `requestAnimationFrame`-coalesced `scroll` of the slider, because the deferred slides
+  arrive late). The header underlines it; off the home page it marks Projects on a case
+  study and Writing on the blog.
+- A click on a link whose fragment is already in the URL is a navigation the router ignores,
+  so the header also sends `request(id)` while on `/`, and this page scrolls on it.
 
 ## Fragment deep links
 

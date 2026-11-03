@@ -6,13 +6,18 @@
   left: 0;
   right: 0;
   z-index: 1000;
+  // Identical on every page, so a route change leaves it in place instead of fading it with
+  // the page (see the view-transition rules in `styles.scss`).
+  view-transition-name: site-header;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--brand-outline);
-  background: #fff;
-  opacity: 0.87;
+  // Frosted rather than faded: the page shows through the bar, the bar's own text stays
+  // fully opaque.
+  background: brand.paper(0.86);
+  backdrop-filter: blur(16px) saturate(1.4);
 }
 
 .menu-toggle {
@@ -61,17 +66,26 @@
   position: relative;
 }
 
+// On hover the mark makes one turn, settling with a slight overshoot, as the name slides out
+// beside it.
 .brand img {
   height: 32px;
   width: auto;
   display: block;
+  filter: var(--logo-filter);
+  transition: transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
+.brand:hover img,
+.brand:focus-visible img {
+  transform: rotate(360deg) scale(1.08);
+}
+
+// Angular drops the whitespace between the two spans, so the gap between the names is drawn.
 .brand-name {
   display: inline-flex;
-  gap: 0.35rem;
-  overflow: hidden;
-  height: 1.1rem;
+  gap: 0.4em;
+  font-size: 0.95rem;
 }
 
 .brand-name .first,
@@ -100,34 +114,133 @@
 
 .nav {
   display: flex;
-  gap: 1.5rem;
-  font-size: 0.95rem;
+  gap: 2rem;
+  margin-left: auto;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
+// The palette button matches the theme toggle beside it.
+.palette-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 1.5rem;
+  padding: 0;
+  border: 1px solid var(--brand-outline);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--brand-muted);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover {
+    color: var(--brand-ink);
+    border-color: brand.ink(0.3);
+    background: brand.ink(0.05);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-wine);
+    outline-offset: 2px;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+  }
+}
+
+.theme-slot {
+  display: flex;
+  margin-left: 0.5rem;
+}
+
+// The slide in view is underlined. The line draws in from the left, like a progress bar
+// filling, and leaves to the right, so moving down the menu reads as one line travelling on.
 .nav a {
+  position: relative;
+  padding: 0.35rem 0;
   color: var(--brand-muted);
   text-decoration: none;
-  padding-bottom: 0.2rem;
-  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.15rem;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--brand-wine);
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  &:hover {
+    color: var(--brand-ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-wine);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
 }
 
 .nav a.active {
   color: var(--brand-ink);
-  border-color: var(--brand-wine);
+
+  &::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+    transition-duration: 0.7s;
+  }
 }
 
-@media (max-width: 600px) {
+// Six section links and two buttons need about 900px; below that the menu folds into the
+// toggle.
+@media (max-width: 900px) {
   .site-header {
     padding: 1rem 1rem;
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto auto;
     align-items: center;
     row-gap: 0.85rem;
     column-gap: 0.75rem;
   }
 
+  // Brand, palette, theme switch and menu button share the first row; the nav drops below.
+  .brand {
+    grid-area: 1 / 1;
+  }
+
+  .palette-trigger {
+    grid-area: 1 / 2;
+    margin-left: 0;
+  }
+
+  .theme-slot {
+    grid-area: 1 / 3;
+    margin-left: 0;
+  }
+
   .menu-toggle {
     display: inline-flex;
+    grid-area: 1 / 4;
   }
 
   .nav {
@@ -146,6 +259,14 @@
 
   .nav a {
     width: fit-content;
-    padding-bottom: 0.1rem;
+    padding: 0.1rem 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand img,
+  .nav a,
+  .nav a::after {
+    transition: none;
   }
 }

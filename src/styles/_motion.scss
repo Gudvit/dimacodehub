@@ -1,0 +1,37 @@
+@use "sass:math";
+
+// Scroll-driven entrances (ADR 0025). Content rises into place as it scrolls into view —
+// driven by the scroll position itself, not by a timer, so it plays when it is seen and
+// runs backwards when scrolled away. Pure CSS; the keyframes, `reveal-rise`, are global
+// in `styles.scss`.
+//
+// Content that is already in view when the page loads is at the end of its range, so it
+// is simply there: nothing above the fold waits on an animation. Browsers without
+// scroll-driven animations and visitors who ask for reduced motion get no animation at all.
+
+// How far the stagger moves each later step along the range.
+$-step: 12%;
+
+@mixin -reveal($timeline, $start, $end) {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: reveal-rise linear both;
+      animation-timeline: $timeline;
+      animation-range: $start $end;
+    }
+  }
+}
+
+// For the home slides. Each `.slide-section` publishes its own view timeline, `--slide`
+// (`styles.scss`): the sections clip their overflow, which makes each one a scroll container,
+// and a plain `view()` inside would look at the section — which never scrolls — instead of
+// the slider. `$order` staggers the parts of one slide: 0 first, then 1, 2…
+@mixin slide-reveal($order: 0) {
+  $start: math.min(10% + $order * $-step, 70%);
+  @include -reveal(--slide, entry $start, entry math.min($start + 50%, 100%));
+}
+
+// For pages that scroll as a document (the colophon): the element's own view timeline.
+@mixin view-reveal {
+  @include -reveal(view(), entry 0%, entry 60%);
+}

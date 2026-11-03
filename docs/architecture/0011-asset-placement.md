@@ -19,8 +19,8 @@ is almost a wasted megabyte in the artifact.
 
 Where an asset lives is determined by who references it.
 
-- **`src/images/`** — files referenced only from SCSS/TS. Today that is `background.jpg`
-  (the hero background, referenced by a relative path from
+- **`src/images/`** — files referenced only from SCSS/TS. Today that is `portrait.webp`
+  (the hero portrait, cut out on transparency, referenced by a relative path from
   `home-hero-section.component.scss`). The bundler hashes them into `media/`.
 - **`public/`** — only what must be reachable at a stable, predictable URL:
   `favicon.ico`, `dmytro_huliaiev_cv.pdf` (the "Download CV" link),

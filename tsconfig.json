@@ -1,3 +1,6 @@
+/* The shared compiler options, and the map of projects for editors: it checks no files
+   itself. The app, the unit tests and the Node code (scripts, e2e, Playwright config) each
+   have their own config; `npm run typecheck` runs all three. */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -18,6 +21,12 @@
     "useDefineForClassFields": false,
     "lib": ["ES2022", "DOM"]
   },
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.spec.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,

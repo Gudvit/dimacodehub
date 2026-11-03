@@ -1,0 +1,230 @@
+@use "brand";
+
+.demo {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 1.25rem;
+}
+
+.demo-side {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+code {
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 0.85em;
+}
+
+.demo-inputs,
+.demo-preview,
+.demo-node {
+  border: 1px solid var(--brand-outline);
+  border-radius: 12px;
+  background: brand.paper(0.6);
+}
+
+.demo-inputs {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1rem 1.1rem 1.1rem;
+
+  legend {
+    padding: 0 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+  }
+}
+
+.demo-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  &__label {
+    font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+    font-size: 0.85rem;
+    color: var(--brand-ink);
+  }
+}
+
+.demo-stepper,
+.demo-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  button {
+    min-width: 36px;
+    min-height: 32px;
+    padding: 0 0.6rem;
+    border: 1px solid var(--brand-outline);
+    border-radius: 8px;
+    background: transparent;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--brand-ink);
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      border-color: brand.wine(0.4);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid brand.wine(0.42);
+      outline-offset: 2px;
+    }
+
+    &[aria-pressed="true"] {
+      background: var(--brand-wine);
+      border-color: var(--brand-wine);
+      color: var(--brand-paper);
+    }
+  }
+
+  output {
+    min-width: 2ch;
+    text-align: center;
+    font-weight: 700;
+  }
+}
+
+.demo-preview {
+  padding: 1rem 1.1rem;
+
+  &__title {
+    margin: 0 0 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+  }
+
+  dl {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+  }
+
+  dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.92rem;
+  }
+
+  dt {
+    color: var(--brand-muted);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--brand-ink);
+  }
+
+  &__total {
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--brand-outline);
+    font-weight: 700;
+  }
+}
+
+.demo-badge {
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  background: brand.wine(0.1);
+  color: var(--brand-wine);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.demo-graph {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo-node {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name runs"
+    "reads value";
+  gap: 0.15rem 1rem;
+  padding: 0.65rem 0.9rem;
+
+  &__name {
+    grid-area: name;
+    color: var(--brand-ink);
+    font-weight: 700;
+  }
+
+  &__reads {
+    grid-area: reads;
+    font-size: 0.8rem;
+    color: var(--brand-muted);
+  }
+
+  &__value {
+    grid-area: value;
+    justify-self: end;
+    font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+    font-size: 0.85rem;
+    color: var(--brand-ink);
+  }
+
+  &__runs {
+    grid-area: runs;
+    justify-self: end;
+    font-size: 0.8rem;
+    color: var(--brand-muted);
+
+    span {
+      font-weight: 700;
+      color: var(--brand-wine);
+    }
+  }
+
+  // Added after each render to the nodes whose computed() ran (SignalsDemoComponent.paint).
+  &.is-running {
+    animation: node-ran 0.9s ease-out;
+  }
+}
+
+.demo-summary {
+  min-height: 3em;
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+  color: var(--brand-muted);
+}
+
+@keyframes node-ran {
+  from {
+    border-color: var(--brand-wine);
+    box-shadow: 0 0 0 3px brand.wine(0.2);
+  }
+}
+
+@media (max-width: 760px) {
+  .demo {
+    grid-template-columns: 1fr;
+  }
+}

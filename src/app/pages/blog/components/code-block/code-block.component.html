@@ -1,0 +1,8 @@
+<figure class="code-block">
+  <figcaption class="code-block__language">{{ block().language }}</figcaption>
+  <!-- Whitespace inside <pre> is kept verbatim, so the template adds none there. -->
+  <pre
+    class="code-block__pre"
+    tabindex="0"
+  ><code>@for (token of tokens(); track $index) {<span [class]="token.kind ? 'token token--' + token.kind : null">{{ token.text }}</span>}</code></pre>
+</figure>

@@ -1,0 +1,121 @@
+<div class="demo">
+  <div class="demo-side">
+    <fieldset class="demo-inputs">
+      <legend>Inputs — <code>signal()</code></legend>
+
+      <div class="demo-field">
+        <span class="demo-field__label" id="demo-quantity">quantity</span>
+        <div class="demo-stepper" role="group" aria-labelledby="demo-quantity">
+          <button
+            type="button"
+            aria-label="Decrease quantity"
+            [disabled]="checkout.quantity() <= 1"
+            (click)="step(-1)"
+          >
+            −
+          </button>
+          <output aria-live="polite">{{ checkout.quantity() }}</output>
+          <button
+            type="button"
+            aria-label="Increase quantity"
+            [disabled]="checkout.quantity() >= quantityMax"
+            (click)="step(1)"
+          >
+            +
+          </button>
+        </div>
+      </div>
+
+      <div class="demo-field">
+        <span class="demo-field__label" id="demo-price">price</span>
+        <div class="demo-choice" role="group" aria-labelledby="demo-price">
+          @for (price of prices; track price) {
+            <button
+              type="button"
+              [attr.aria-pressed]="checkout.price() === price"
+              (click)="checkout.price.set(price)"
+            >
+              {{ price }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="demo-field">
+        <span class="demo-field__label" id="demo-currency">currency</span>
+        <div class="demo-choice" role="group" aria-labelledby="demo-currency">
+          @for (currency of currencies; track currency) {
+            <button
+              type="button"
+              [attr.aria-pressed]="checkout.currency() === currency"
+              (click)="checkout.currency.set(currency)"
+            >
+              {{ currency }}
+            </button>
+          }
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="demo-preview" aria-label="What the template shows">
+      <p class="demo-preview__title">On screen — the template</p>
+      <dl>
+        <div>
+          <dt>Items</dt>
+          <dd data-binding="quantity">{{ checkout.quantity() }} × {{ checkout.price() }}</dd>
+        </div>
+        <div>
+          <dt>Discount</dt>
+          <dd data-binding="discount">
+            @if (checkout.isBulk()) {
+              <span class="demo-badge">bulk −10%</span>
+            } @else {
+              none below {{ bulkFrom }}
+            }
+          </dd>
+        </div>
+        <div class="demo-preview__total">
+          <dt>Total</dt>
+          <dd data-binding="display">{{ checkout.display() }}</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <ol class="demo-graph" aria-label="Derived values — computed()">
+    @for (name of derived; track name) {
+      <li class="demo-node" [attr.data-node]="name">
+        <span class="demo-node__name"
+          ><code>{{ name }}</code></span
+        >
+        <span class="demo-node__reads">{{ reads[name] }}</span>
+        <span class="demo-node__value">
+          @switch (name) {
+            @case ("subtotal") {
+              {{ checkout.subtotal() }}
+            }
+            @case ("isBulk") {
+              {{ checkout.isBulk() }}
+            }
+            @case ("discount") {
+              {{ checkout.discount() }}
+            }
+            @case ("total") {
+              {{ checkout.total() }}
+            }
+            @case ("display") {
+              {{ checkout.display() }}
+            }
+          }
+        </span>
+        <span class="demo-node__runs" title="How many times this computed() has run">
+          ran <span [attr.data-runs]="name"></span>
+        </span>
+      </li>
+    }
+  </ol>
+</div>
+
+<p class="demo-summary" aria-live="polite">
+  Change an input: the counters show which computed values run again.
+</p>

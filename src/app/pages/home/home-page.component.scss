@@ -11,6 +11,14 @@
   overscroll-behavior: contain;
 }
 
+// Hold the projects' and the writing section's places until `@defer` loads them — the same
+// height, so a jump to `#contacts` lands where the contacts will still be once they arrive.
+.projects-placeholder,
+.writing-placeholder {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
 // Snapping is desktop-only: on mobile it makes sections stick and the page becomes
 // impossible to scroll properly.
 @media (max-width: 768px) {

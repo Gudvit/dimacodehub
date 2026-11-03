@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 
 /**
- * The brand spinner. Replaces the old `[appLoading]` directive, which built the same SVG
- * with `innerHTML`, kept its styles in the global stylesheet and reused one hardcoded
- * gradient id. The gradient id is per instance here, so two spinners on a page cannot
- * collide.
+ * The brand mark, spinning while its ring draws itself: the "coming soon" sign of a case
+ * study that is not written up yet. The gradient id is per instance, so two on a page
+ * cannot collide; its colours are the theme's ink and wine.
  */
 @Component({
   selector: "app-loader",

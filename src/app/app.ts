@@ -4,42 +4,28 @@ import {
   Component,
   DestroyRef,
   inject,
-  signal,
 } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
-import { filter } from "rxjs";
+import { RouterOutlet } from "@angular/router";
+import { CommandPaletteComponent } from "./components/command-palette/command-palette.component";
+import { countPageViews } from "./analytics/page-views";
+import { scrollToTopOnPageChange } from "./navigation/scroll-to-top";
+import { syncPageUrl } from "./seo/page-url";
 
 @Component({
   selector: "app-root",
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CommandPaletteComponent],
   templateUrl: "./app.html",
   styleUrl: "./app.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  readonly routeAnimationsEnabled = signal(false);
-
-  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
-  private hasNavigated = false;
   private pendingCursorFrame = 0;
 
   constructor() {
-    this.router.events
-      .pipe(
-        filter((event) => event instanceof NavigationEnd),
-        takeUntilDestroyed(),
-      )
-      .subscribe(() => {
-        // Skip the first navigation so the initial page does not animate in.
-        if (!this.hasNavigated) {
-          this.hasNavigated = true;
-          return;
-        }
-        this.routeAnimationsEnabled.set(true);
-      });
-
+    syncPageUrl();
+    countPageViews();
+    scrollToTopOnPageChange();
     afterNextRender(() => this.trackCursor());
   }
 

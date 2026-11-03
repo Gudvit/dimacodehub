@@ -1,16 +1,17 @@
 @use "brand";
+@use "layout";
 
 .blog-page {
   min-height: calc(100vh - 82px);
 }
 
 .blog-hero {
-  padding: calc(82px + clamp(2rem, 5vw, 4rem)) 1.5rem clamp(2rem, 5vw, 3.5rem);
+  @include layout.gutters;
+  padding-top: calc(82px + clamp(2rem, 5vw, 4rem));
+  padding-bottom: clamp(2rem, 5vw, 3.5rem);
   border-bottom: 1px solid var(--brand-outline);
 
   &__inner {
-    max-width: 800px;
-    margin: 0 auto;
     animation: fadeUp 0.6s ease both;
   }
 
@@ -36,30 +37,107 @@
     font-size: clamp(1rem, 2vw, 1.2rem);
     color: var(--brand-muted);
     margin: 0;
-    max-width: 520px;
+    max-width: 52ch;
     line-height: 1.6;
   }
 }
 
 .blog-list {
-  padding: clamp(2.5rem, 6vw, 4rem) 1.5rem clamp(3rem, 8vw, 6rem);
+  @include layout.gutters;
+  padding-top: clamp(2.5rem, 6vw, 4rem);
+  padding-bottom: clamp(3rem, 8vw, 6rem);
 
-  &__inner {
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
+  // As many columns as fit at 360px or more; one on a phone.
+  &__posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
     gap: 1.5rem;
+  }
+
+  // Announces the filter's result; empty, and out of the way, when nothing is filtered.
+  &__status {
+    margin: 0 0 1rem;
+    font-size: 0.85rem;
+    color: var(--brand-muted);
+
+    &:empty {
+      margin: 0;
+    }
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--brand-muted);
+
+    a {
+      color: var(--brand-ink);
+      font-weight: 600;
+    }
+  }
+}
+
+.tag-filter {
+  margin-bottom: 1.5rem;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 32px;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--brand-outline);
+    border-radius: 999px;
+    background: brand.paper(0.6);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--brand-ink);
+    text-decoration: none;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      border-color: brand.wine(0.4);
+    }
+
+    &:focus-visible {
+      outline: 2px solid brand.wine(0.42);
+      outline-offset: 2px;
+    }
+
+    &.is-active {
+      background: var(--brand-wine);
+      border-color: var(--brand-wine);
+      color: var(--brand-paper);
+    }
+  }
+
+  &__count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    opacity: 0.6;
   }
 }
 
 .post-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
   position: relative;
   padding: 2rem 2.25rem;
   border: 1px solid var(--brand-outline);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.6);
+  background: brand.paper(0.6);
   cursor: pointer;
   text-decoration: none;
   color: inherit;
@@ -78,7 +156,7 @@
   &:hover,
   &:has(.post-card__link:focus-visible) {
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px brand.ink(0.08);
+    box-shadow: 0 12px 32px brand.shadow(0.08);
     border-color: brand.wine(0.25);
   }
 
@@ -136,7 +214,9 @@
     margin: 0 0 1.5rem;
   }
 
+  // At the bottom of the card, so the dates line up across a row of cards.
   &__meta {
+    margin-top: auto;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -161,6 +241,12 @@
   &:hover &__arrow {
     opacity: 1;
     transform: translateX(4px);
+  }
+}
+
+@media (max-width: 640px) {
+  .post-card {
+    padding: 1.5rem 1.4rem;
   }
 }
 

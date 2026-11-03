@@ -1,4 +1,5 @@
 @use "brand";
+@use "motion";
 @use "../../display-title";
 
 :host {
@@ -13,7 +14,7 @@
   flex-direction: column;
   padding: clamp(3.6rem, 12vh, 8.4rem) clamp(2rem, 9vw, 2rem) clamp(1.4rem, 4vh, 2.6rem);
   border-bottom: 1px solid var(--brand-outline);
-  background: linear-gradient(180deg, #fff 0%, #f8f4f7 100%);
+  background: linear-gradient(180deg, var(--brand-paper) 0%, var(--brand-surface) 100%);
   overflow: hidden;
 }
 
@@ -43,7 +44,7 @@
 }
 
 .experience__display-title {
-  @include display-title.display-title(clamp(108px, 12vw, 220px));
+  @include display-title.display-title;
   z-index: 1;
   width: 100%;
   margin-bottom: clamp(0.9rem, 2.4vw, 1.6rem);
@@ -61,6 +62,7 @@
 }
 
 .experience-layout {
+  @include motion.slide-reveal(1);
   flex: 1;
   height: 100%;
   min-height: 0;
@@ -123,8 +125,10 @@
   height: 14px;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: brand.ink(0.32);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75);
+  // Opaque: the same tint as ink(0.32), but mixed into the paper rather than into
+  // transparency, so the timeline's line does not show through the dot.
+  background: color-mix(in srgb, var(--brand-ink) 32%, var(--brand-paper));
+  box-shadow: 0 0 0 3px brand.paper(0.75);
   transition:
     transform 0.25s ease,
     background 0.25s ease,
@@ -150,7 +154,7 @@
 }
 
 .timeline__company {
-  font-size: 1.2rem;
+  font-size: clamp(1.2rem, 1.3vw, 1.5rem);
   font-weight: 700;
   color: brand.ink(0.78);
   line-height: 1.2;
@@ -165,7 +169,7 @@
 }
 
 .timeline__item:hover .timeline__text {
-  background: rgba(255, 255, 255, 0.62);
+  background: brand.paper(0.62);
 }
 
 .timeline__item.is-active .timeline__text {
@@ -177,7 +181,7 @@
   transform: translateY(-50%) scale(1.26);
   background: var(--brand-wine);
   box-shadow:
-    0 0 0 4px rgba(255, 255, 255, 0.84),
+    0 0 0 4px brand.paper(0.84),
     0 0 18px brand.wine(0.52);
 }
 
@@ -201,18 +205,17 @@
   min-height: 0;
   overflow: hidden;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(248, 242, 246, 0.88)),
-    rgba(255, 255, 255, 0.65);
+  border: 1px solid brand.paper(0.62);
+  background: linear-gradient(145deg, brand.paper(0.78), brand.surface(0.88)), brand.paper(0.65);
   box-shadow:
-    0 24px 48px brand.ink(0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 24px 48px brand.shadow(0.14),
+    inset 0 1px 0 brand.paper(0.8);
   backdrop-filter: blur(8px);
-  padding: clamp(1rem, 2vw, 1.35rem);
+  // The type grows with the window, so a wide screen is not one small paragraph in a big box.
+  padding: clamp(1rem, 2.2vw, 2.4rem);
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: 0.9rem;
+  gap: clamp(0.9rem, 2vh, 1.6rem);
   animation-duration: 0.42s;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   animation-fill-mode: both;
@@ -247,15 +250,16 @@
 
 .focus-panel__header h3 {
   margin: 0;
-  font-size: clamp(1.2rem, 2vw, 1.55rem);
-  line-height: 1.25;
+  font-size: clamp(1.2rem, 2.1vw, 2.4rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   color: var(--brand-ink);
 }
 
 .meta {
   margin: 0.4rem 0 0;
   color: brand.ink(0.6);
-  font-size: 0.92rem;
+  font-size: clamp(0.92rem, 1vw, 1.15rem);
 }
 
 .focus-panel__bullets {
@@ -263,7 +267,7 @@
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 0.44rem;
+  gap: clamp(0.44rem, 1.2vh, 0.9rem);
   align-content: start;
   min-height: 0;
   overflow-y: auto;
@@ -273,8 +277,10 @@
 
 .focus-panel__bullets li {
   border-left: 2px solid brand.wine(0.28);
-  padding: 0.34rem 0 0.34rem 0.72rem;
+  max-width: 70ch;
+  padding: 0.34rem 0 0.34rem clamp(0.72rem, 1vw, 1.1rem);
   color: var(--brand-muted);
+  font-size: clamp(1rem, 1.15vw, 1.3rem);
   line-height: 1.52;
   animation: bullet-enter 0.45s ease both;
 }
@@ -298,28 +304,54 @@
 
 .focus-panel__impact article {
   border-radius: 12px;
-  padding: 0.62rem 0.65rem;
-  background: rgba(255, 255, 255, 0.72);
+  padding: clamp(0.62rem, 0.9vw, 0.95rem) clamp(0.65rem, 1vw, 1.1rem);
+  background: brand.paper(0.72);
   border: 1px solid brand.ink(0.08);
 }
 
 .focus-panel__impact .value {
   margin: 0;
   color: var(--brand-wine);
-  font-size: 1.02rem;
-  font-weight: 700;
+  font-size: clamp(1.02rem, 1.25vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 .focus-panel__impact .label {
   margin: 0.2rem 0 0;
   color: brand.ink(0.56);
-  font-size: 0.78rem;
+  font-size: clamp(0.78rem, 0.8vw, 0.9rem);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .experience-mobile-nav {
   display: none;
+}
+
+// On a desktop the role sits in the middle of the panel and the numbers stay at its foot.
+// The two 1fr rows share the space left over; when there is none, the bullets (0 to auto)
+// give way and scroll.
+@media (min-width: 981px) {
+  .focus-panel {
+    grid-template-rows: minmax(0, 1fr) auto minmax(0, auto) minmax(0, 1fr) auto;
+    row-gap: 0;
+  }
+
+  .focus-panel__header {
+    grid-row: 2;
+    margin-bottom: clamp(0.9rem, 2vh, 1.6rem);
+  }
+
+  .focus-panel__bullets {
+    grid-row: 3;
+  }
+
+  .focus-panel__impact {
+    grid-row: 5;
+    margin-top: clamp(0.9rem, 2vh, 1.6rem);
+  }
 }
 
 @media (max-width: 980px) {
@@ -368,17 +400,30 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0;
     margin-top: 0;
     padding-bottom: 0.1rem;
   }
 
+  // The button is a 24px touch target; the dot it shows is 9px. The negative block margin
+  // keeps the row as tall as the dots, so the section still fits one phone screen.
   .experience-mobile-nav__dot {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    margin-block: -7.5px;
+    border: 0;
+    padding: 0;
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .experience-mobile-nav__dot::before {
+    content: "";
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    border: 0;
-    padding: 0;
     background: brand.ink(0.24);
     transition:
       transform 0.2s ease,
@@ -386,7 +431,7 @@
       box-shadow 0.2s ease;
   }
 
-  .experience-mobile-nav__dot.is-active {
+  .experience-mobile-nav__dot.is-active::before {
     background: var(--brand-wine);
     transform: scale(1.18);
     box-shadow: 0 0 0 3px brand.wine(0.18);
@@ -394,7 +439,7 @@
 
   .experience-mobile-nav__dot:focus-visible {
     outline: 2px solid brand.wine(0.42);
-    outline-offset: 2px;
+    outline-offset: -4px;
   }
 }
 
@@ -418,10 +463,6 @@
     height: 360px;
     bottom: -170px;
     right: -165px;
-  }
-
-  .experience__display-title {
-    font-size: clamp(18px, 12vw, 220px);
   }
 
   .focus-panel {
