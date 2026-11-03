@@ -2,7 +2,15 @@
   <h2 class="writing__display-title">WRITING</h2>
   <div class="writing__inner">
     <header class="writing__head">
-      <h3 class="writing__headline">Notes from building frontends in production</h3>
+      <h3 class="writing__headline" appHeadlineReveal #reveal="headlineReveal">
+        @if (reveal.visible()) {
+          <app-animated-text
+            [text]="'Notes from building frontends in production'"
+          ></app-animated-text>
+        } @else {
+          Notes from building frontends in production
+        }
+      </h3>
       <a class="writing__all" routerLink="/blog">All posts <span aria-hidden="true">→</span></a>
     </header>
     <ul class="writing__list">

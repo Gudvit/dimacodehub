@@ -31,6 +31,34 @@ $-step: 12%;
   @include -reveal(--slide, entry $start, entry math.min($start + 50%, 100%));
 }
 
+// For a headline with `appHeadlineReveal`: hidden until the directive adds `is-visible` and
+// `app-animated-text` takes over. Reduced motion never gets that class, so it shows the plain
+// text from the start.
+@mixin headline-reveal {
+  $ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(5px);
+  transition:
+    opacity 0.75s $ease,
+    transform 0.75s $ease,
+    filter 0.75s $ease;
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}
+
 // For pages that scroll as a document (the colophon): the element's own view timeline.
 @mixin view-reveal {
   @include -reveal(view(), entry 0%, entry 60%);

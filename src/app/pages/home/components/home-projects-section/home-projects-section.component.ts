@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { AnimatedTextComponent } from "../../../../components/animated-text/animated-text.component";
+import { HeadlineRevealDirective } from "../../../../components/animated-text/headline-reveal.directive";
 import { CaseStudyService } from "../../../projects/services/case-study.service";
 import { ProjectGridComponent } from "../../../projects/components/project-grid/project-grid.component";
 
@@ -12,7 +14,7 @@ import { ProjectGridComponent } from "../../../projects/components/project-grid/
   selector: "app-home-projects-section",
   templateUrl: "./home-projects-section.component.html",
   styleUrl: "./home-projects-section.component.scss",
-  imports: [ProjectGridComponent],
+  imports: [AnimatedTextComponent, HeadlineRevealDirective, ProjectGridComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeProjectsSectionComponent {

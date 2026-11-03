@@ -4,7 +4,7 @@ The most involved subsystem in the project: not a regular scrolling page but a v
 slider with hand-rolled scroll and gesture handling. The gestures of the experience
 section are covered by unit tests
 (`home-experience-section.component.spec.ts` — thresholds, cooldown, edge exit, swipe
-intent), as are the three branches of the about reveal
+intent), as are the three branches of the headline reveal
 (`home-about-section.component.spec.ts` — reduced motion, observer, no observer);
 everything that depends on real scrolling is covered by e2e only, so change scroll
 behaviour carefully.
@@ -38,7 +38,7 @@ What scrolls is **`.home-slider`, not `window`** (`overflow-y: auto` + `scroll-s
   `ResizeObserver`. The header is `position: fixed` above the slider. On a phone every
   slide pads itself below the header (`$phone-padding-top` in `_display-title.scss`), so it
   lands at its own top; stopping a header's height short would push its foot off screen.
-- The `IntersectionObserver` in the about section is given `root: .home-slider`. With
+- The `IntersectionObserver` in `appHeadlineReveal` is given `root: .home-slider`. With
   `root: null` (the viewport) it would never fire — as far as the document is concerned,
   the section is always visible.
 
@@ -187,14 +187,13 @@ Role data lives in `experience-roles.ts` (`EXPERIENCE_ROLES`). Content in code i
 - Anything visible in a template must be a signal: the app is zoneless, a plain field
   will not repaint.
 - Do not attach high-frequency listeners with `@HostListener` (see the root CLAUDE.md).
-- The about-heading animation must respect `prefers-reduced-motion` — the early return is
-  already there; repeat it in any new animation. Under that preference the component does
-  **nothing**: no observer, no `is-visible`, so the heading stays plain text and
-  `app-animated-text` (an infinite `shine` plus a per-letter reveal, neither of which is
-  guarded) never renders. What makes the heading legible there is the
-  `@media (prefers-reduced-motion: reduce)` block in the section's SCSS, which carries the
-  same opacity and colour `is-visible` would have applied. Do not "fix" that by setting the
-  signal instead — the class is what starts the animation.
+- The letter-by-letter headlines (about, projects, writing) must respect
+  `prefers-reduced-motion` — `appHeadlineReveal` has the early return; repeat it in any new
+  animation. Under that preference the directive does **nothing**: no observer, no
+  `is-visible`, so the heading stays plain text and `app-animated-text` (an infinite `shine`
+  plus a per-letter reveal, neither of which is guarded) never renders. What makes the
+  heading legible there is the reduced-motion block in `motion.headline-reveal`. Do not
+  "fix" that by setting the signal instead — the class is what starts the animation.
 - The contact section has a real form that posts to Web3Forms (`contact-form.service.ts`,
   ADR 0015). The success state may only be shown after the send is confirmed — the e2e
   test `contact form admits failure instead of claiming a message was sent` is there to

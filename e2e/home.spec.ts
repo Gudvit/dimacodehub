@@ -87,7 +87,33 @@ test.describe("with reduced motion", () => {
     await expect(headline).toHaveCSS("opacity", "1");
     await expect(headline.locator("app-animated-text")).toHaveCount(0);
   });
+
+  for (const [id, selector] of [
+    ["projects", ".projects__headline"],
+    ["writing", ".writing__headline"],
+  ]) {
+    test(`the ${id} headline is plain text from the start`, async ({ page }) => {
+      await page.goto(`/#${id}`);
+      const headline = page.locator(selector);
+
+      await expect(headline).toHaveCSS("opacity", "1");
+      await expect(headline.locator("app-animated-text")).toHaveCount(0);
+    });
+  }
 });
+
+for (const [id, selector] of [
+  ["projects", ".projects__headline"],
+  ["writing", ".writing__headline"],
+]) {
+  test(`the ${id} headline animates in when its slide is reached`, async ({ page }) => {
+    await page.goto(`/#${id}`);
+    const headline = page.locator(selector);
+
+    await expect(headline.locator("app-animated-text")).toBeVisible();
+    await expect(headline).toHaveCSS("opacity", "1");
+  });
+}
 
 test("the header marks the slide in view and scrolls to it again on a second click", async ({
   page,
