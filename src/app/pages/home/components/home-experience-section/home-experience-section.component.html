@@ -49,6 +49,12 @@
             </article>
           }
         </div>
+        <button
+          class="focus-panel__next"
+          type="button"
+          aria-label="Next role"
+          (click)="nextRole()"
+        ></button>
         <div class="experience-mobile-nav">
           @for (role of roles; track $index; let i = $index) {
             <button

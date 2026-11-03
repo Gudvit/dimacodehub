@@ -61,6 +61,8 @@
 
 @media (max-width: 640px) {
   .projects {
+    padding-top: display-title.$phone-padding-top;
+    padding-bottom: display-title.$phone-padding-bottom;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
   }

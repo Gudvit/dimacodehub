@@ -32,10 +32,12 @@ What scrolls is **`.home-slider`, not `window`** (`overflow-y: auto` + `scroll-s
 
 - `window.scrollTo` / document-level `scrollIntoView` do not work here — you need
   `slider.scrollTo({ top })`.
-- The offset is computed by hand: `target.offsetTop - getHeaderOffset()`, where
-  `getHeaderOffset()` reads `--header-height` — a variable `HeaderComponent` publishes
-  and keeps current with a `ResizeObserver`. The header is `position: fixed` above the
-  slider, so without subtracting it the section heading ends up underneath.
+- The offset is computed by hand in `landingTop()`: a section's top, less whatever part of
+  the header its own top padding does not already clear. `getHeaderOffset()` reads
+  `--header-height` — a variable `HeaderComponent` publishes and keeps current with a
+  `ResizeObserver`. The header is `position: fixed` above the slider. On a phone every
+  slide pads itself below the header (`$phone-padding-top` in `_display-title.scss`), so it
+  lands at its own top; stopping a header's height short would push its foot off screen.
 - The `IntersectionObserver` in the about section is given `root: .home-slider`. With
   `root: null` (the viewport) it would never fire — as far as the document is concerned,
   the section is always visible.
@@ -58,6 +60,13 @@ the hero is a grid — so do not pull those into the global rule.
 `scroll-snap-type: y mandatory` is desktop-only: at `max-width: 768px` snapping,
 `scroll-snap-align` and `overscroll-behavior: contain` are all turned off, otherwise
 sections stick on mobile and the page becomes impossible to scroll properly.
+
+A phone gets a floating arrow instead (`.slide-step` in `home-page.component.*`): the
+hero's own chevron and bounce, at the foot of the screen from the second slide on. It
+points down and goes to the next slide while the reader scrolls down, turns up and goes to
+the previous one once they scroll back, and always points up at the end, where it moves to
+the right end of the footer and stands in for the contact section's "Back to top" (hidden on
+phones). Every slide keeps `$phone-padding-bottom` free for it.
 
 Without snapping, a phone still reads the page as slides: **every section fits one
 screen**, checked down to 390×664 (the visible height of Safari on a 390px iPhone). The
@@ -134,7 +143,8 @@ thresholds are the constants at the top of that file — change those rather tha
 hardcoding numbers inline:
 
 - **Click** on a timeline item (desktop) or on a dot in `experience-mobile-nav` (mobile)
-  → `setActive(i)`. This is the only keyboard-reachable entry point: both are real
+  → `setActive(i)`, or on the arrow at the card's right edge (mobile) → `nextRole()`.
+  These are the only keyboard-reachable entry points: all are real
   `<button>` elements.
 - **Touch swipe**: horizontal intent is decided by `|dx| > |dy|`, with a
   `SWIPE_THRESHOLD_PX = 40` threshold. Without that check vertical page scrolling would
@@ -150,8 +160,8 @@ bound in the template: they fire dozens of times per gesture and a template list
 would schedule change detection for each. `wheel` is `passive: false` on purpose.
 `touchstart`/`touchend` fire once per gesture and stay in the template.
 
-`prevRole()` / `nextRole()` (which wrap around) are not bound in the template — only the
-swipe handlers call them.
+`prevRole()` / `nextRole()` wrap around; the swipe handlers and the mobile arrow share
+them, so a tap and a swipe always move the same way.
 
 `setActive()` increments `panelKey`, and the template flips `[style.animationName]`
 between two identical keyframes, `panel-enter-a` / `panel-enter-b`, based on its parity.

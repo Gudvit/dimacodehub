@@ -11,6 +11,15 @@
 // the least room to spare. Measure the contact section after changing either.
 $font-size: clamp(18px, min(10vw, 16vh), 220px);
 
+// Where each slide starts on a phone: under the fixed header, with a little air. Each title
+// used to sit at its own distance from the top (12vh, 6.6svh, the header's height), so some
+// ended up flush against the header and some behind it as soon as the page shifted.
+$phone-padding-top: calc(var(--header-height) + 0.75rem);
+
+// And where it ends: clear of the arrow at the foot of the screen (`.slide-step` on the home
+// page, the hero's `.scroll-hint`), which sits 28px tall at max(0.9rem, 3.5svh) from the bottom.
+$phone-padding-bottom: calc(max(0.9rem, 3.5svh) + 28px + 0.5rem);
+
 @mixin display-title {
   position: relative;
   margin: 0;

@@ -2,9 +2,11 @@ import {
   afterNextRender,
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   ElementRef,
   inject,
+  signal,
   viewChild,
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -39,6 +41,19 @@ export class HomePageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly sections = inject(HomeSectionsService);
 
+  /**
+   * The phone's floating arrow (`.slide-step`): which way the reader is going. It points down
+   * while they scroll down and up once they turn back; on the last slide it can only go up.
+   * Hidden on the first slide, which has its own arrow.
+   */
+  readonly stepDirection = signal<"down" | "up">("down");
+  /** On the last slide the arrow moves aside, clear of the footer's links. */
+  readonly stepRaised = computed(() => this.sections.current() === "contacts");
+  readonly stepVisible = computed(() => {
+    const current = this.sections.current();
+    return current !== null && current !== "home";
+  });
+
   constructor() {
     syncJsonLd(() => PERSON);
 
@@ -61,18 +76,32 @@ export class HomePageComponent {
       return;
     }
 
-    const sections = Array.from(slider.querySelectorAll<HTMLElement>(".slide-section"));
-    const currentTop = slider.scrollTop + this.getHeaderOffset() + 1;
-    const nextSection = sections.find((section) => section.offsetTop > currentTop);
+    const next = this.slideSections(slider).find(
+      (section) => this.landingTop(section) > slider.scrollTop + 2,
+    );
+    if (next) {
+      slider.scrollTo({ top: this.landingTop(next), behavior: "smooth" });
+    }
+  }
 
-    if (!nextSection) {
+  scrollToPreviousSection(): void {
+    const slider = this.homeSliderRef()?.nativeElement;
+    if (!slider) {
       return;
     }
 
-    slider.scrollTo({
-      top: Math.max(0, nextSection.offsetTop - this.getHeaderOffset()),
-      behavior: "smooth",
-    });
+    const previous = this.slideSections(slider)
+      .filter((section) => this.landingTop(section) < slider.scrollTop - 2)
+      .at(-1);
+    slider.scrollTo({ top: previous ? this.landingTop(previous) : 0, behavior: "smooth" });
+  }
+
+  step(): void {
+    if (this.stepDirection() === "up") {
+      this.scrollToPreviousSection();
+    } else {
+      this.scrollToNextSection();
+    }
   }
 
   scrollToContactsSection(): void {
@@ -108,10 +137,22 @@ export class HomePageComponent {
       return;
     }
 
-    slider.scrollTo({
-      top: Math.max(0, target.offsetTop - this.getHeaderOffset()),
-      behavior,
-    });
+    slider.scrollTo({ top: this.landingTop(target), behavior });
+  }
+
+  private slideSections(slider: HTMLElement): HTMLElement[] {
+    return Array.from(slider.querySelectorAll<HTMLElement>(".slide-section"));
+  }
+
+  /**
+   * Where the slider stops for a section: its top, unless its own top padding is shorter than
+   * the fixed header — then far enough above it that the heading clears the header. On a
+   * phone every slide pads itself below the header, so it lands at its top and fits the
+   * screen; stopping a header's height short would push its foot below the screen.
+   */
+  private landingTop(section: HTMLElement): number {
+    const padding = Number.parseFloat(getComputedStyle(section).paddingTop) || 0;
+    return Math.max(0, section.offsetTop - Math.max(0, this.getHeaderOffset() - padding));
   }
 
   /**
@@ -128,8 +169,17 @@ export class HomePageComponent {
     }
 
     let frame = 0;
+    let lastTop = slider.scrollTop;
     const measure = () => {
       frame = 0;
+      const top = slider.scrollTop;
+      const atEnd = top + slider.clientHeight >= slider.scrollHeight - 2;
+      if (atEnd) {
+        this.stepDirection.set("up");
+      } else if (Math.abs(top - lastTop) > 4) {
+        this.stepDirection.set(top > lastTop ? "down" : "up");
+      }
+      lastTop = top;
       const header = this.getHeaderOffset();
       const line = slider.scrollTop + header + (slider.clientHeight - header) / 3;
       const passed = Array.from(slider.querySelectorAll<HTMLElement>(".slide-section")).filter(
