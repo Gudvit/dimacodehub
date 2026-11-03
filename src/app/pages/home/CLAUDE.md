@@ -64,7 +64,8 @@ the hero is a grid — so do not pull those into the global rule.
 sections stick on mobile and the page becomes impossible to scroll properly.
 
 A phone gets a floating arrow instead (`.slide-step` in `home-page.component.*`): the
-hero's own chevron and bounce, at the foot of the screen from the second slide on. It
+hero's own chevron and bounce, at the foot of the screen once the hero has gone under the
+header, so the hero's arrow and this one are never on screen together. It
 points down and goes to the next slide while the reader scrolls down, turns up and goes to
 the previous one once they scroll back, and always points up at the end, where it moves to
 the right end of the footer and stands in for the contact section's "Back to top" (hidden on
