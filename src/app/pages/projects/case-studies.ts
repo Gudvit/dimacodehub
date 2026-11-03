@@ -288,7 +288,12 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     kind: "side",
     title: "Document Vault",
     tagline: "A private vault for a family's documents and medical history",
-    // [TODO: cover — a screenshot filled with made-up records, never real ones]
+    // Not the app itself: a drawn outline of it, with no text and no records, while its
+    // design is still changing.
+    cover: {
+      src: "images/projects/document-vault.webp",
+      alt: "An outline of the vault: cards for a passport, medical records, insurance, an expiry date, a document and a pet, and a Telegram reminder.",
+    },
     summary:
       "A family's passports, insurance, vaccinations and medical history in one private web app: profiles for each person and pet, a medical timeline, full-text search, expiry tracking with reminders to the family's Telegram group, and encrypted backups that are proven to restore.",
     company: "Personal project",
