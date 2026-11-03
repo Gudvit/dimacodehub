@@ -26,6 +26,8 @@
   --code-function: #{brand.$code-function};
   --spotlight-blend: multiply;
   --logo-filter: none;
+  // Company wordmarks in the hero, flattened to the ink of the theme.
+  --wordmark-filter: brightness(0);
 }
 
 @mixin dark-theme {
@@ -48,6 +50,7 @@
   // The logo is a dark gradient drawn for a light page. Inverting it and turning the hue
   // back keeps its two brand colours recognisable.
   --logo-filter: invert(1) hue-rotate(180deg) brightness(1.1);
+  --wordmark-filter: brightness(0) invert(1);
 }
 
 :root {

@@ -69,8 +69,3 @@ $code-function-dark: #c9a3ef;
 @function shadow($alpha) {
   @return -mix(--brand-shadow, $alpha);
 }
-
-// The hero sits on a photo in both themes, so its white button keeps the light ink.
-@function fixed-ink($alpha) {
-  @return rgba($ink, $alpha);
-}

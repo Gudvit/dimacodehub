@@ -37,9 +37,10 @@ cannot know the visitor's theme. And the CSP allows no inline script, so the usu
   (`#theme-init`) in `<head>`, ahead of the stylesheets. The CSP allows it by its sha256
   hash, and `index-html.spec.ts` fails when the script and the hash disagree. Without it a
   visitor who chose dark on a light system would see a white flash on every page load.
-- **The hero is outside the theme.** It is text on a darkened photo in both themes, so it
-  keeps its literal whites and uses `brand.fixed-ink()` for the dark text on its white
-  button. The logo, a dark gradient, is inverted in the dark theme through
+- **The hero follows the theme.** It was outside it at first — text on a darkened photo in
+  both themes, with literal whites — until the portrait became a cut-out on transparency.
+  Now it sits on the page colour in either theme like every other slide; its company logos
+  are flattened to the ink through `--wordmark-filter`. The logo, a dark gradient, is inverted in the dark theme through
   `--logo-filter`; the cursor spotlight switches from `multiply` to `screen` through
   `--spotlight-blend`. Both are custom properties because a component's emulated styles
   cannot target `:root` reliably.

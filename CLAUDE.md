@@ -36,9 +36,10 @@ before any large architectural change — they record why things are the way the
   (ADR 0020): every `--brand-*` property has a value per theme, and the helpers mix the
   property, so a component that sticks to them works in both without knowing which is on.
   `--brand-paper` is the layer above the page (white in light); `--brand-on-image` /
-  `brand.on-image()` is text over a darkened picture, light in both themes. Code in posts is coloured
-  by `--code-*`, defined per theme next to the brand properties. The hero is the exception:
-  it sits on a photo in both themes and keeps its literal whites and `brand.fixed-ink()`.
+  `brand.on-image()` is text over a darkened picture, light in both themes. Code in posts is
+  coloured by `--code-*`, defined per theme next to the brand properties. The hero follows
+  the theme too: the portrait is a cut-out on transparency, so it sits on the page colour
+  like every other slide, and `--wordmark-filter` flattens its company logos to the ink.
 - **Vitest 5** (jsdom 30) for unit tests; **Playwright** for e2e.
 - **ESLint 10** (`angular-eslint`, including `templateAccessibility`) + **Prettier 3**.
 - **npm 11.13.0** (`packageManager` in `package.json`), Node 24 (`.nvmrc`, `engines`).
