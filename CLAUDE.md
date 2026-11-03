@@ -87,7 +87,7 @@ src/
   vitest.setup.ts             matchMedia polyfill for jsdom
 scripts/build-feeds.ts        sitemap.xml + RSS, run in plain Node after `ng build`
 scripts/build-og-images.ts    a 1200×630 og:image per post / case study, via Playwright
-scripts/build-cover.ts        a 1600×900 project cover: screenshot in a tilted browser on a gradient
+scripts/build-cover.ts        a 1600×900 project cover: the page, sharp, over its own picture blurred
 scripts/build-icons.ts        the manifest's and iOS's home-screen icons, from logo.svg
 scripts/build-og-cover.ts     the site's own 1200×630 sharing image, from the hero portrait
 scripts/build-stats.ts        bundle sizes, page and test counts → build-stats.json

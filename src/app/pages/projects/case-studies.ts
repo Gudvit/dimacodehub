@@ -20,7 +20,7 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     tagline: "An online doctor and pharmacy for seven European countries",
     cover: {
       src: "images/projects/apomeds.webp",
-      alt: "The Apomeds website in a browser window: who the company is and how the service works.",
+      alt: "The Apomeds hair-loss page: request a treatment or send in a prescription, rated 4.87 on Trusted Shops.",
     },
     site: "https://apomeds.com",
     summary:
@@ -106,68 +106,6 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     draft: true,
   },
   {
-    // Built from the Agendo-Booking-Widget repository: its code and its history (my commits
-    // run Oct 2019 – Aug 2021, through IdeaSoft). [TODO] marks what only the author knows.
-    slug: "agendo",
-    title: "Agendo",
-    tagline: "An online booking widget any business can put on its own website",
-    cover: {
-      src: "images/projects/agendo.webp",
-      alt: "The Agendo website: four kinds of booking — a meeting room by the hour, a storage unit by the month, a time with a specialist and a group course with its schedule.",
-    },
-    summary:
-      "Two years on the booking widget of a Swedish scheduling platform: one script tag puts a book button on a business's own website, and the booking — service, resource, time, sign-in and payment — runs in an Angular app inside an iframe. I took over a codebase begun in 2016 and added several buttons per page, branded buttons, payment links and a rework of how the widget learns its language.",
-    company: "Agendo · via IdeaSoft",
-    role: "Angular Developer",
-    period: "Oct 2019 – Aug 2021",
-    stack: ["Angular", "NgRx", "RxJS", "TypeScript", "postMessage", "Angular Material"],
-    outcomes: [
-      { value: "1", label: "script tag puts booking on any website" },
-      { value: "5", label: "steps from choosing a service to paying" },
-      { value: "2016", label: "the year the codebase I took over was started" },
-      { value: "270+", label: "of my commits over two years" },
-    ],
-    context: [
-      "Agendo sells online booking to businesses in Sweden, and the booking is not only of appointments: a meeting room by the hour, a storage unit by the month until cancelled, a time with a specialist, a group course with a schedule and a waiting list. [TODO: who the clients are — and whether all of this already existed in 2019–2021] Their customers book on the business's own website, not on Agendo's.",
-      "The widget is what makes that work: a small loader script adds a book button to the page, and pressing it opens the booking itself — choose a service or a course, a resource, a time, sign in or sign up, confirm and pay — in an Angular app running inside an iframe.",
-      "[TODO: what the state of the widget was when you joined, and what the business needed from it]",
-    ],
-    constraints: [
-      "The widget lives on websites nobody on the team controls: any CSS, any scripts, any CMS.",
-      "A codebase begun in 2016 by other developers, on Angular and NgRx, with the built bundle committed to the repository.",
-      "Booking and payment had to work inside an iframe on phones, where mobile browsers are least forgiving.",
-      "[TODO: team size, deadlines, how releases happened]",
-    ],
-    decisions: [
-      {
-        title: "An iframe, not a script on the page",
-        choice:
-          "The loader only creates an iframe and the button; the whole booking runs in its own document. The host page's styles cannot break the widget, the widget's cannot break the page, and the two talk only through a small event protocol over postMessage.",
-        tradeoff:
-          "Everything that crosses the boundary has to be a message, and mobile browsers treat iframes their own way — the payment step needed fixes for phones that a plain page would not have.",
-      },
-      {
-        title: "Many buttons, one widget",
-        choice:
-          "One loader on a page serves every element that matches its selector, so a business can put a book button next to each service. The button's look comes from the business's profile, fetched by the site's domain; if that request fails, a plain button in the page's language is shown, so booking never disappears.",
-        tradeoff:
-          "Every page view costs a request before the button appears, and a business is recognised by its domain — a site moved to a new domain loses its styling until the profile is updated.",
-      },
-      {
-        title: "Pay later, from a link",
-        choice:
-          "A booking can be paid from a link that carries a hash. The widget fetches the booking by that hash and rebuilds its state — the customer, the appointment, the time, the quantity — then opens straight at the payment step, on any device.",
-        tradeoff:
-          "Every step's store had to accept being entered in the middle, not only in order, and the link works only while the booking it points to is still payable.",
-      },
-    ],
-    results: [
-      "[TODO: what changed for the business — bookings, payments through links, support load]",
-    ],
-    lessons: ["[TODO: what you would do differently]"],
-    draft: true,
-  },
-  {
     // Built from the krakow-now-api repository: README, PROJECT_VISION, ARCHITECTURE (its
     // ADRs) and DEPLOYMENT. [TODO] marks what only the author knows. The repository and the
     // code call it Kraków Now; in production the bot is Kraków Events.
@@ -177,7 +115,7 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     tagline: "A curated guide to what is on in Kraków, in a Telegram bot",
     cover: {
       src: "images/projects/krakow-events.webp",
-      alt: "Kraków Events: St Mary's Basilica at night between a concert crowd, a painter at her easel and friends at a meetup, under the word events.",
+      alt: "Kraków Events: the moderation panel, a list of approved concerts with their scores, and beside it the bot in Telegram on a phone showing one of them with buttons for the website, directions, saving and a reminder.",
     },
     site: "https://t.me/KrakowEventsBot",
     summary:
@@ -250,6 +188,174 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     draft: true,
   },
   {
+    // Built from the Agendo-Booking-Widget repository: its code and its history (my commits
+    // run Oct 2019 – Aug 2021, through IdeaSoft). [TODO] marks what only the author knows.
+    slug: "agendo",
+    title: "Agendo",
+    tagline: "An online booking widget any business can put on its own website",
+    cover: {
+      src: "images/projects/agendo.webp",
+      alt: "The Agendo website, “Alltid enkelt och tydligt för dina kunder”: four kinds of booking — a meeting room by the hour, a storage unit by the month, a time with a specialist and a group course with its schedule.",
+    },
+    summary:
+      "Two years on the booking widget of a Swedish scheduling platform: one script tag puts a book button on a business's own website, and the booking — service, resource, time, sign-in and payment — runs in an Angular app inside an iframe. I took over a codebase begun in 2016 and added several buttons per page, branded buttons, payment links and a rework of how the widget learns its language.",
+    company: "Agendo · via IdeaSoft",
+    role: "Angular Developer",
+    period: "Oct 2019 – Aug 2021",
+    stack: ["Angular", "NgRx", "RxJS", "TypeScript", "postMessage", "Angular Material"],
+    outcomes: [
+      { value: "1", label: "script tag puts booking on any website" },
+      { value: "5", label: "steps from choosing a service to paying" },
+      { value: "2016", label: "the year the codebase I took over was started" },
+      { value: "270+", label: "of my commits over two years" },
+    ],
+    context: [
+      "Agendo sells online booking to businesses in Sweden, and the booking is not only of appointments: a meeting room by the hour, a storage unit by the month until cancelled, a time with a specialist, a group course with a schedule and a waiting list. [TODO: who the clients are — and whether all of this already existed in 2019–2021] Their customers book on the business's own website, not on Agendo's.",
+      "The widget is what makes that work: a small loader script adds a book button to the page, and pressing it opens the booking itself — choose a service or a course, a resource, a time, sign in or sign up, confirm and pay — in an Angular app running inside an iframe.",
+      "[TODO: what the state of the widget was when you joined, and what the business needed from it]",
+    ],
+    constraints: [
+      "The widget lives on websites nobody on the team controls: any CSS, any scripts, any CMS.",
+      "A codebase begun in 2016 by other developers, on Angular and NgRx, with the built bundle committed to the repository.",
+      "Booking and payment had to work inside an iframe on phones, where mobile browsers are least forgiving.",
+      "[TODO: team size, deadlines, how releases happened]",
+    ],
+    decisions: [
+      {
+        title: "An iframe, not a script on the page",
+        choice:
+          "The loader only creates an iframe and the button; the whole booking runs in its own document. The host page's styles cannot break the widget, the widget's cannot break the page, and the two talk only through a small event protocol over postMessage.",
+        tradeoff:
+          "Everything that crosses the boundary has to be a message, and mobile browsers treat iframes their own way — the payment step needed fixes for phones that a plain page would not have.",
+      },
+      {
+        title: "Many buttons, one widget",
+        choice:
+          "One loader on a page serves every element that matches its selector, so a business can put a book button next to each service. The button's look comes from the business's profile, fetched by the site's domain; if that request fails, a plain button in the page's language is shown, so booking never disappears.",
+        tradeoff:
+          "Every page view costs a request before the button appears, and a business is recognised by its domain — a site moved to a new domain loses its styling until the profile is updated.",
+      },
+      {
+        title: "Pay later, from a link",
+        choice:
+          "A booking can be paid from a link that carries a hash. The widget fetches the booking by that hash and rebuilds its state — the customer, the appointment, the time, the quantity — then opens straight at the payment step, on any device.",
+        tradeoff:
+          "Every step's store had to accept being entered in the middle, not only in order, and the link works only while the booking it points to is still payable.",
+      },
+    ],
+    results: [
+      "[TODO: what changed for the business — bookings, payments through links, support load]",
+    ],
+    lessons: ["[TODO: what you would do differently]"],
+    draft: true,
+  },
+  {
+    // [TODO] The cover is from ideasoft.io; the text is to be written by the author.
+    slug: "ideasoft",
+    title: "IdeaSoft",
+    tagline: "[TODO: what IdeaSoft is, in a few words]",
+    cover: {
+      src: "images/projects/ideasoft.webp",
+      alt: "The IdeaSoft website: “Innovative Blockchain Solutions Development For Enterprises”, over its clients’ logos — Securitize, Kadena, HSBC and Bits of Gold.",
+    },
+    site: "https://ideasoft.io",
+    summary: "[TODO: the result in one sentence]",
+    company: "IdeaSoft",
+    role: "Angular Developer",
+    period: "May 2019 – Dec 2021",
+    stack: ["Angular", "NgRx", "RxJS", "TypeScript"],
+    outcomes: [
+      { value: "[TODO]", label: "[TODO: a headline number]" },
+      { value: "[TODO]", label: "[TODO: another]" },
+    ],
+    context: ["[TODO: the situation and the problem]"],
+    constraints: ["[TODO: what could not change]"],
+    decisions: [
+      {
+        title: "[TODO: a decision]",
+        choice: "[TODO: what was chosen and why]",
+        tradeoff: "[TODO: what it cost]",
+      },
+    ],
+    results: ["[TODO: what happened]"],
+    draft: true,
+  },
+  {
+    // Built from the vault-document repository: README and its ADRs. [TODO] marks what only
+    // the author knows. The vault is private: no `site`, and a cover only with synthetic data.
+    slug: "document-vault",
+    kind: "side",
+    title: "Document Vault",
+    tagline: "A private vault for a family's documents and medical history",
+    // [TODO: cover — a screenshot filled with made-up records, never real ones]
+    summary:
+      "A family's passports, insurance, vaccinations and medical history in one private web app: profiles for each person and pet, a medical timeline, full-text search, expiry tracking with reminders to the family's Telegram group, and encrypted backups that are proven to restore.",
+    company: "Personal project",
+    role: "Author",
+    period: "Sep 2026",
+    stack: ["Next.js", "React", "TypeScript", "Supabase", "PostgreSQL", "Tailwind CSS"],
+    outcomes: [
+      { value: "15 min", label: "lifetime of every link to a stored file" },
+      { value: "1", label: "encrypted file holds every row, account and document" },
+      { value: "7", label: "architecture decisions written down" },
+      { value: "6", label: "test suites run against a real local Supabase" },
+    ],
+    context: [
+      "A family's paperwork is scattered: passports in a drawer, scans in a mailbox, test results in a clinic's portal, a pet's vaccinations on a card. The vault keeps all of it in one place, by person: documents with their files, a medical timeline that links to them, and a list of what expires soon.",
+      "Expiring documents are the point. Each category has its own lead time, a reminder can be snoozed or closed by a renewal, and the reminders arrive in the family's Telegram group, so nobody has to open the app to remember a passport.",
+      "[TODO: why you built it, and who in the family uses it]",
+    ],
+    constraints: [
+      "The most sensitive data a family has — medical records and identity documents.",
+      "Supabase's free plan keeps no backups, and no plan backs up stored files.",
+      "Scans of 20 MB, while Server Actions cap a request at 1 MB and Vercel at 4.5 MB.",
+      "Storage cannot take part in a database transaction.",
+    ],
+    decisions: [
+      {
+        title: "Invitation-only accounts",
+        choice:
+          "Sign-up, anonymous sign-in and every OAuth provider are off; an administrator creates each account, with passwords of twelve characters or more, and access-control tests guard it. Every signed-in account is a trusted family member.",
+        tradeoff:
+          "Everyone sees and can change everything. Splitting the data per person later means an owner column and stricter policies in a new migration.",
+      },
+      {
+        title: "Uploads go around the server, saves are atomic",
+        choice:
+          "Files go from the browser straight into a private bucket; a Postgres function then saves the record in one transaction and checks the file really exists. The form picks the record's id on the first attempt, so pressing Save again after a lost response finishes the same save instead of creating a second one.",
+        tradeoff:
+          "A file can outlive a failed save, so files are deleted only through a cleanup queue, and only when no record can point at them.",
+      },
+      {
+        title: "Backups made by hand, and proven",
+        choice:
+          "One command writes an encrypted file with every row, every family account and every stored file, with a checksum for each. A restore drill starts a throwaway Supabase, restores into it and compares every count and checksum — a backup that has never passed a drill is not proof of anything.",
+        tradeoff:
+          "Backups happen only when someone runs the command, and without the passphrase none of them can be restored.",
+      },
+      {
+        title: "Reminders live in the database",
+        choice:
+          "pg_cron calls an Edge Function every hour; the database decides what is due, with the same rules as the app, and claims each reminder before it is sent, so two runs can never send one twice. The bot token never reaches the app, GitHub or a laptop.",
+        tradeoff:
+          "The rules for what is due exist twice — in SQL and in TypeScript — and a test has to hold them to each other.",
+      },
+    ],
+    results: [
+      "[TODO: is the family using it, and for what]",
+      "The repository is run like a team's: an ADR for every decision, pull requests, CI on every push, and tests against a real database that refuse to run against anything but a local one.",
+    ],
+    lessons: ["[TODO: what you would do differently]"],
+    draft: true,
+  },
+];
+
+/**
+ * Case studies taken off the list for now, kept whole to come back: nothing reads this array,
+ * so they are neither shown nor prerendered. LingoPath gave its place to IdeaSoft.
+ */
+export const SHELVED_CASE_STUDIES: readonly CaseStudy[] = [
+  {
     // Built from the productivity-bot repository: README, ROADMAP, CHANGELOG and its ADRs.
     // [TODO] marks what only the author knows. Lingua was its early name and is not listed;
     // its picture stays in public/ because the bot's share card loads it from main.
@@ -318,74 +424,6 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     results: [
       "[TODO: how many people use it, how many study daily, the longest streak]",
       "The repository is run like a team's: an ADR for every decision, a changelog for operators, CI on every pull request and sixty smoke-test files, over 228 commits in four months.",
-    ],
-    lessons: ["[TODO: what you would do differently]"],
-    draft: true,
-  },
-  {
-    // Built from the vault-document repository: README and its ADRs. [TODO] marks what only
-    // the author knows. The vault is private: no `site`, and a cover only with synthetic data.
-    slug: "document-vault",
-    kind: "side",
-    title: "Document Vault",
-    tagline: "A private vault for a family's documents and medical history",
-    // [TODO: cover — a screenshot filled with made-up records, never real ones]
-    summary:
-      "A family's passports, insurance, vaccinations and medical history in one private web app: profiles for each person and pet, a medical timeline, full-text search, expiry tracking with reminders to the family's Telegram group, and encrypted backups that are proven to restore.",
-    company: "Personal project",
-    role: "Author",
-    period: "Sep 2026",
-    stack: ["Next.js", "React", "TypeScript", "Supabase", "PostgreSQL", "Tailwind CSS"],
-    outcomes: [
-      { value: "15 min", label: "lifetime of every link to a stored file" },
-      { value: "1", label: "encrypted file holds every row, account and document" },
-      { value: "7", label: "architecture decisions written down" },
-      { value: "6", label: "test suites run against a real local Supabase" },
-    ],
-    context: [
-      "A family's paperwork is scattered: passports in a drawer, scans in a mailbox, test results in a clinic's portal, a pet's vaccinations on a card. The vault keeps all of it in one place, by person: documents with their files, a medical timeline that links to them, and a list of what expires soon.",
-      "Expiring documents are the point. Each category has its own lead time, a reminder can be snoozed or closed by a renewal, and the reminders arrive in the family's Telegram group, so nobody has to open the app to remember a passport.",
-      "[TODO: why you built it, and who in the family uses it]",
-    ],
-    constraints: [
-      "The most sensitive data a family has — medical records and identity documents.",
-      "Supabase's free plan keeps no backups, and no plan backs up stored files.",
-      "Scans of 20 MB, while Server Actions cap a request at 1 MB and Vercel at 4.5 MB.",
-      "Storage cannot take part in a database transaction.",
-    ],
-    decisions: [
-      {
-        title: "Invitation-only accounts",
-        choice:
-          "Sign-up, anonymous sign-in and every OAuth provider are off; an administrator creates each account, with passwords of twelve characters or more, and access-control tests guard it. Every signed-in account is a trusted family member.",
-        tradeoff:
-          "Everyone sees and can change everything. Splitting the data per person later means an owner column and stricter policies in a new migration.",
-      },
-      {
-        title: "Uploads go around the server, saves are atomic",
-        choice:
-          "Files go from the browser straight into a private bucket; a Postgres function then saves the record in one transaction and checks the file really exists. The form picks the record's id on the first attempt, so pressing Save again after a lost response finishes the same save instead of creating a second one.",
-        tradeoff:
-          "A file can outlive a failed save, so files are deleted only through a cleanup queue, and only when no record can point at them.",
-      },
-      {
-        title: "Backups made by hand, and proven",
-        choice:
-          "One command writes an encrypted file with every row, every family account and every stored file, with a checksum for each. A restore drill starts a throwaway Supabase, restores into it and compares every count and checksum — a backup that has never passed a drill is not proof of anything.",
-        tradeoff:
-          "Backups happen only when someone runs the command, and without the passphrase none of them can be restored.",
-      },
-      {
-        title: "Reminders live in the database",
-        choice:
-          "pg_cron calls an Edge Function every hour; the database decides what is due, with the same rules as the app, and claims each reminder before it is sent, so two runs can never send one twice. The bot token never reaches the app, GitHub or a laptop.",
-        tradeoff:
-          "The rules for what is due exist twice — in SQL and in TypeScript — and a test has to hold them to each other.",
-      },
-    ],
-    results: [
-      "[TODO: is the family using it, and for what]",
-      "The repository is run like a team's: an ADR for every decision, pull requests, CI on every push, and tests against a real database that refuse to run against anything but a local one.",
     ],
     lessons: ["[TODO: what you would do differently]"],
     draft: true,
