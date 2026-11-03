@@ -69,9 +69,12 @@ the right end of the footer and stands in for the contact section's "Back to top
 phones). Every slide keeps `$phone-padding-bottom` free for it.
 
 Without snapping, a phone still reads the page as slides: **every section fits one
-screen**, checked down to 390×664 (the visible height of Safari on a 390px iPhone). The
-hero pins its copy to the bottom over the darkened photo; the contact section puts the
-form first and shrinks the contact card to a strip of fallbacks. Adding content to a
+screen**, checked at 390×664 (the visible height of Safari on a 390px iPhone) and down to
+402×620 (what Chrome on an iPhone 16 Pro leaves the page between its top and bottom bars).
+The hero pins its copy to the bottom over the darkened photo; below 720px of height it drops
+the company logos and the availability chip and lifts the portrait, so the copy stays under
+the face. The contact section puts the form first and shrinks the contact card to a strip of
+fallbacks; below 720px every gap in it gives a little more. Adding content to a
 section on a phone means taking something out — measure the section heights after any
 change there.
 
@@ -102,7 +105,7 @@ link all point here. The grid and its tiles are `ProjectGridComponent` and
 `min-height`. On a desktop screen at least 1024×640 the slide is exactly one screen tall and
 the grid fills what the heading leaves; below that the grid is `compact` — two columns of
 short tiles under a wide first one — which keeps five projects inside one screen down to
-390×664. Measure the slide after changing the number of projects or the heading.
+390×664 and 402×620. Measure the slide after changing the number of projects or the heading.
 
 With no published project the component renders nothing, so the slide disappears; until
 the section loads, its placeholder still holds a screen, and a `/#contacts` jump made in that

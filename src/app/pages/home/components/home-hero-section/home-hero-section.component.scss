@@ -527,6 +527,21 @@ $portrait-fade:
   }
 }
 
+// A short phone screen: what a browser with bars top and bottom leaves (Chrome on an iPhone
+// gives the page about 402×620). Bottom-pinned, the full copy reached up over the face; the
+// company logos and the availability chip give way, and the portrait moves up, so the face
+// stays above the copy. The numbers stay.
+@media (max-width: 640px) and (max-height: 720px) {
+  .hero {
+    background-position: center -45px;
+  }
+
+  .hero-text .availability,
+  .proof__companies {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-text {
     animation: none;
