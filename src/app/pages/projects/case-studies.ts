@@ -250,20 +250,21 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     draft: true,
   },
   {
-    // [TODO] The cover is from ideasoft.io; the text is to be written by the author.
-    slug: "ideasoft",
-    title: "IdeaSoft",
-    tagline: "[TODO: what IdeaSoft is, in a few words]",
+    // [TODO] The cover is from modniy-ostrov.com; the text is to be written by the author.
+    slug: "modniy-ostriv",
+    title: "Modniy Ostriv",
+    tileTitle: "MO",
+    tagline: "A wholesale online store of a Ukrainian clothing manufacturer",
     cover: {
-      src: "images/projects/ideasoft.webp",
-      alt: "The IdeaSoft website: “Innovative Blockchain Solutions Development For Enterprises”, over its clients’ logos — Securitize, Kadena, HSBC and Bits of Gold.",
+      src: "images/projects/modniy-ostrov.webp",
+      alt: "The Modniy Ostriv store: a catalogue of women's clothing sold wholesale from five items, under the banner of its Fall Muse mid-season collection.",
     },
-    site: "https://ideasoft.io",
+    site: "https://modniy-ostrov.com/ua",
     summary: "[TODO: the result in one sentence]",
-    company: "IdeaSoft",
-    role: "Angular Developer",
-    period: "May 2019 – Dec 2021",
-    stack: ["Angular", "NgRx", "RxJS", "TypeScript"],
+    company: "[TODO: the client, and the company you worked through]",
+    role: "[TODO: your role]",
+    period: "[TODO: when]",
+    stack: ["[TODO: the stack]"],
     outcomes: [
       { value: "[TODO]", label: "[TODO: a headline number]" },
       { value: "[TODO]", label: "[TODO: another]" },
@@ -352,7 +353,7 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
 
 /**
  * Case studies taken off the list for now, kept whole to come back: nothing reads this array,
- * so they are neither shown nor prerendered. LingoPath gave its place to IdeaSoft.
+ * so they are neither shown nor prerendered. LingoPath gave its place to another project.
  */
 export const SHELVED_CASE_STUDIES: readonly CaseStudy[] = [
   {

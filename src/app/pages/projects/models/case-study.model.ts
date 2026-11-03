@@ -37,6 +37,8 @@ export interface CaseStudy {
   /** Client work (the default) or a project of my own. */
   readonly kind?: "client" | "side";
   readonly title: string;
+  /** A shorter name for the tile's hover, when the title is too long there. The page keeps `title`. */
+  readonly tileTitle?: string;
   /** What the product is, in a few words: the line under the title on the card. */
   readonly tagline?: string;
   /** The result in one sentence. It is the page lead and the sharing description. */

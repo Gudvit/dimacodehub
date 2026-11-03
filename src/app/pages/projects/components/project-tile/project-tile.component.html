@@ -19,8 +19,12 @@
   <div class="work__overlay">
     <!-- One real link, on the name, stretched over the whole tile. -->
     <h3 class="work__title">
-      <a class="work__link" [routerLink]="['/projects', study().slug]"
-        ><span class="work__name">{{ study().title }}</span></a
+      <!-- A short tile name is only what the eye sees; the link keeps the full name. -->
+      <a
+        class="work__link"
+        [attr.aria-label]="study().tileTitle ? study().title : null"
+        [routerLink]="['/projects', study().slug]"
+        ><span class="work__name">{{ study().tileTitle ?? study().title }}</span></a
       >
     </h3>
   </div>
