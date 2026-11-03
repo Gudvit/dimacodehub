@@ -28,6 +28,12 @@ if (!outDir) {
 const PAGES = ["", "blog/", "blog/ai-frontend-engineering/", "colophon/"];
 
 /**
+ * Runs per page; a page is judged on its median by performance. One build's single runs land
+ * as much as seven points apart on a CI runner (ADR 0021), which is a coin toss at the budget.
+ */
+const RUNS = 3;
+
+/**
  * Minimum category scores, 0–100 (ADR 0021). Raise them as the site improves; never lower
  * one to get a red build through. Performance measures 95–100 locally; the floor leaves
  * room for a slower CI runner.
@@ -97,42 +103,59 @@ const chrome = await launch({
   chromeFlags: ["--headless=new", "--no-sandbox"],
 });
 
-const results: {
-  readonly page: string;
+interface Run {
   readonly scores: LighthouseScores;
   /** What costs the page points, for the log: "category: audit title (value)". */
   readonly findings: readonly string[];
-}[] = [];
+}
+
+async function audit(url: string, port: number): Promise<Run> {
+  const run = await lighthouse(url, {
+    port,
+    output: "json",
+    logLevel: "error",
+    onlyCategories: Object.values(CATEGORIES),
+  });
+  const lhr = run?.lhr;
+  const categories = lhr?.categories ?? {};
+  const findings = Object.entries(categories).flatMap(([id, category]) =>
+    category.auditRefs
+      .filter((ref) => ref.weight > 0)
+      .map((ref) => lhr?.audits[ref.id])
+      .filter((audit) => audit && audit.score !== null && audit.score < 0.9)
+      .map(
+        (audit) => `${id}: ${audit?.title}${audit?.displayValue ? ` (${audit.displayValue})` : ""}`,
+      ),
+  );
+  const score = (id: string) => Math.round((categories[id]?.score ?? 0) * 100);
+  return {
+    scores: {
+      performance: score(CATEGORIES.performance),
+      accessibility: score(CATEGORIES.accessibility),
+      bestPractices: score(CATEGORIES.bestPractices),
+      seo: score(CATEGORIES.seo),
+    },
+    findings,
+  };
+}
+
+const results: (Run & { readonly page: string; readonly performanceRuns: readonly number[] })[] =
+  [];
 try {
   for (const page of PAGES) {
-    const run = await lighthouse(`${origin}${base}${page}`, {
-      port: chrome.port,
-      output: "json",
-      logLevel: "error",
-      onlyCategories: Object.values(CATEGORIES),
-    });
-    const lhr = run?.lhr;
-    const categories = lhr?.categories ?? {};
-    const findings = Object.entries(categories).flatMap(([id, category]) =>
-      category.auditRefs
-        .filter((ref) => ref.weight > 0)
-        .map((ref) => lhr?.audits[ref.id])
-        .filter((audit) => audit && audit.score !== null && audit.score < 0.9)
-        .map(
-          (audit) =>
-            `${id}: ${audit?.title}${audit?.displayValue ? ` (${audit.displayValue})` : ""}`,
-        ),
-    );
-    const score = (id: string) => Math.round((categories[id]?.score ?? 0) * 100);
+    const runs: Run[] = [];
+    for (let i = 0; i < RUNS; i++) {
+      runs.push(await audit(`${origin}${base}${page}`, chrome.port));
+    }
+    runs.sort((a, b) => a.scores.performance - b.scores.performance);
+    const median = runs[Math.floor(RUNS / 2)];
+    if (!median) {
+      throw new Error(`No Lighthouse run for /${page}`);
+    }
     results.push({
+      ...median,
       page: `/${page}`,
-      scores: {
-        performance: score(CATEGORIES.performance),
-        accessibility: score(CATEGORIES.accessibility),
-        bestPractices: score(CATEGORIES.bestPractices),
-        seo: score(CATEGORIES.seo),
-      },
-      findings,
+      performanceRuns: runs.map((run) => run.scores.performance),
     });
   }
 } finally {
@@ -142,9 +165,10 @@ try {
 
 console.table(Object.fromEntries(results.map(({ page, scores }) => [page, scores])));
 
-for (const { page, findings } of results) {
+for (const { page, findings, performanceRuns } of results) {
+  console.log(`${page} (performance runs: ${performanceRuns.join(", ")})`);
   if (findings.length) {
-    console.log(`${page}\n  ${findings.join("\n  ")}`);
+    console.log(`  ${findings.join("\n  ")}`);
   }
 }
 

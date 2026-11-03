@@ -3,7 +3,8 @@
 ## Status
 
 Accepted. In effect. Extends [0009](0009-ci-quality-gate-before-deploy.md). Amended: the
-test server gzips like GitHub Pages, and the performance budget went from 80 to 90.
+test server gzips like GitHub Pages, the performance budget went from 80 to 90, and a page
+is judged on the median of three runs.
 
 ## Context
 
@@ -21,7 +22,7 @@ serves the build from `/`, while this build only works under `/dimacodehub/`.
   `<base href>` the way GitHub Pages does (a directory answers with its `index.html`,
   anything else with `404.html`; text gzipped, as Pages sends it), starts Playwright's Chromium — CI already installs it for
   the e2e tests — and audits one page of each kind: home, blog, a post, the colophon. Mobile
-  settings, simulated throttling, one run per page.
+  settings, simulated throttling, three runs per page, judged on the median by performance.
 - **Budgets per category, in the script.** Accessibility, best practices and SEO must be
   100 on every page: those audits are deterministic, so anything less is a defect, not
   noise. Performance must be at least 90; it measures 95–100 locally, and a CI runner is
@@ -41,7 +42,7 @@ a layout shift.
 
 ## Consequences
 
-- About 40 seconds more per CI run, and two dev dependencies (`lighthouse`,
+- About two minutes more per CI run, and two dev dependencies (`lighthouse`,
   `chrome-launcher`).
 - Lighthouse scores move with Lighthouse versions; a dependency update can turn the build
   red with no change to the site. That is the moment to look, not to lower a budget.
@@ -53,3 +54,10 @@ a layout shift.
   entrance without `opacity` moved nothing outside the noise. The server gzips now, and the
   budget went up to 90. The lesson is in the comment above `COMPRESSED`: measure what the
   host serves.
+- One run per page was a coin toss near the budget. `/blog/` read 89 on a CI runner (Total
+  Blocking Time 300 ms) with no defect behind it; here the same build scored 97–98, and 88,
+  94 and 95 with the CPU slowed to match the runner. Only two tasks cross the 50 ms line
+  there, the first layout and Angular's hydration, so a small change in their length moves
+  the score by points. The budget stayed at 90; the median takes the noise out of the
+  verdict instead. The log prints all three scores, so a page drifting towards the floor
+  shows before it fails.
