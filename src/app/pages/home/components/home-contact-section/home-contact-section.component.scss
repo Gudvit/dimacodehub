@@ -1,5 +1,4 @@
 @use "brand";
-@use "motion";
 @use "../../display-title";
 
 :host {
@@ -625,10 +624,8 @@
   }
 }
 
-.contact-intro {
-  @include motion.slide-reveal(1);
-}
-
-.message-cta {
-  @include motion.slide-reveal(2);
-}
+// The two cards do not rise in with the slide (`motion.slide-reveal`), unlike the other
+// slides' cards. On an iPhone, WebKit ran that scroll-driven fade on its compositor thread and
+// left it at `opacity: 0`: the fields were there to tap but drew nothing, and a theme switch
+// showed them for a moment before they vanished again. The form is the one thing on this
+// slide that must always be seen, so it does not hang on a timeline.
