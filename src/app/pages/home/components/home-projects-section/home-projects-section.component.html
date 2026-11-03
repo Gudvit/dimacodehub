@@ -4,7 +4,13 @@
     <h2 class="projects__display-title">PROJECTS</h2>
     <div class="projects__inner">
       <header class="projects__head">
-        <p class="projects__headline">Work, and how it was done</p>
+        <p class="projects__headline" appHeadlineReveal #reveal="headlineReveal">
+          @if (reveal.visible()) {
+            <app-animated-text [text]="'Work, and how it was done'"></app-animated-text>
+          } @else {
+            Work, and how it was done
+          }
+        </p>
       </header>
       <app-project-grid class="projects__grid" [projects]="projects" />
     </div>

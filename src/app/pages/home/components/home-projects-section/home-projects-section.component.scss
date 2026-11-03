@@ -52,6 +52,7 @@
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--brand-ink);
+  @include motion.headline-reveal;
 }
 
 .projects__grid {

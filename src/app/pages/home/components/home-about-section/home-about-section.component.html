@@ -2,8 +2,8 @@
   <h2 class="about-hero__display-title">ABOUT ME</h2>
   <div class="about-hero__grid">
     <div class="about-hero__copy">
-      <h3 class="about-hero__headline" #aboutHeadline [class.is-visible]="aboutHeadlineVisible()">
-        @if (aboutHeadlineVisible()) {
+      <h3 class="about-hero__headline" appHeadlineReveal #reveal="headlineReveal">
+        @if (reveal.visible()) {
           <app-animated-text
             [text]="'I build scalable frontend systems that don\'t break under real-world complexity.'"
           ></app-animated-text>

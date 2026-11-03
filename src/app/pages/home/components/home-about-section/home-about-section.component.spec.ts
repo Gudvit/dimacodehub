@@ -68,7 +68,6 @@ describe("HomeAboutSectionComponent reveal", () => {
     // No observer, no `is-visible`, no `app-animated-text`: the stylesheet shows the
     // plain heading and no animation ever starts.
     expect(observer.count).toBe(0);
-    expect(fixture.componentInstance.aboutHeadlineVisible()).toBe(false);
     expect(headlineOf(fixture).classList.contains("is-visible")).toBe(false);
     expect(headlineOf(fixture).querySelector("app-animated-text")).toBeNull();
   });
@@ -81,12 +80,11 @@ describe("HomeAboutSectionComponent reveal", () => {
     await fixture.whenStable();
 
     expect(observer.observe).toHaveBeenCalledWith(headlineOf(fixture));
-    expect(fixture.componentInstance.aboutHeadlineVisible()).toBe(false);
+    expect(headlineOf(fixture).classList.contains("is-visible")).toBe(false);
 
     observer.intersect();
     await fixture.whenStable();
 
-    expect(fixture.componentInstance.aboutHeadlineVisible()).toBe(true);
     expect(headlineOf(fixture).classList.contains("is-visible")).toBe(true);
     expect(headlineOf(fixture).querySelector("app-animated-text")).not.toBeNull();
   });
@@ -97,6 +95,6 @@ describe("HomeAboutSectionComponent reveal", () => {
     const fixture = TestBed.createComponent(HomeAboutSectionComponent);
     await fixture.whenStable();
 
-    expect(fixture.componentInstance.aboutHeadlineVisible()).toBe(true);
+    expect(headlineOf(fixture).querySelector("app-animated-text")).not.toBeNull();
   });
 });

@@ -74,19 +74,10 @@
   letter-spacing: -0.02em;
   color: var(--brand-ink);
   font-weight: 700;
-  opacity: 0;
-  transform: translateY(18px);
-  filter: blur(5px);
-  transition:
-    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  @include motion.headline-reveal;
 }
 
 .about-hero__headline.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
   color: var(--brand-wine);
 }
 
@@ -239,14 +230,10 @@
   }
 }
 
-// The headline never gets `is-visible` here — the component leaves the animation alone and
-// the heading is shown as plain text, so this block carries what that class would have done.
+// The headline never gets `is-visible` here: it stays plain text, in the colour that class
+// would have given it.
 @media (prefers-reduced-motion: reduce) {
   .about-hero__headline {
-    opacity: 1;
-    transform: none;
-    filter: none;
-    transition: none;
     color: var(--brand-wine);
   }
 }
