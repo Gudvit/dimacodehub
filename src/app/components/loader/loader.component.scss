@@ -1,3 +1,8 @@
+@use "brand";
+
+// The ring sits inside the viewBox at the logo's own thickness: r + width / 2 = 500.
+$ring-width: 80;
+
 :host {
   display: inline-flex;
 }
@@ -8,17 +13,21 @@
   animation: loader-rotate 4s linear infinite;
 }
 
+.loader__track,
 .loader__ring {
   fill: none;
-  stroke-width: 12;
-  stroke-dasharray: 3000;
-  stroke-dashoffset: 3000;
-  animation: loader-draw 2.5s ease-in-out infinite;
+  stroke-width: $ring-width;
 }
 
-.loader__mark {
-  fill: var(--brand-ink);
-  opacity: 0.8;
+.loader__track {
+  stroke: brand.ink(0.1);
+}
+
+// Whole by default, so that without the animation the mark is still complete.
+.loader__ring {
+  stroke-linecap: round;
+  stroke-dasharray: 100 100;
+  animation: loader-draw 2.5s ease-in-out infinite;
 }
 
 @keyframes loader-rotate {
@@ -27,15 +36,16 @@
   }
 }
 
+// In from one end, out through the other: the arc never reverses on itself.
 @keyframes loader-draw {
   0% {
-    stroke-dashoffset: 3000;
+    stroke-dashoffset: 100;
   }
   50% {
     stroke-dashoffset: 0;
   }
   100% {
-    stroke-dashoffset: 3000;
+    stroke-dashoffset: -100;
   }
 }
 
