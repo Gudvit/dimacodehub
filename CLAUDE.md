@@ -50,25 +50,25 @@ contact form. Nothing else in `dependencies` is optional.
 
 ## Commands
 
-| Command                           | What it does                                                                   |
-| --------------------------------- | ------------------------------------------------------------------------------ |
-| `npm start`                       | dev server at `http://localhost:4200/`                                         |
-| `npm run build`                   | production build into `dist/dimacodehub/browser`                               |
-| `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs              |
-| `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)       |
-| `npm run build:og`                | renders a sharing image per post and case study (needs Playwright\'s Chromium) |
-| `npm run build:cover -- …`        | renders a project cover from a screenshot (see `scripts/build-cover.ts`)       |
-| `npm run build:icons`             | renders the home-screen icons from `logo.svg` into `public/images/icons/`      |
-| `npm run build:og-cover`          | renders the site's sharing image `og-cover.jpg` from the hero portrait         |
-| `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page               |
-| `npm run lighthouse`              | Lighthouse budgets on the built site (after `build:gh`; CI runs it)            |
-| `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)              |
-| `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself                |
-| `npm run test:e2e:ui`             | Playwright in UI mode                                                          |
-| `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)                      |
-| `npm run typecheck`               | `tsc` over the app, the unit tests and the Node code (scripts, e2e, config)    |
-| `npm run format` / `format:check` | Prettier write / check                                                         |
-| `npm test`                        | `test:unit` + `test:e2e`                                                       |
+| Command                           | What it does                                                                  |
+| --------------------------------- | ----------------------------------------------------------------------------- |
+| `npm start`                       | dev server at `http://localhost:4200/`                                        |
+| `npm run build`                   | production build into `dist/dimacodehub/browser`                              |
+| `npm run build:gh`                | same, but with `--base-href /dimacodehub/` — this is what CI runs             |
+| `npm run build:feeds`             | writes `sitemap.xml` and `feed.xml` into the build (part of both builds)      |
+| `npm run build:og`                | renders a sharing image per post and case study (needs Playwright's Chromium) |
+| `npm run build:cover -- …`        | renders a project cover from a screenshot (see `scripts/build-cover.ts`)      |
+| `npm run build:icons`             | renders the home-screen icons from `logo.svg` into `public/images/icons/`     |
+| `npm run build:og-cover`          | renders the site's sharing image `og-cover.jpg` from the hero portrait        |
+| `npm run build:stats`             | measures the build into `build-stats.json` for the colophon page              |
+| `npm run lighthouse`              | Lighthouse budgets on the built site (after `build:gh`; CI runs it)           |
+| `npm run test:unit`               | `ng test` — Vitest + jsdom + TestBed (`test:unit:watch` to watch)             |
+| `npm run test:e2e`                | Playwright; it starts the dev server on `127.0.0.1:4200` itself               |
+| `npm run test:e2e:ui`             | Playwright in UI mode                                                         |
+| `npm run lint`                    | `ng lint` (ESLint over `src/**/*.ts` and `src/**/*.html`)                     |
+| `npm run typecheck`               | `tsc` over the app, the unit tests and the Node code (scripts, e2e, config)   |
+| `npm run format` / `format:check` | Prettier write / check                                                        |
+| `npm test`                        | `test:unit` + `test:e2e`                                                      |
 
 ## Directory layout
 
