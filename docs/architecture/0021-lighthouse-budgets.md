@@ -61,3 +61,8 @@ a layout shift.
   the score by points. The budget stayed at 90; the median takes the noise out of the
   verdict instead. The log prints all three scores, so a page drifting towards the floor
   shows before it fails.
+- The median then showed a real shortfall: the home page read 89, 89 and 92 on a runner. The
+  budget stayed again. The contact section went behind `@defer`, which took `@angular/forms`
+  and the section's styles off the first load: 132 → 116 kB of initial JavaScript. Six paired
+  runs with the CPU slowed against `main`: Largest Contentful Paint 3.0 → 2.6 s, Total
+  Blocking Time 530 → 415 ms, median score 86 → 88.

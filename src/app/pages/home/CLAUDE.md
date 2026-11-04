@@ -18,7 +18,7 @@ components/home-about-section/            "about", revealed by IntersectionObser
 components/home-experience-section/       role timeline: clicks, swipes, wheel
 components/home-projects-section/         the projects as pictures, loaded through @defer
 components/home-writing-section/          the latest blog posts, loaded through @defer
-components/home-contact-section/          contacts + working message form + footer
+components/home-contact-section/          contacts + working message form + footer, through @defer
 ```
 
 The sections are dumb components: they know nothing about scrolling and talk to the
@@ -115,12 +115,20 @@ the section loads, its placeholder still holds a screen, and a `/#contacts` jump
 moment would land one screen short. A case marked `comingSoon` counts as published here: its
 tile shows, and its page is a placeholder until the case is written up.
 
+## The contact section
+
+Deferred like the two before it, with a `.contact-placeholder` that carries `id="contacts"`:
+the form is what brings `@angular/forms` to the page, and the section's styles are the
+largest in the build. On the first load they cost the home page Largest Contentful Paint
+and its Lighthouse budget (ADR 0021). So the prerendered home page holds no contact details: they
+arrive with the section, and a visitor without JavaScript does not see them.
+
 ## The header menu
 
 The header's links are the slides themselves — Home, About, Experience, Projects, Writing,
 Contact (`HOME_SECTIONS` in `src/app/navigation/home-sections.ts`) — each `routerLink="/"`
 with the slide's id as fragment, so they work from any page. Every slide's section carries
-that id (`home`, `about`, `experience`, `projects`, `writing`, `contacts`); the two deferred
+that id (`home`, `about`, `experience`, `projects`, `writing`, `contacts`); the three deferred
 ones put it on their placeholder too.
 
 `HomeSectionsService` is the only thing the header and this page share, and scrolling stays

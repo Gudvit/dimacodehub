@@ -17,12 +17,19 @@
   overscroll-behavior: contain;
 }
 
-// Hold the projects' and the writing section's places until `@defer` loads them — the same
-// height, so a jump to `#contacts` lands where the contacts will still be once they arrive.
+// Hold the deferred slides' places until `@defer` loads them — the same height, so a jump to
+// `#contacts` lands where the contacts will still be once they arrive.
 .projects-placeholder,
-.writing-placeholder {
+.writing-placeholder,
+.contact-placeholder {
   min-height: 100vh;
   min-height: 100svh;
+}
+
+// The last slide must land at the very end of the slider, which is what turns the phone's
+// arrow upwards, and `landingTop()` stops a header's height short of a slide with no padding.
+.contact-placeholder {
+  padding-top: var(--header-height);
 }
 
 // The phone's floating arrow (`step()` in the component). Desktop has snapping and the wheel,

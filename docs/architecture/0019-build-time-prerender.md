@@ -47,8 +47,9 @@ and none is wanted.
 - Code that runs during rendering must not touch browser globals. The existing rule —
   DOM work in `afterNextRender()` — is what keeps it safe; `afterNextRender` does not run
   on the server.
-- A `@defer` block renders its placeholder at build time: the home page's writing section
-  is not in the prerendered HTML. Acceptable — the posts have their own pages.
+- A `@defer` block renders its placeholder at build time: the home page's projects, writing
+  and contact sections are not in the prerendered HTML. Acceptable — the posts and the cases
+  have their own pages, and a form does nothing before hydration anyway.
 - The footer year and anything else computed at render time is first written at build time
   and then corrected by hydration in the browser.
 - `ng serve` renders on the server as well, so e2e exercise the same code path.
