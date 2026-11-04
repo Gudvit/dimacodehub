@@ -24,7 +24,13 @@
     <div class="writing-placeholder slide-section" id="writing" aria-hidden="true"></div>
   }
 
-  <app-home-contact-section (backToTop)="scrollToTop()"></app-home-contact-section>
+  <!-- Deferred so the form, @angular/forms and the section's styles stay off the first load. -->
+  @defer (on viewport; prefetch on idle) {
+    <app-home-contact-section (backToTop)="scrollToTop()"></app-home-contact-section>
+  } @placeholder {
+    <!-- Carries the section's id, so `/#contacts` lands here before the section loads. -->
+    <div class="contact-placeholder slide-section" id="contacts" aria-hidden="true"></div>
+  }
 </main>
 
 <!-- A phone's way through the slides: next while going down, previous once turned back. -->

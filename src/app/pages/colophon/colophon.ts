@@ -148,7 +148,7 @@ export const PIPELINE: readonly PipelineStep[] = [
 
 export const PERFORMANCE: readonly string[] = [
   "HTML for every route is ready before the first byte of JavaScript runs.",
-  "The blog, the projects and this page are lazy routes; the home page's post list is a deferred block that loads as it scrolls into view.",
+  "The blog, the projects and this page are lazy routes; the home page's projects, posts and contact form are deferred blocks that load as they scroll into view.",
   "No UI framework, no animation library, no zone.js — the dependencies are Angular, RxJS and the forms package.",
   "The hero photo is AVIF with a JPEG fallback, and the Urbanist font is the only third-party asset.",
 ];
