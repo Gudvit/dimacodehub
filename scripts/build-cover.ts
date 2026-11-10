@@ -14,6 +14,8 @@
  * picture rather than its text), unless another picture is given: a photo from the
  * product, say, which then fills the back as it is.
  *
+ * `--light` keeps the back layer bright, for a light page behind a dark one.
+ *
  * `--phone <shot>` puts a phone's shot in a phone over the window's lower right corner: an
  * app and its mobile side together.
  *
@@ -31,6 +33,10 @@ import { extname } from "node:path";
 const args = process.argv.slice(2);
 const phoneFlag = args.indexOf("--phone");
 const companion = phoneFlag >= 0 ? args.splice(phoneFlag, 2)[1] : undefined;
+// `--light` keeps the back layer in daylight: for a back picture of a light page, which the
+// usual shade would turn grey.
+const lightFlag = args.indexOf("--light");
+const light = lightFlag >= 0 && args.splice(lightFlag, 1).length > 0;
 const [shot, out, backArg, focusArg, blurArg, deviceArg] = args;
 // An empty argument skips one: `"" "88% 40%"` keeps the shot behind and moves the focus.
 const background = backArg || shot;
@@ -40,7 +46,7 @@ const focus = focusArg || "70% 40%";
 const blur = Number(blurArg || 3);
 if (!shot || !out) {
   throw new Error(
-    "Usage: node scripts/build-cover.ts <shot> <out.webp> [background] [focus] [blur] [tablet] [--phone <shot>]",
+    "Usage: node scripts/build-cover.ts <shot> <out.webp> [background] [focus] [blur] [tablet] [--phone <shot>] [--light]",
   );
 }
 
@@ -84,11 +90,11 @@ const html = `<!doctype html>
         position: absolute; inset: -18%;
         background: url("${dataUri(background)}") ${focus} / ${background === shot ? "260%" : "cover"} no-repeat;
         transform: rotate(-7deg) scale(1.08);
-        filter: blur(${blur}px) brightness(0.42) saturate(1.1);
+        filter: blur(${blur}px) brightness(${light ? 0.92 : 0.42}) saturate(1.1);
       }
       .vignette {
         position: absolute; inset: 0;
-        background: radial-gradient(75% 75% at 50% 50%, transparent 40%, rgb(0 0 0 / 0.55) 100%);
+        background: radial-gradient(75% 75% at 50% 50%, transparent 40%, rgb(0 0 0 / ${light ? 0.18 : 0.55}) 100%);
       }
 
       /* The front layer: the page itself, flat and sharp. */

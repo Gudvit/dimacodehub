@@ -134,6 +134,42 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     comingSoon: true,
   },
   {
+    // This site. Everything here can be checked in the repository and on /colophon, which
+    // carries the live numbers — the text keeps to what does not change with each build.
+    slug: "my-portfolio",
+    kind: "side",
+    title: "My Portfolio",
+    tagline: "This site: Angular 22, zoneless and prerendered, with no backend",
+    cover: {
+      src: "images/projects/my-portfolio.webp",
+      alt: "This site on a desktop and on a phone: the About me slide, “I build scalable frontend systems that don't break under real-world complexity”, beside the home page with a black-and-white portrait.",
+    },
+    site: "https://gudvit.github.io/dimacodehub/",
+    summary:
+      "The site you are reading: a portfolio, case studies and a blog in Angular 22 without zone.js, prerendered page by page into static files on GitHub Pages — no backend, a strict content security policy, light and dark themes, and Lighthouse budgets that block a release.",
+    company: "Personal project",
+    role: "Author · design, content and code",
+    period: "Mar 2026 – present",
+    stack: ["Angular", "TypeScript", "Signals", "SCSS", "Vitest", "Playwright", "GitHub Actions"],
+    task: [
+      "A portfolio is the one project a reviewer can open and inspect in full, so it has to show the same standards as the work it describes. This one had to be fast, accessible and readable without JavaScript in search results and share cards — as static files on GitHub Pages, with no server, no database and nothing to pay for.",
+    ],
+    contributions: [
+      "Built the app on standalone components and signals without zone.js: every value on screen is a signal, and scroll and pointer listeners are coalesced into one frame instead of a change-detection cycle each.",
+      "Prerendered every route at build time, so each post and case study is its own HTML file with its own title, description, canonical link, schema.org data and sharing image; anything else falls through to a client-side 404.",
+      "Kept content in typed TypeScript files instead of a CMS: the build reads the same files to write the sitemap and the RSS feed, and a test validates every entry.",
+      "Locked the page down with a content security policy that allows one inline script, the theme script, by its hash — a test keeps the hash and the script in step.",
+      "Drew light and dark themes from one palette of custom properties, so a component that sticks to the palette works in both without knowing which is on.",
+      "Made the contact form send through one fetch to a mail relay, showing success only after the relay confirms the send; e2e tests cover both the sent and the failed path.",
+      "Put a quality gate in front of every deploy: formatting, lint, type checks, unit tests with a coverage floor, e2e on desktop and mobile, and Lighthouse budgets on the built site.",
+    ],
+    results: [
+      "Lighthouse budgets of 100 for accessibility, best practices and SEO, and 90 for performance, checked on every push before the site goes live.",
+      "Twenty-six architecture decisions written down, each with the reason behind it.",
+      "The colophon page measures the build — bundle sizes, prerendered pages, test counts, scores — and a unit test fails when the page and the repository disagree.",
+    ],
+  },
+  {
     // Built from the Agendo-Booking-Widget repository: its code and its history (my commits
     // run Oct 2019 – Aug 2021, through IdeaSoft). [TODO] marks what only the author knows.
     slug: "agendo",
@@ -190,6 +226,15 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     draft: true,
     comingSoon: true,
   },
+];
+
+/**
+ * Case studies taken off the list for now, kept whole to come back: nothing reads this array,
+ * so they are neither shown nor prerendered. LingoPath gave its place to another project;
+ * Document Vault gave its place to My Portfolio — the vault is private, so a reader could not
+ * open it.
+ */
+export const SHELVED_CASE_STUDIES: readonly CaseStudy[] = [
   {
     // Built from the vault-document repository: README and its ADRs. [TODO] marks what only
     // the author knows. The vault is private: no `site`, and a cover only with synthetic data.
@@ -228,13 +273,6 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     draft: true,
     comingSoon: true,
   },
-];
-
-/**
- * Case studies taken off the list for now, kept whole to come back: nothing reads this array,
- * so they are neither shown nor prerendered. LingoPath gave its place to another project.
- */
-export const SHELVED_CASE_STUDIES: readonly CaseStudy[] = [
   {
     // Built from the productivity-bot repository: README, ROADMAP, CHANGELOG and its ADRs.
     // [TODO] marks what only the author knows. Lingua was its early name and is not listed;

@@ -20,7 +20,7 @@ export class ProjectTileComponent {
   /** The large tile of a grid: a bigger name, and its picture loads first. */
   readonly featured = input(false);
 
-  /** The stand-in for a missing cover: `Document Vault` → `DV`, `Apomeds` → `A`. */
+  /** The stand-in for a missing cover: `My Portfolio` → `MP`, `Apomeds` → `A`. */
   initials(title: string): string {
     return title
       .split(/\s+/)
