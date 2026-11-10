@@ -928,13 +928,14 @@ interface ChatRequest {
     date: "2024-03-15",
     tags: ["Angular", "Architecture", "NgRx"],
     preview:
-      "Good architecture is invisible — it's what lets a team move fast without breaking things. The patterns I've kept after years of Angular products that outgrew their plans, and how I enforce them.",
-    readingTime: 5,
+      "Good architecture is invisible — it's what lets a team move fast without breaking things. The patterns I've kept after years of Angular products that outgrew their plans, why each one earns its place, and how I make the tooling enforce them.",
+    readingTime: 10,
     sections: [
       {
         paragraphs: [
           "I've spent most of my career on Angular products that grew beyond what anyone planned for: a CRM used across Europe, a healthcare platform with 50K+ active users, products where the team doubled and the feature scope tripled in two years.",
-          "The decisions you make in the first few months tend to live with you for years. These are the patterns I've settled on — not because they're elegant on a whiteboard, but because they held up when the codebase and the team got big. Where I can, I also show how to make the tooling enforce them, because a rule that lives only in a wiki is a suggestion.",
+          "The decisions you make in the first few months tend to live with you for years. Angular gives you the tools, but it doesn't tell you how to arrange them at scale — and most of the pain I've seen in large codebases wasn't caused by a missing feature. It was caused by nobody being able to say who owns a piece of state, which component is allowed to call the API, or which folder a new file belongs in.",
+          "So every pattern below serves one idea: make ownership obvious. Each piece of state, logic and UI should have one owner you can find without asking. Where I can, I also show how to make tooling enforce the pattern, because a rule that lives only in a wiki is a suggestion.",
         ],
       },
       {
@@ -961,17 +962,19 @@ export class OrderRowComponent {
   template: \`
     @for (order of orders(); track order.id) {
       <app-order-row [order]="order" (cancel)="onCancel($event)" />
+    } @empty {
+      <p>No orders yet.</p>
     }
   \`,
   imports: [OrderRowComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrdersPageComponent {
-  private readonly store = inject(Store);
-  readonly orders = this.store.selectSignal(selectOrderViews);
+  private readonly facade = inject(OrdersFacade);
+  readonly orders = this.facade.orders;
 
   onCancel(id: string): void {
-    this.store.dispatch(OrdersPageActions.cancelRequested({ id }));
+    this.facade.cancel(id);
   }
 }`,
         },
@@ -979,48 +982,188 @@ export class OrdersPageComponent {
       {
         heading: "Why dumb components pay off",
         paragraphs: [
-          "Testability is the obvious payoff: a component with no injected services is tested by setting inputs and reading the DOM. A component with three services and logic spread across lifecycle hooks needs a page of setup before the first assertion.",
-          "The less obvious payoff is reuse and review. When a presentational component takes an `OrderView` — a shape made for display — rather than the raw API model, a backend change touches one selector instead of twenty templates. And a reviewer can tell from the imports alone whether a component is allowed to talk to the outside world.",
+          "Testability is the obvious payoff: a component with no injected services is tested by setting inputs and reading the DOM, and it renders in Storybook in every state without a single mock. A component with three services and logic spread across lifecycle hooks needs a page of setup before the first assertion.",
+          "The less obvious payoff is change. When a presentational component takes an `OrderView` — a shape made for display — rather than the raw API model, a backend change touches one mapping instead of twenty templates. And a reviewer can tell from the imports alone whether a component is allowed to talk to the outside world.",
+          "Where I don't apply it: a component that is used once and has no logic worth isolating — a settings toggle doesn't need a container and a presenter. Splitting everything into tiny components so the architecture looks modular is its own kind of mess; the goal is that logic has a home, not that the component count goes up.",
         ],
       },
       {
-        heading: "State management is about boundaries",
+        heading: "Organize by feature, not by file type",
         paragraphs: [
-          "NgRx has a reputation for verbosity, and it earns it. But the verbosity does real work: it forces explicit decisions about what state exists, who owns it and how it changes.",
-          "The mistake most teams make is putting everything in the store. Local UI state — is this dropdown open, which tab is selected — belongs in the component. Server data that several features share belongs in the store. My rule fits in one sentence: if two distinct features need the same data, it goes in the store; if one component needs it, it stays local. I go through that rule, and what to do instead of NgRx, in more detail in a separate post on state management.",
+          "Folders named `components/`, `services/` and `models/` at the top of the app answer a question nobody asks. The question people ask is 'where is the orders code?'. So the top level is `features/` — one folder per product area holding its pages, components, state and API client — plus `shared/` for code that is genuinely generic (the UI kit, formatting utilities) and `core/` for things that exist once (auth, HTTP interceptors, the app shell).",
+          "Each feature gets a public face: an `index.ts` that exports what other features may use. Everything else is private. Deleting or extracting a feature then means one folder and one list of exports, not a hunt across the app.",
         ],
+        code: {
+          language: "typescript",
+          source: `// features/orders/index.ts — the only file other features may import.
+export { OrdersPageComponent } from "./orders-page.component";
+export { OrdersFacade } from "./orders.facade";
+export type { OrderSummary } from "./order.model";
+
+// order-row, the store slice, the API client: private to the feature.`,
+        },
       },
       {
         heading: "Make the boundaries a lint error",
         paragraphs: [
-          "Folder structure only helps if it constrains something. I split code into `features/` (one folder per product area) and `shared/` (UI kit, utilities, nothing feature-specific), with one rule: shared code never imports from a feature. Without it, `shared/` slowly becomes the place where features reach into each other.",
-          "ESLint can enforce that with a built-in rule, no plugin needed:",
+          "The most common way this structure decays is `shared/` turning into the place where everything goes: a 'shared' component that knows about orders, a utility that imports a feature's model. After a year, nobody knows who owns what. Two rules prevent it — features are imported only through their `index.ts`, and shared code never imports a feature — and ESLint enforces both with a built-in rule:",
         ],
         code: {
           language: "typescript",
           source: `// eslint.config.js
 {
+  files: ["src/app/**/*.ts"],
+  rules: {
+    "no-restricted-imports": ["error", {
+      patterns: [{ group: ["@app/features/*/*"], message: "Import a feature through its index.ts." }],
+    }],
+  },
+},
+{
+  // Replaces the rule above for shared/; this pattern also covers deep imports.
   files: ["src/app/shared/**/*.ts"],
   rules: {
-    "no-restricted-imports": [
-      "error",
-      {
-        patterns: [
-          {
-            group: ["@app/features/*"],
-            message: "shared/ must not depend on a feature. Move the code, or pass it in.",
-          },
-        ],
-      },
-    ],
+    "no-restricted-imports": ["error", {
+      patterns: [{ group: ["@app/features/*"], message: "shared/ must not depend on a feature." }],
+    }],
   },
 },`,
         },
       },
       {
+        heading: "State management is about boundaries",
+        paragraphs: [
+          "NgRx has a reputation for verbosity, and it earns it. But the verbosity does real work: it forces explicit decisions about what state exists, who owns it and how it changes.",
+          "The mistake most teams make is putting everything in the store. Local UI state — is this dropdown open, which tab is selected — belongs in the component, as a signal. Server data that several features share belongs in the store. My rule fits in one sentence: if two distinct features need the same data, it goes in the store; if one component needs it, it stays local. I go through that rule, and what to use instead of NgRx, in a separate post on state management.",
+        ],
+      },
+      {
+        heading: "Derive, don't synchronize",
+        paragraphs: [
+          "Within whatever owns the state, the rule I lean on most is: if a value can be calculated from existing state, calculate it — don't store a second copy and keep it in step. Every stored copy is a second source of truth, and sooner or later one code path updates the first and forgets the second.",
+          "Signals make the wrong version easy to spot. If you find yourself writing an `effect()` that sets another signal — so easy to get wrong that Angular makes you opt in with `allowSignalWrites` — you almost certainly wanted `computed()`:",
+        ],
+        code: {
+          language: "typescript",
+          source: `// Two sources of truth, kept in step by hand.
+readonly items = signal<readonly CartItem[]>([]);
+readonly total = signal(0);
+constructor() {
+  effect(() => this.total.set(sum(this.items())), { allowSignalWrites: true });
+}
+
+// One source of truth: the total can't disagree with the items.
+readonly items = signal<readonly CartItem[]>([]);
+readonly total = computed(() => sum(this.items()));`,
+        },
+      },
+      {
+        heading: "What effect() is actually for",
+        paragraphs: [
+          "Filtered lists, totals, display labels, whether a button is enabled, what a user is allowed to see — all of these are `computed()`. A `computed()` reading a signal `input()` replaces most of what `ngOnChanges` used to do, without the bookkeeping.",
+          "`effect()` is for leaving the signal world: writing to `localStorage`, calling a third-party widget's imperative API, logging. If an effect's only job is to update other state, the relationship should have been declared, not scripted.",
+        ],
+      },
+      {
+        heading: "Signals for state, RxJS for streams",
+        paragraphs: [
+          "'Signals or RxJS?' is the wrong question; they're good at different things. A signal holds a value that exists right now — the query in a search box, the selected tab. An Observable describes things happening over time — keystrokes that should be debounced, requests that should cancel each other. Search needs both, and Angular's interop functions let each do its part:",
+        ],
+        code: {
+          language: "typescript",
+          source: `export class ProductSearchComponent {
+  private readonly api = inject(ProductsApi);
+
+  /** State: what the user typed. Bound to the input. */
+  readonly query = signal("");
+
+  /** A stream in the middle, state again at the end. */
+  readonly results = toSignal(
+    toObservable(this.query).pipe(
+      map((query) => query.trim()),
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((query) =>
+        this.api.search(query).pipe(
+          map((products) => ({ products, failed: false })),
+          catchError(() => of({ products: [] as Product[], failed: true })),
+        ),
+      ),
+    ),
+    { initialValue: { products: [] as Product[], failed: false } },
+  );
+}`,
+        },
+      },
+      {
+        heading: "Where each tool stops",
+        paragraphs: [
+          "Debouncing, cancelling the previous request, retrying — that's RxJS's home ground, and rewriting it with signals and timers produces worse code, not more modern code. Holding the current value and deriving from it is where signals win: no subscriptions, no `async` pipe, no `BehaviorSubject` used as a variable.",
+          "The boundary I aim for: signals at the edges a template touches, RxJS inside for anything with time in it, `toSignal` and `toObservable` where they meet. The template never sees an Observable; the service never hand-rolls a debounce.",
+        ],
+      },
+      {
+        heading: "A facade in front of the state",
+        paragraphs: [
+          "Pages shouldn't need to know how a feature's state is implemented. A facade is a small service per feature that exposes signals to read and methods to call, and hides whether there's NgRx, a signal service or three coordinating services behind it:",
+        ],
+        code: {
+          language: "typescript",
+          source: `@Injectable({ providedIn: "root" })
+export class CartFacade {
+  private readonly store = inject(Store);
+
+  readonly items = this.store.selectSignal(cartFeature.selectItems);
+  readonly total = this.store.selectSignal(selectCartTotal);
+  readonly canCheckout = computed(() => this.items().length > 0);
+
+  add(product: Product): void {
+    this.store.dispatch(CartActions.itemAdded({ product }));
+  }
+
+  applyDiscount(code: string): void {
+    this.store.dispatch(CartActions.discountRequested({ code }));
+  }
+}`,
+        },
+      },
+      {
+        heading: "When a facade earns its place",
+        paragraphs: [
+          "The payoff I value most isn't the tidier constructor — it's the seam. Behind a facade you can move a feature from NgRx to a signal service, or the other way, without touching a single component. On a large codebase that's the difference between a migration you can do one feature at a time and one you never start.",
+          "Two ways to get it wrong. A facade that only forwards calls one-to-one adds a file and nothing else; skip it until there's something to coordinate or hide. And a facade shared by several features becomes a god object; one facade per feature, exported from its `index.ts`, keeps ownership where it was.",
+        ],
+      },
+      {
+        heading: "Configuration through injection tokens",
+        paragraphs: [
+          "Importing `environment.ts` straight into a service fixes the value at build time and makes the service awkward to test. An `InjectionToken` turns configuration into a dependency like any other — provided once, overridden per test or per deployment:",
+        ],
+        code: {
+          language: "typescript",
+          source: `export interface AppConfig {
+  readonly apiUrl: string;
+  readonly features: { readonly newCheckout: boolean };
+}
+
+export const APP_CONFIG = new InjectionToken<AppConfig>("APP_CONFIG");
+
+// app.config.ts
+{ provide: APP_CONFIG, useValue: { apiUrl: environment.apiUrl, features: { newCheckout: false } } }
+
+// any consumer
+private readonly config = inject(APP_CONFIG);
+
+// a test
+TestBed.configureTestingModule({
+  providers: [{ provide: APP_CONFIG, useValue: { apiUrl: "/test", features: { newCheckout: true } } }],
+});`,
+        },
+      },
+      {
         heading: "Feature modules vs standalone components",
         paragraphs: [
-          "Since Angular 14 and the push toward standalone, I've stopped writing feature modules for new code. A standalone component lists its own dependencies, so the graph is visible where it's used instead of hidden in a module declaration somewhere else.",
+          "Since Angular 14 and the push toward standalone, I've stopped writing feature modules for new code. A standalone component lists its own dependencies, so the question changes from 'which module does this belong to?' to 'what does this component actually need?' — and the answer is visible right where it's used.",
           "The bigger win isn't the syntax, it's lazy loading. A route can load a single component without a module created just to hold it, and a feature can expose its routes as a plain array:",
         ],
         code: {
@@ -1028,8 +1171,7 @@ export class OrdersPageComponent {
           source: `export const routes: Routes = [
   {
     path: "orders",
-    loadComponent: () =>
-      import("./features/orders/orders-page.component").then((m) => m.OrdersPageComponent),
+    loadComponent: () => import("./features/orders").then((m) => m.OrdersPageComponent),
   },
   {
     path: "admin",
@@ -1039,17 +1181,45 @@ export class OrdersPageComponent {
         },
       },
       {
+        heading: "Lazy loading inside a page with @defer",
+        paragraphs: [
+          "Routes split the app by URL; `@defer` splits a page by priority. On a product page the user needs the product now; reviews and recommendations can arrive when they scroll near them or when the browser is idle. The component and everything it imports move into their own chunk:",
+        ],
+        code: {
+          language: "html",
+          source: `<app-product-details [product]="product()" />
+
+@defer (on viewport) {
+  <app-reviews [productId]="product().id" />
+} @placeholder {
+  <div class="reviews-placeholder"></div>
+}
+
+@defer (on idle) {
+  <app-recommendations [productId]="product().id" />
+}`,
+        },
+      },
+      {
+        heading: "Deferring without hurting the page",
+        paragraphs: [
+          "Two details decide whether `@defer` helps or hurts. The placeholder should reserve roughly the height of what replaces it — otherwise the content below jumps when the chunk lands, and you've traded a bundle-size win for layout shift. And `on viewport` watches the placeholder itself, so the placeholder needs a single root element.",
+          "The rule for choosing what to defer is about the user, not the bundle: is it needed for the first useful screen? Is it below the fold? Can the user do what they came for without it? Deferring something people need immediately just moves the wait to a worse moment.",
+        ],
+      },
+      {
         heading: "Migrating an NgModule codebase",
         paragraphs: [
-          "For an existing NgModule codebase I don't recommend a big-bang migration. Angular mixes both styles happily: a standalone component can be imported into an NgModule, and a module can be imported into a standalone component. Start at the leaves — shared presentational components — and work inward; the Angular CLI's standalone migration schematic handles most of the mechanical part.",
-          "Convert routes last. By the time the components they load are standalone, switching a route from `loadChildren` with a module to `loadComponent` is a two-line change.",
+          "For an existing NgModule codebase I don't recommend a big-bang migration. Angular mixes both styles happily: a standalone component can be imported into an NgModule, and a module into a standalone component. Start at the leaves — shared presentational components — and work inward; the CLI's standalone and control-flow schematics handle most of the mechanical part.",
+          "Convert routes last. By the time the components they load are standalone, switching a route from `loadChildren` with a module to `loadComponent` is a two-line change. And modernise where it solves a problem: a stable, well-tested area written the old way can stay that way until there's a reason to open it.",
         ],
       },
       {
         heading: "What I would do differently",
         paragraphs: [
-          "If I were starting a large Angular project today, I'd invest upfront in three things. A written state policy — one page in the repository that says what goes in the store and what doesn't. Boundaries the linter enforces from the first commit, because adding them later means first fixing every violation. And end-to-end tests for every critical user flow before the first major release.",
+          "If I were starting a large Angular project today, I'd invest upfront in three things. A written state policy — one page in the repository that says what goes in the store, what stays local and what is derived. Boundaries the linter enforces from the first commit, because adding them later means first fixing every violation. And end-to-end tests for every critical user flow before the first major release.",
           "The E2E tests especially. We added Playwright to a mature product, and the confidence it gave the team to refactor showed up in velocity almost immediately. Don't wait until you're afraid to deploy.",
+          "None of these patterns is the point on its own. Before I call a feature done, I ask a few questions: who owns this state, and could it be derived instead? Is this a value or a stream? Does this component need to exist on first render? Could the next developer find all of this without asking me? If the answers are obvious, the architecture is doing its job.",
         ],
       },
     ],
@@ -1060,27 +1230,150 @@ export class OrdersPageComponent {
     date: "2024-02-08",
     tags: ["Angular", "NgRx", "State Management"],
     preview:
-      "NgRx is powerful, and easy to overcomplicate. The rules I follow after using it on several large products: what goes in the store, selectors as an API, effects that don't die, and when to use signals instead.",
-    readingTime: 5,
+      "Before picking a library, ask what kind of state it is and who owns the truth. Server cache, URL, local UI and shared client state each have a different home — and the global store ends up much smaller than you'd think.",
+    readingTime: 9,
     sections: [
       {
         paragraphs: [
           "State management is a topic where the gap between theory and practice is enormous. You can read all of the Redux documentation and still build a tangled mess once the app passes a certain size.",
-          "This is what I've learned building NgRx frontends in production: the rules I follow, the patterns I've dropped, and the questions I ask before adding a new piece of state.",
+          "For years the default answer in Angular was 'add NgRx', and projects grew hundreds of files of actions, reducers and effects to show a list and open a dialog. I've built NgRx frontends in production, I still use NgRx, and I think the default was wrong. Not because NgRx is bad, but because it answers the second question before anyone asked the first: what kind of state is this, and who owns the truth?",
+          "This is how I answer that question now: the categories I sort state into, where each one lives, and the NgRx patterns I keep for the state that genuinely needs a store.",
+        ],
+      },
+      {
+        heading: "Four kinds of state, four owners",
+        paragraphs: [
+          "Server state is data the backend owns: users, orders, products. Whatever you hold in the browser is a copy, and the real problems are cache problems — is it stale, who else is loading it, what to refetch after a change.",
+          "URL state is what a link should reproduce: the current filter, sort order, page, selected tab. The address bar owns it, whether you like it or not — Back, reload and 'send this link to a colleague' all read from there.",
+          "Local UI state belongs to one component: is the dropdown open, which accordion panel is expanded, what's typed in a field that hasn't been submitted. Shared client state is what's left: data the client itself owns and several unrelated parts of the app need — the session, a cart, user preferences, a wizard that spans routes.",
+          "Most 'state management' pain I've seen comes from storing one kind in another kind's home: server data hand-copied into a store and going stale, filters in a service so the link doesn't reproduce them, a tooltip's visibility in the global store.",
+        ],
+      },
+      {
+        heading: "Server state is a cache, not state",
+        paragraphs: [
+          "Most of what ends up in a typical global store is a copy of the database, with `loadUsers`, `loadUsersSuccess` and `loadUsersFailure` written by hand for every entity. That's not modelling the app — it's reimplementing a cache badly. The hard parts of a cache are deduplication, staleness, background refresh and invalidation after a mutation, and hand-written reducers rarely do any of them.",
+          "The direction I find most promising is a query library. TanStack Query has an Angular adapter — still experimental as I write this, so I'd introduce it in a corner of the app first — and it turns a request into signals for data, status and error, with caching handled by keys:",
+        ],
+        code: {
+          language: "typescript",
+          source: `export class ProductsPageComponent {
+  private readonly api = inject(ProductsApi);
+
+  readonly products = injectQuery(() => ({
+    queryKey: ["products"],
+    queryFn: () => lastValueFrom(this.api.list()),
+    staleTime: 60_000, // reuse the cached list for a minute
+  }));
+}
+
+// After a mutation, mark the cache stale; every screen showing products refetches.
+queryClient.invalidateQueries({ queryKey: ["products"] });`,
+        },
+      },
+      {
+        heading: "If you keep server data in a store",
+        paragraphs: [
+          "A library isn't required; the mindset is. If server data lives in NgRx or a service, treat it as a cache explicitly: store when it was loaded, decide how long it's fresh, and after every mutation decide what becomes stale. A list that never refetches after an edit elsewhere is the classic bug of server data treated as client state.",
+          "And keep the request status next to the data it describes — per entity or per query, not one global `loading` flag that two screens fight over.",
+        ],
+      },
+      {
+        heading: "The URL is state too",
+        paragraphs: [
+          "If a user sets up a filter, copies the link and sends it to a colleague, the colleague should see the same list. If they see an empty filter, the state lives in the wrong place. Filters, sort order, pagination and the active tab belong in the URL, and Angular's router already handles Back, Forward, reload and deep links for them.",
+          "With `withComponentInputBinding()` a query parameter arrives as a component input, with no `ActivatedRoute` subscription:",
+        ],
+        code: {
+          language: "typescript",
+          source: `// app.config.ts: provideRouter(routes, withComponentInputBinding())
+
+export class CatalogPageComponent {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  /** /catalog?q=lamp lands here. An absent parameter arrives as undefined. */
+  readonly q = input<string>();
+  readonly query = computed(() => this.q() ?? "");
+
+  search(value: string): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { q: value.trim() || null }, // null removes the parameter
+      queryParamsHandling: "merge",
+      replaceUrl: true, // typing shouldn't fill the Back button's history
+    });
+  }
+}`,
+        },
+      },
+      {
+        heading: "Details that make URL state pleasant",
+        paragraphs: [
+          "Three details I learned the hard way. A bound input whose parameter is absent receives `undefined`, overriding any default you gave it — hence the `computed()` with a fallback. Writing `null` removes a parameter, so a cleared filter leaves a clean URL instead of `?q=`. And choose `replaceUrl` deliberately: keystrokes should replace the history entry, while a discrete choice — picking a category, going to page 3 — deserves its own entry so Back undoes it.",
+          "Not everything belongs in the URL. Scroll position, an open dropdown, a half-typed comment — if reproducing it from a link would surprise the person opening the link, it's local state.",
         ],
       },
       {
         heading: "Not everything belongs in the store",
         paragraphs: [
           "The most common NgRx mistake I see is the store used as a global variable dump. Every piece of data ends up there, whether or not anything else needs it.",
-          "My test has two questions. Does this state cross a feature boundary? Does it need to survive navigation? If neither, it stays local. A form's validation state, a tooltip's visibility, the pagination controls of one table — those are component concerns, and putting them in the store adds an action, a reducer case and a selector for something a `signal()` handles in one line.",
+          "My test has two questions. Does this state cross a feature boundary? Does it need to survive navigation? If neither, it stays local. A form's validation state, a tooltip's visibility, an expanded card — those are component concerns, and putting them in the store adds an action, a reducer case and a selector for something `signal(false)` and an `update()` handle in two lines.",
           "A lean store pays off in places you don't expect: actions stay meaningful, the DevTools timeline stays readable, and a new developer can understand the app's shared state by reading one folder.",
+        ],
+      },
+      {
+        heading: "Shared state is smaller than you think",
+        paragraphs: [
+          "Take server data out (it's a cache), take filters out (they're in the URL), take UI flags out (they're local) — and what remains in most apps is short: the session, preferences, a cart, a multi-step flow. For that, I start with Angular's signals in a plain service:",
+        ],
+        code: {
+          language: "typescript",
+          source: `@Injectable({ providedIn: "root" })
+export class CartStore {
+  private readonly items = signal<readonly CartItem[]>([]);
+
+  // The public API: read-only signals, like selectors.
+  readonly lines = this.items.asReadonly();
+  readonly count = computed(() => this.items().reduce((n, item) => n + item.quantity, 0));
+  readonly total = computed(() =>
+    this.items().reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
+  );
+
+  // The only ways in: like actions and reducers in one place.
+  add(product: Product): void {
+    this.items.update((items) => {
+      const existing = items.find((item) => item.productId === product.id);
+      return existing
+        ? items.map((item) => (item === existing ? { ...item, quantity: item.quantity + 1 } : item))
+        : [...items, { productId: product.id, unitPrice: product.price, quantity: 1 }];
+    });
+  }
+
+  remove(productId: string): void {
+    this.items.update((items) => items.filter((item) => item.productId !== productId));
+  }
+}`,
+        },
+      },
+      {
+        heading: "What makes a signal service hold up",
+        paragraphs: [
+          "Three rules keep this shape honest. The writable signal is private, so the only way to change state is through named methods — the same guarantee actions give, without the files. Derived values are `computed()`, never stored: I've seen this pattern written with `total` kept as a field and recalculated inside `add()`, which works until someone adds `remove()` and forgets. And the public surface is read-only signals, so components can't `set()` their way around the methods.",
+          "NgRx now has its own take on this, SignalStore — still in developer preview as I write — which gives the same idea a standard structure and plugins. Worth watching; the principles are the same either way.",
+        ],
+      },
+      {
+        heading: "Knowing when it has outgrown the service",
+        paragraphs: [
+          "A signal service covers a lot of ground. It also has limits worth knowing before they bite: two overlapping async loads can resolve out of order, because nothing plays the role of `switchMap`; there's no action log to replay a bug from; and when several features write to the same state, there's no single place that records who changed what and why.",
+          "When I hit those — cancellation and ordering, a need for time-travel debugging, real cross-feature coordination with an audit trail — that's the point to introduce the NgRx store for that slice. The rest of this post is how I use it when I do.",
         ],
       },
       {
         heading: "Selectors as your API",
         paragraphs: [
-          "Selectors are underused. Most teams write one selector per raw field and then compute everything in the component. That spreads the same derivation across several places, each slightly different.",
+          "Selectors are underused. Most teams write one selector per raw field and then compute everything in the component, which spreads the same derivation across several places, each slightly different.",
           "I treat selectors as the public API of a state slice. If a component needs 'active users, most recently logged in first', that's a selector — memoized, composable and testable as a pure function:",
         ],
         code: {
@@ -1105,7 +1398,7 @@ readonly users = this.store.selectSignal(selectActiveUsersByLastLogin);`,
       {
         heading: "Selectors first, reducers second",
         paragraphs: [
-          "I've started writing selectors before reducers. It makes me describe what the consumer needs before deciding what's convenient to store — and it often shows that some state doesn't need to be stored at all, because it can be derived.",
+          "I've started writing selectors before reducers. It makes me describe what the consumer needs before deciding what's convenient to store — and it often shows that some state doesn't need to be stored at all, because it can be derived. It's the same rule as `computed()` in a signal service, applied to the store.",
           "`createFeature` helps here: it generates a selector per top-level field, so the hand-written selectors are only the ones that mean something.",
         ],
       },
@@ -1141,41 +1434,10 @@ readonly users = this.store.selectSignal(selectActiveUsersByLastLogin);`,
         ],
       },
       {
-        heading: "When to reach for something simpler",
+        heading: "The questions I ask before adding state",
         paragraphs: [
-          "I've been on projects where NgRx clearly cost more than it gave. For small apps, or feature areas where state is mostly server data with little local logic, I now use Angular's signals in a plain service:",
-        ],
-        code: {
-          language: "typescript",
-          source: `@Injectable({ providedIn: "root" })
-export class InvoicesStore {
-  private readonly api = inject(InvoicesApi);
-  private readonly state = signal({
-    invoices: [] as readonly Invoice[],
-    loading: false,
-    error: null as string | null,
-  });
-
-  readonly invoices = computed(() => this.state().invoices);
-  readonly overdue = computed(() => this.invoices().filter(isOverdue));
-  readonly loading = computed(() => this.state().loading);
-
-  load(): void {
-    this.state.update((state) => ({ ...state, loading: true, error: null }));
-    this.api.list().subscribe({
-      next: (invoices) => this.state.set({ invoices, loading: false, error: null }),
-      error: (error: unknown) =>
-        this.state.update((state) => ({ ...state, loading: false, error: toMessage(error) })),
-    });
-  }
-}`,
-        },
-      },
-      {
-        heading: "Knowing when it has outgrown the service",
-        paragraphs: [
-          "That covers a lot of ground with none of the actions, reducers and effects. It also has limits worth knowing before they bite: two overlapping `load()` calls can resolve out of order, because nothing plays the role of `switchMap`; there's no action log to replay a bug from; and two features writing to the same service have no single place that says who changed what.",
-          "When I hit those — cancellation and ordering, a need for time-travel debugging, real cross-feature coordination — that's the point to introduce NgRx for that slice. Not before.",
+          "Put together, this is the order I go through whenever something new needs to be remembered. Does the server own it? Then it's a cache — a query library or a service that treats it as one. Should a link reproduce it? Then it's a query parameter. Does anything outside this component need it? If not, it's a local signal. Can it be calculated from state that already exists? Then it's `computed()` or a selector, not new state.",
+          "Only what survives all four questions is shared client state — and for that, a signal service until it needs cancellation, an action log or coordination across features, and the NgRx store from then on. The store stopped being the default in my projects. It became the tool for the part of the state that actually earns it.",
         ],
       },
     ],
