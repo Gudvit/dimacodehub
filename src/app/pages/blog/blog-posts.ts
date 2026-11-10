@@ -702,53 +702,222 @@ export class WheelNavigator {
     date: "2026-04-22",
     tags: ["AI", "Frontend", "UX", "Architecture"],
     preview:
-      "AI features aren't a new category of problem — they're existing frontend problems under new pressure. Here's what actually changes when you add an LLM to a production UI.",
-    readingTime: 6,
+      "Writing code got cheap; knowing what good looks like didn't. What AI changes about how frontend gets built, what changes when AI is the feature — and what stays exactly the same.",
+    readingTime: 11,
     sections: [
       {
         paragraphs: [
-          "I've been integrating AI features into frontend products for over a year now. Chat interfaces, inline suggestions, semantic search, summarization flows. And the most consistent observation I can share is this: AI doesn't introduce fundamentally new engineering problems. It takes the problems you already have — async state, error handling, loading UX, perceived performance — and makes them harder to ignore.",
-          "Here's what I've actually had to rethink when building for AI.",
+          "AI changes frontend work from two directions at once. It changes how we build: a working component is now a sentence away. And it changes what we build: chat, inline suggestions, semantic search and summaries are ordinary product features now, with their own engineering problems.",
+          "I've been on both sides for over a year — writing code with AI every day, and integrating AI features into products. My conclusion is less dramatic than most of what's written about it. AI doesn't bring a new kind of engineering. It makes the old kind — clear standards, explicit state, honest error handling, accessible markup — impossible to skip. This post covers both directions, the first one first.",
         ],
       },
       {
-        heading: "Streaming changes everything about loading states",
+        heading: "Writing code stopped being the bottleneck",
         paragraphs: [
-          "Most AI responses are streamed. The server sends tokens incrementally over a long-lived connection, and your UI needs to reflect that in real time. This breaks the standard request/response mental model that most frontend code is built around.",
-          "The naive approach — wait for the full response, then render — feels broken to users. A 3-second blank wait followed by a wall of text is far worse than text appearing word by word, even if the total latency is identical. Streaming makes latency feel interactive rather than blocking.",
-          "Implementing this well in Angular means thinking about SSE (Server-Sent Events) or WebSocket streams, managing a signal or BehaviorSubject that updates as chunks arrive, and rendering incrementally. The tricky part is that you're essentially building a live, append-only document — and you need to handle mid-stream errors, unexpected stream closures, and markdown that renders correctly even when partially received.",
+          "Being a good frontend engineer used to mean, to a large degree, being fast and fluent at writing code: knowing the framework, remembering the APIs, building something from scratch without constantly looking things up. That fluency still matters, but it's no longer scarce. Describe a feature with enough context and you get a working implementation in minutes.",
+          "What didn't get cheaper is everything around the code. Deciding what to build. Reading a 600-line diff and knowing whether it belongs in this codebase. Noticing the state nobody specified. The time I save typing now goes into reviewing, and a review is only as good as my understanding of the system it lands in.",
+          "That's why I disagree with the idea that engineers no longer need to understand code because AI writes it. It's the other way round: you can't review what you don't understand, and you can't spot a bad architectural decision in an architecture you don't know. 'It runs' was never the bar — and the more code is generated, the less 'it runs' tells you.",
         ],
+      },
+      {
+        heading: "Generated code defaults to the average",
+        paragraphs: [
+          "A model writes the most likely code for the request — roughly the average of everything it learned from. In frontend the average is not great. It reaches for a `div` with a click handler instead of a button, adds a new spinner instead of the one your design system already has, fetches data its own way instead of through your data layer, and copies a near-duplicate of a component that already exists two folders away.",
+        ],
+        code: {
+          language: "html",
+          source: `<!-- The likely output: looks fine, works with a mouse, invisible to a keyboard. -->
+<div class="card" (click)="open(order)">{{ order.title }}</div>
+
+<!-- What the codebase actually wants: a real control, focusable for free. -->
+<article class="card">
+  <h3><a class="card__link" [routerLink]="['/orders', order.id]">{{ order.title }}</a></h3>
+</article>`,
+        },
+      },
+      {
+        heading: "The cost of code that is easy to write",
+        paragraphs: [
+          "The second effect is volume. When code is nearly free to produce, nobody hesitates to produce more of it — another component, another helper, another layer of abstraction that works but that nobody asked for. Each piece passes review on its own; together they make a codebase that is bigger, slower to read and harder to change. Generated code is also sometimes cleverer than the problem needs, which is its own kind of debt.",
+          "So deleting code, merging duplicates and keeping the structure small becomes a bigger part of the job, not a smaller one. The fix for a model that defaults to the average is not a longer prompt every time. It's a codebase that makes the right choice the obvious one.",
+        ],
+      },
+      {
+        heading: "Define what good looks like before the code exists",
+        paragraphs: [
+          "Asking for a form is easy. Whether the form validates correctly, has loading and error states, is accessible, uses the existing input components and follows the same data-fetching pattern as the rest of the app — that's the actual work, and it's exactly what gets lost when the measure is how fast something was built.",
+          "Those expectations should be written down before anyone starts, human or model. Not as a wiki page nobody opens, but in the repository, next to the code: architecture decision records, a short instructions file for coding agents that names the conventions, and feature specs that say which states and scenarios must exist. When someone adds a feature, they shouldn't have to guess how state is managed or how errors are shown — and neither should an agent. The same standards apply to both.",
+          "This site works that way. The repository has written decisions for every non-obvious choice and an instructions file that names the conventions. One unit test fails when the page describing how the site is built stops matching the repository, so the docs can't quietly fall behind.",
+        ],
+      },
+      {
+        heading: "Guardrails beat instructions",
+        paragraphs: [
+          "Written standards help; enforced ones help more. Anything a machine can check should be checked by a machine: a lint rule for the clickable `div`, a type that makes an impossible state unrepresentable, an import rule that keeps shared code out of features. A model forgets a sentence in a document. It can't forget a failing build.",
+          "This has a practical side for agents in particular. An agent is as good as its feedback loop. A repository where `lint`, `typecheck` and the tests each run with one command and give a clear error lets an agent find and fix its own mistakes. A repository where 'it works on my machine' is the test lets it ship them.",
+        ],
+      },
+      {
+        heading: "Tests are the spec that can't drift",
+        paragraphs: [
+          "The most valuable artefact in an AI-assisted codebase may be the one that describes behaviour rather than implementation. A behaviour test says what must stay true no matter who or what rewrites the code next. Once a bug is fixed, a test that pins it down means no later refactor — human or generated — can quietly bring it back.",
+          "Here's one from this site. The contact form must never claim a message was sent unless the service confirmed it. That rule is not a comment; it's this:",
+        ],
+        code: {
+          language: "typescript",
+          source: `test("contact form admits failure instead of claiming a message was sent", async ({ page }) => {
+  await page.route("https://api.web3forms.com/**", async (route) => {
+    await route.fulfill({ status: 500, json: { success: false, message: "Server error" } });
+  });
+
+  await page.goto("/#contacts");
+  await page.getByLabel("Name").fill("Ada Lovelace");
+  await page.getByLabel("Email").fill("ada@example.com");
+  await page.getByLabel("Message").fill("I would like to talk about an Angular rewrite.");
+  await page.getByRole("button", { name: "Send message" }).click();
+
+  await expect(page.getByText("The message could not be sent")).toBeVisible();
+  await expect(page.getByText("Message sent.")).toHaveCount(0);
+});`,
+        },
+      },
+      {
+        heading: "Generated tests need the same review",
+        paragraphs: [
+          "AI is genuinely good at writing tests: scaffolding, sample data, the tedious tenth variation of a case. But a test generated from the implementation tends to assert what the code does, not what it should do — a bug turns into an expectation. The scenarios still have to come from someone who knows what the feature is for; the model can write them out.",
+          "Notice also what the test above uses to find things: labels, roles, the button's accessible name. That turns out to matter for the next point.",
+        ],
+      },
+      {
+        heading: "Your interface has a new kind of user",
+        paragraphs: [
+          "Agents now operate websites on people's behalf: they read the page, find the controls and fill in forms. Most of them navigate the same structure a screen reader does — roles, names, labels, headings. A button that is really a `div` is as invisible to an agent as it is to a keyboard user.",
+          "So semantic, accessible markup now serves three audiences: people with assistive technology, your test suite, and software acting for users. It was always the right thing to do; it's now also the cheapest way to be usable by agents. The same goes for honest states — a form that shows a clear error is one an agent can recover from.",
+          "I'm more sceptical about the other popular prediction: interfaces generated per user, rearranging themselves around each person's behaviour. A layout that moves breaks muscle memory, makes support instructions wrong and multiplies what must be tested and checked for accessibility. I'd rather give users settings they control than have the interface guess. Personalising content is old news; personalising the controls themselves has a higher bar to clear.",
+        ],
+      },
+      {
+        heading: "When AI is the feature: streaming changes loading states",
+        paragraphs: [
+          "Now the other direction — building AI into the product. Most model responses are streamed: the server sends tokens as they're produced, over one long-lived response. A 3-second blank wait followed by a wall of text feels broken; the same 3 seconds with text appearing as it's written feels fast. The UI is no longer rendering a response, it's rendering a document that keeps growing.",
+          "The first surprise is transport. Server-Sent Events are the usual wire format, but the browser's `EventSource` only does GET, with no body and no custom headers. In practice you POST with `fetch` and read the event format off the response body yourself:",
+        ],
+        code: {
+          language: "typescript",
+          source: `export async function* streamAnswer(
+  request: ChatRequest,
+  signal: AbortSignal,
+): AsyncGenerator<string> {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+    signal,
+  });
+  if (!response.ok || !response.body) {
+    throw new ChatHttpError(response.status, response.headers.get("Retry-After"));
+  }
+
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+  let buffer = "";
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) return;
+    buffer += value;
+    // An event ends with a blank line; a chunk can end mid-event.
+    const events = buffer.split("\\n\\n");
+    buffer = events.pop() ?? "";
+    for (const event of events) {
+      const data = event
+        .split("\\n")
+        .filter((line) => line.startsWith("data: "))
+        .map((line) => line.slice("data: ".length))
+        .join("\\n");
+      if (data) yield data;
+    }
+  }
+}`,
+        },
+      },
+      {
+        heading: "Rendering a document that is still being written",
+        paragraphs: [
+          "The `AbortSignal` powers the Stop button, and it's what you abort in `DestroyRef.onDestroy()` — otherwise a user who navigates away keeps paying for tokens nobody will read.",
+          "Models answer in markdown, and half a markdown document is often invalid: an unclosed code fence turns the rest of the answer into one grey block until the closing backticks arrive. Close open fences before parsing each partial, and parse at most once per animation frame rather than on every token.",
+          "And don't make the answer an `aria-live` region: a screen reader would try to announce every token. Keep the answer out of the live region and announce once, when it's done:",
+        ],
+        code: {
+          language: "html",
+          source: `<article class="answer">
+  <app-markdown [source]="answerText()" />
+</article>
+
+<!-- Says "Answer ready" once, instead of reading every token aloud. -->
+<p class="visually-hidden" aria-live="polite">{{ announcement() }}</p>`,
+        },
       },
       {
         heading: "Error handling is more visible than ever",
         paragraphs: [
-          "In a standard API call, an error is binary: the request either succeeds or fails. With AI, there's a spectrum. The model might produce a response that is technically valid but completely wrong for the user's intent. The stream might cut off halfway. The model might refuse to answer. Rate limits might kick in after several successful requests.",
-          "All of these need distinct UI handling. A mid-stream failure should show what was generated so far, not discard it. A refusal should be surfaced clearly, not silently replaced with an empty state. Rate limit errors need a user-facing message, not a raw HTTP 429.",
-          "The discipline required here is the same discipline good error handling always demands — explicit states, not implicit ones. But AI makes bad error handling immediately painful in a way that a standard REST endpoint rarely does.",
+          "A REST call succeeds or fails. A streamed answer can fail before the first token, stop halfway, be stopped by the user, end in a refusal, or hit a rate limit after several requests that worked. A boolean `isLoading` plus an `error` string can't express that, so I model the answer as a discriminated union and let the template switch on it:",
+        ],
+        code: {
+          language: "typescript",
+          source: `type AnswerState =
+  | { status: "idle" }
+  | { status: "waiting" } // sent, no token yet
+  | { status: "streaming"; text: string }
+  | { status: "done"; text: string }
+  | { status: "interrupted"; text: string; reason: "network" | "stopped" }
+  | { status: "refused"; message: string }
+  | { status: "rate-limited"; retryAfterSeconds: number | null };`,
+        },
+      },
+      {
+        heading: "What each failure should look like",
+        paragraphs: [
+          "An interrupted answer keeps the text it already has and offers Retry next to it — throwing away 400 words because the last 20 didn't arrive is the most common mistake I see. A refusal is shown as what it is, never as an empty state. A rate limit becomes a sentence with a time in it, read from `Retry-After`, not a raw 429.",
+          "One subtle case: a stream that simply ends. Without an explicit final event, a dropped connection and a finished answer look identical to the client. Agree on a terminal event with the backend and treat a stream that closes without it as interrupted.",
         ],
       },
       {
         heading: "Perceived performance matters more than actual performance",
         paragraphs: [
-          "LLM inference is slow. First-token latency is often 500ms–2s even for fast providers. This is a UX constraint you can't engineer away — you can only design around it.",
-          "What I've found most effective: show something within 200ms of the user action, always. That something might be a skeleton, a 'thinking' indicator, or the beginning of a response. The exact content matters less than the signal that the system acknowledged the request and is working.",
-          "The psychological research on this is clear: perceived wait time is a function of feedback, not elapsed time. Users tolerate 3-second waits with good feedback far better than 1-second waits with none.",
+          "Time to the first token is often a second or more, even with fast providers. The frontend can't engineer that away; it can only design around it. My rule: the interface reacts in the same frame as the click. The user's message appears in the thread, the input clears, Send becomes Stop, and a 'thinking' state takes the answer's place — none of it waits for the network.",
+          "The old response-time limits hold up well: about 0.1 s feels instant, about 1 s keeps the flow of thought, past 10 s attention leaves. Make the acknowledgement land in the first band even when the answer can only land in the second. And measure time to first token, not total time — that's where your own code (auth round-trips, context retrieval, a cold function) shows up.",
         ],
       },
       {
         heading: "Where does AI logic actually belong?",
         paragraphs: [
-          "A question I get asked often: should prompt construction live in the frontend or the backend? My answer is almost always the backend — and here's why.",
-          "Prompts contain your product logic. They encode how your product interprets user input, what context it provides the model, what constraints it enforces. Exposing that in client-side code means exposing it to users. It also means every prompt change requires a frontend deploy.",
-          "The frontend's job is to collect user input cleanly, stream and render the response, and handle states. The backend's job is to own the model interaction. This boundary is clean and survives well as AI capabilities change — you can swap models, tweak prompts, add RAG context, all without touching the UI.",
+          "Should prompt construction live in the frontend or the backend? Almost always the backend. The provider's API key can't ship to the browser, so something server-side makes the call anyway. More importantly, prompts are product logic: in client code they're readable by every user, editable in DevTools, and every wording change waits for a frontend release. So the browser sends intent and references, not a prompt:",
+        ],
+        code: {
+          language: "typescript",
+          source: `// What the frontend sends. The server turns it into a prompt.
+interface ChatRequest {
+  readonly conversationId: string;
+  readonly message: string;
+  readonly context: {
+    readonly productId?: string;
+    readonly locale: string;
+  };
+}`,
+        },
+      },
+      {
+        heading: "A boundary that survives model changes",
+        paragraphs: [
+          "With that contract, the frontend collects input, renders the stream and handles every state in `AnswerState`. The backend owns the model: which one, which prompt, what context, what limits. Providers and prompts change without a UI deploy — and the UI can be built against a fake stream before the model work is done.",
+          "That fake is worth having permanently. A test server that streams canned events with delays and a mid-stream cut exercises every branch of the state machine in e2e tests, deterministically, without paying for a single token.",
         ],
       },
       {
         heading: "What hasn't changed",
         paragraphs: [
-          "The fundamentals don't change. Good component boundaries, clean state management, explicit error states, accessible UI — all of this matters exactly as much as it did before AI entered the picture.",
-          "If anything, AI features raise the bar on engineering quality because the failure modes are more visible. A poorly handled loading state in a standard form is annoying. The same in an AI chat interface feels broken. The margin for 'good enough' gets thinner.",
-          "The engineers who will do this well aren't the ones who know the most about LLMs. They're the ones who already cared about UX detail, state correctness, and the craft of building interfaces that feel solid. AI just gives them a new surface to apply that craft.",
+          "Good component boundaries, clean state, explicit error states, accessible markup — all of it matters as much as before. If anything the bar is higher: a sloppy loading state in a form is annoying, the same sloppiness in a chat feels broken, and generated code repeats a sloppy pattern as fast as a good one.",
+          "What changes is where experience shows. A good engineer fixes the bug. An experienced one asks why the bug was possible and closes that door — a shared component, a lint rule, a test, a written decision. That work is less visible than a new feature, and it's what makes every feature after it cheaper. With AI multiplying how much code gets written, it's the work that matters most.",
+          "I'd be careful with measuring AI by output. Twice the code with twice the bugs isn't progress; sometimes the most valuable result is less code, a better spec, or a decision not to build something. AI can write the code. Someone still has to understand what's being built, why, and whether it was built well — and own the outcome.",
         ],
       },
     ],
@@ -759,44 +928,128 @@ export class WheelNavigator {
     date: "2024-03-15",
     tags: ["Angular", "Architecture", "NgRx"],
     preview:
-      "After years of building Angular applications for tens of thousands of users, I've learned that good architecture is invisible — it's what lets a team move fast without breaking things.",
-    readingTime: 7,
+      "Good architecture is invisible — it's what lets a team move fast without breaking things. The patterns I've kept after years of Angular products that outgrew their plans, and how I enforce them.",
+    readingTime: 5,
     sections: [
       {
         paragraphs: [
-          "I've spent most of my career working on Angular products that grew beyond what anyone initially planned for. A CRM used across Europe. A healthcare platform with 50K+ active users. Products where the team doubled and the feature scope tripled over two years.",
-          "What I've found is that the architectural decisions you make in the first few months tend to live with you for years. This post is about the patterns I've settled on — not because they're theoretically elegant, but because they've proven themselves under real-world load.",
+          "I've spent most of my career on Angular products that grew beyond what anyone planned for: a CRM used across Europe, a healthcare platform with 50K+ active users, products where the team doubled and the feature scope tripled in two years.",
+          "The decisions you make in the first few months tend to live with you for years. These are the patterns I've settled on — not because they're elegant on a whiteboard, but because they held up when the codebase and the team got big. Where I can, I also show how to make the tooling enforce them, because a rule that lives only in a wiki is a suggestion.",
         ],
       },
       {
         heading: "Keep your components dumb",
         paragraphs: [
-          "The single highest-leverage rule in any Angular codebase: push as much logic as possible out of your components. Components should be thin — they accept inputs, emit outputs, and delegate everything else.",
-          "This means no direct HTTP calls in components. No business logic. Minimal derived state. If a component is doing something complex, that complexity belongs in a service, a store selector, or a pure function.",
-          "The payoff is testability. A component with zero injected services is trivially unit-tested. A component with three injected services and business logic scattered through its lifecycle hooks is a nightmare.",
+          "The highest-leverage rule in any Angular codebase: most components should only take inputs, emit outputs and render. No HTTP calls, no business rules, as little derived state as possible. A handful of page-level components connect that tree to services or the store; everything below them is presentational.",
+        ],
+        code: {
+          language: "typescript",
+          source: `// Presentational: no injected services, nothing to mock in a test.
+@Component({
+  selector: "app-order-row",
+  templateUrl: "./order-row.component.html",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class OrderRowComponent {
+  readonly order = input.required<OrderView>();
+  readonly cancel = output<string>();
+}
+
+// The page is the one place that knows where data comes from.
+@Component({
+  selector: "app-orders-page",
+  template: \`
+    @for (order of orders(); track order.id) {
+      <app-order-row [order]="order" (cancel)="onCancel($event)" />
+    }
+  \`,
+  imports: [OrderRowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class OrdersPageComponent {
+  private readonly store = inject(Store);
+  readonly orders = this.store.selectSignal(selectOrderViews);
+
+  onCancel(id: string): void {
+    this.store.dispatch(OrdersPageActions.cancelRequested({ id }));
+  }
+}`,
+        },
+      },
+      {
+        heading: "Why dumb components pay off",
+        paragraphs: [
+          "Testability is the obvious payoff: a component with no injected services is tested by setting inputs and reading the DOM. A component with three services and logic spread across lifecycle hooks needs a page of setup before the first assertion.",
+          "The less obvious payoff is reuse and review. When a presentational component takes an `OrderView` — a shape made for display — rather than the raw API model, a backend change touches one selector instead of twenty templates. And a reviewer can tell from the imports alone whether a component is allowed to talk to the outside world.",
         ],
       },
       {
         heading: "State management is about boundaries",
         paragraphs: [
-          "NgRx gets a reputation for being verbose, and it is. But the verbosity is doing real work — it forces you to make explicit decisions about what state lives where, who owns it, and how it changes.",
-          "The mistake most teams make is putting everything in the store. Not every piece of state needs NgRx. Local UI state (is this dropdown open? which tab is selected?) belongs in the component. Server-fetched data that multiple features share belongs in the store.",
-          "I use a simple rule: if two distinct feature modules need the same data, it goes in the store. If only one component needs it, keep it local. That boundary stays clear as the app grows.",
+          "NgRx has a reputation for verbosity, and it earns it. But the verbosity does real work: it forces explicit decisions about what state exists, who owns it and how it changes.",
+          "The mistake most teams make is putting everything in the store. Local UI state — is this dropdown open, which tab is selected — belongs in the component. Server data that several features share belongs in the store. My rule fits in one sentence: if two distinct features need the same data, it goes in the store; if one component needs it, it stays local. I go through that rule, and what to do instead of NgRx, in more detail in a separate post on state management.",
         ],
+      },
+      {
+        heading: "Make the boundaries a lint error",
+        paragraphs: [
+          "Folder structure only helps if it constrains something. I split code into `features/` (one folder per product area) and `shared/` (UI kit, utilities, nothing feature-specific), with one rule: shared code never imports from a feature. Without it, `shared/` slowly becomes the place where features reach into each other.",
+          "ESLint can enforce that with a built-in rule, no plugin needed:",
+        ],
+        code: {
+          language: "typescript",
+          source: `// eslint.config.js
+{
+  files: ["src/app/shared/**/*.ts"],
+  rules: {
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            group: ["@app/features/*"],
+            message: "shared/ must not depend on a feature. Move the code, or pass it in.",
+          },
+        ],
+      },
+    ],
+  },
+},`,
+        },
       },
       {
         heading: "Feature modules vs standalone components",
         paragraphs: [
-          "With Angular 14+ and the push toward standalone, I've moved away from feature modules for new code. Standalone components are simpler to reason about — the dependency graph is explicit at the component level rather than hidden inside a module declaration.",
-          "For existing NgModule-based codebases, I don't recommend a big-bang migration. Instead, introduce standalone components at the edges and work inward. Angular supports mixing both approaches.",
-          "The bigger win from standalone isn't the syntax change — it's the improved lazy loading granularity. You can now lazy-load at the route level without creating a dedicated module just to hold one component.",
+          "Since Angular 14 and the push toward standalone, I've stopped writing feature modules for new code. A standalone component lists its own dependencies, so the graph is visible where it's used instead of hidden in a module declaration somewhere else.",
+          "The bigger win isn't the syntax, it's lazy loading. A route can load a single component without a module created just to hold it, and a feature can expose its routes as a plain array:",
+        ],
+        code: {
+          language: "typescript",
+          source: `export const routes: Routes = [
+  {
+    path: "orders",
+    loadComponent: () =>
+      import("./features/orders/orders-page.component").then((m) => m.OrdersPageComponent),
+  },
+  {
+    path: "admin",
+    loadChildren: () => import("./features/admin/admin.routes").then((m) => m.ADMIN_ROUTES),
+  },
+];`,
+        },
+      },
+      {
+        heading: "Migrating an NgModule codebase",
+        paragraphs: [
+          "For an existing NgModule codebase I don't recommend a big-bang migration. Angular mixes both styles happily: a standalone component can be imported into an NgModule, and a module can be imported into a standalone component. Start at the leaves — shared presentational components — and work inward; the Angular CLI's standalone migration schematic handles most of the mechanical part.",
+          "Convert routes last. By the time the components they load are standalone, switching a route from `loadChildren` with a module to `loadComponent` is a two-line change.",
         ],
       },
       {
         heading: "What I would do differently",
         paragraphs: [
-          "If I were starting a large Angular project today, I'd invest heavily upfront in three things: a clear state management policy (document what goes in the store), a strict boundary between feature code and shared code, and E2E tests for every critical user flow before the first major release.",
-          "The E2E tests especially. We added Playwright to a mature product and the confidence it gave the team to refactor was immediately visible in velocity. Don't wait until you're afraid to deploy.",
+          "If I were starting a large Angular project today, I'd invest upfront in three things. A written state policy — one page in the repository that says what goes in the store and what doesn't. Boundaries the linter enforces from the first commit, because adding them later means first fixing every violation. And end-to-end tests for every critical user flow before the first major release.",
+          "The E2E tests especially. We added Playwright to a mature product, and the confidence it gave the team to refactor showed up in velocity almost immediately. Don't wait until you're afraid to deploy.",
         ],
       },
     ],
@@ -807,44 +1060,122 @@ export class WheelNavigator {
     date: "2024-02-08",
     tags: ["Angular", "NgRx", "State Management"],
     preview:
-      "NgRx is powerful, but it's also easy to overcomplicate. After using it across multiple large-scale products, here's what I've distilled into practical patterns.",
+      "NgRx is powerful, and easy to overcomplicate. The rules I follow after using it on several large products: what goes in the store, selectors as an API, effects that don't die, and when to use signals instead.",
     readingTime: 5,
     sections: [
       {
         paragraphs: [
-          "State management is one of those topics where the gap between theory and practice is enormous. You can read all the Redux documentation and still build yourself a tangled mess once the app grows past a certain complexity.",
-          "This is what I've learned after building NgRx-based frontends in production environments — the rules I follow, the patterns I've abandoned, and the questions I ask before adding new state.",
+          "State management is a topic where the gap between theory and practice is enormous. You can read all of the Redux documentation and still build a tangled mess once the app passes a certain size.",
+          "This is what I've learned building NgRx frontends in production: the rules I follow, the patterns I've dropped, and the questions I ask before adding a new piece of state.",
         ],
       },
       {
         heading: "Not everything belongs in the store",
         paragraphs: [
-          "The most common NgRx mistake I see in codebases is treating the store as a global variable dump. Every piece of data ends up there, regardless of whether it needs to be shared or persisted.",
-          "I use a simple mental model: the store is for state that crosses feature boundaries or needs to survive navigation. Everything else stays local. A form's validation state, a tooltip's open/closed state, pagination UI — these are component concerns.",
-          "When you keep the store lean, selectors stay fast, actions stay meaningful, and the DevTools timeline stays readable.",
+          "The most common NgRx mistake I see is the store used as a global variable dump. Every piece of data ends up there, whether or not anything else needs it.",
+          "My test has two questions. Does this state cross a feature boundary? Does it need to survive navigation? If neither, it stays local. A form's validation state, a tooltip's visibility, the pagination controls of one table — those are component concerns, and putting them in the store adds an action, a reducer case and a selector for something a `signal()` handles in one line.",
+          "A lean store pays off in places you don't expect: actions stay meaningful, the DevTools timeline stays readable, and a new developer can understand the app's shared state by reading one folder.",
         ],
       },
       {
         heading: "Selectors as your API",
         paragraphs: [
-          "Selectors are underutilized. Most teams write one selector per piece of raw state and then compute everything inline in the component. This is a mistake.",
-          "Treat selectors as the public API of your state slice. If a component needs 'the list of active users sorted by last login', that computation belongs in a selector — not in a `computed()` or a template pipe. Selectors are memoized, composable, and independently testable.",
-          "I've started defining selectors first, before writing any reducers, because they force me to think about what the consumer actually needs rather than what's convenient to store.",
+          "Selectors are underused. Most teams write one selector per raw field and then compute everything in the component. That spreads the same derivation across several places, each slightly different.",
+          "I treat selectors as the public API of a state slice. If a component needs 'active users, most recently logged in first', that's a selector — memoized, composable and testable as a pure function:",
+        ],
+        code: {
+          language: "typescript",
+          source: `export const usersFeature = createFeature({
+  name: "users",
+  reducer: usersReducer,
+});
+
+export const selectActiveUsersByLastLogin = createSelector(
+  usersFeature.selectUsers,
+  (users) =>
+    users
+      .filter((user) => user.active)
+      .sort((a, b) => b.lastLoginAt - a.lastLoginAt),
+);
+
+// In the component: a signal, no async pipe, no subscription.
+readonly users = this.store.selectSignal(selectActiveUsersByLastLogin);`,
+        },
+      },
+      {
+        heading: "Selectors first, reducers second",
+        paragraphs: [
+          "I've started writing selectors before reducers. It makes me describe what the consumer needs before deciding what's convenient to store — and it often shows that some state doesn't need to be stored at all, because it can be derived.",
+          "`createFeature` helps here: it generates a selector per top-level field, so the hand-written selectors are only the ones that mean something.",
         ],
       },
       {
         heading: "Effect patterns that age well",
         paragraphs: [
-          "Effects are where NgRx tends to sprawl. I've seen effects files grow to 600 lines with a dozen different side effects per action. That's a sign that the action granularity is wrong.",
-          "One pattern that's helped: one effect per distinct side effect. Don't have a single effect that fires an API call, updates a loading state, handles errors, and dispatches a success action. Split those concerns. The boilerplate cost is low; the clarity benefit is high.",
-          "Also: be careful with `exhaustMap` vs `switchMap` vs `concatMap`. Wrong choice here causes subtle bugs. I default to `switchMap` for queries (latest result wins) and `concatMap` for mutations (order matters).",
+          "Effects are where NgRx sprawls. I've seen effects files grow to 600 lines with a dozen side effects per action; that usually means the action granularity is wrong. One effect per distinct side effect — the boilerplate is cheap, the clarity isn't.",
+          "The bug I see most often in effects is `catchError` in the wrong place. Put it on the outer stream and the first failed request completes the effect: it never runs again until the page reloads, and nothing in the console says so. It belongs inside the flattening operator, around the one request that can fail:",
+        ],
+        code: {
+          language: "typescript",
+          source: `export const loadUsers = createEffect(
+  (actions$ = inject(Actions), api = inject(UsersApi)) =>
+    actions$.pipe(
+      ofType(UsersPageActions.opened, UsersPageActions.filterChanged),
+      switchMap(({ filter }) =>
+        api.list(filter).pipe(
+          map((users) => UsersApiActions.loaded({ users })),
+          // Inside switchMap: one failure becomes an action, the effect lives on.
+          catchError((error: unknown) => of(UsersApiActions.loadFailed({ error: toMessage(error) }))),
+        ),
+      ),
+    ),
+  { functional: true },
+);`,
+        },
+      },
+      {
+        heading: "Choosing the flattening operator",
+        paragraphs: [
+          "The other source of subtle bugs is the operator. The wrong one doesn't fail loudly; it drops a request, or applies two in the wrong order, once in a hundred times.",
+          "`switchMap` for queries: a new filter cancels the old request, the latest result wins. `concatMap` for mutations whose order matters: two edits to the same record are applied as the user made them. `exhaustMap` for actions that should not repeat while one is in flight — submit, log in, pay — so a double click doesn't charge twice. `mergeMap` for independent operations on different items, like deleting two separate rows, where neither should wait for or cancel the other.",
         ],
       },
       {
         heading: "When to reach for something simpler",
         paragraphs: [
-          "I've been on projects where the complexity of NgRx clearly outweighed the benefits. For smaller apps or feature areas where state is mostly server-driven with minimal local complexity, I now reach for Angular's own signals + a simple service instead.",
-          "Signals (from Angular 16+) combined with a service that wraps HTTP calls cover a wide range of use cases without the boilerplate overhead of actions, reducers, and effects. I only introduce NgRx when I need its specific strengths: time-travel debugging, strict action log, or complex cross-feature state coordination.",
+          "I've been on projects where NgRx clearly cost more than it gave. For small apps, or feature areas where state is mostly server data with little local logic, I now use Angular's signals in a plain service:",
+        ],
+        code: {
+          language: "typescript",
+          source: `@Injectable({ providedIn: "root" })
+export class InvoicesStore {
+  private readonly api = inject(InvoicesApi);
+  private readonly state = signal({
+    invoices: [] as readonly Invoice[],
+    loading: false,
+    error: null as string | null,
+  });
+
+  readonly invoices = computed(() => this.state().invoices);
+  readonly overdue = computed(() => this.invoices().filter(isOverdue));
+  readonly loading = computed(() => this.state().loading);
+
+  load(): void {
+    this.state.update((state) => ({ ...state, loading: true, error: null }));
+    this.api.list().subscribe({
+      next: (invoices) => this.state.set({ invoices, loading: false, error: null }),
+      error: (error: unknown) =>
+        this.state.update((state) => ({ ...state, loading: false, error: toMessage(error) })),
+    });
+  }
+}`,
+        },
+      },
+      {
+        heading: "Knowing when it has outgrown the service",
+        paragraphs: [
+          "That covers a lot of ground with none of the actions, reducers and effects. It also has limits worth knowing before they bite: two overlapping `load()` calls can resolve out of order, because nothing plays the role of `switchMap`; there's no action log to replay a bug from; and two features writing to the same service have no single place that says who changed what.",
+          "When I hit those — cancellation and ordering, a need for time-travel debugging, real cross-feature coordination — that's the point to introduce NgRx for that slice. Not before.",
         ],
       },
     ],
