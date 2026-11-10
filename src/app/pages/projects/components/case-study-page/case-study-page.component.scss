@@ -172,7 +172,7 @@
     font-size: 1rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: brand.ink(0.5);
+    color: var(--brand-muted);
   }
 
   &__loader {
