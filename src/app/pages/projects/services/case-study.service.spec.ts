@@ -36,20 +36,23 @@ describe("CaseStudyService", () => {
       expect(study.title.length).toBeGreaterThan(0);
       expect(study.summary.length).toBeGreaterThan(0);
       expect(study.stack.length).toBeGreaterThan(0);
-      expect(study.outcomes.length).toBeGreaterThanOrEqual(2);
-      expect(study.outcomes.length).toBeLessThanOrEqual(4);
-      expect(study.context.length).toBeGreaterThan(0);
-      expect(study.constraints.length).toBeGreaterThan(0);
-      expect(study.decisions.length).toBeGreaterThan(0);
+      expect(study.contributions.length).toBeGreaterThan(0);
       expect(study.results.length).toBeGreaterThan(0);
-      for (const decision of study.decisions) {
-        expect(decision.choice.length).toBeGreaterThan(0);
-        expect(decision.tradeoff.length).toBeGreaterThan(0);
+      const contributions = study.contributions.flatMap((item) =>
+        typeof item === "string" ? [item] : [item.title, ...item.items],
+      );
+      for (const area of study.contributions) {
+        if (typeof area !== "string") {
+          expect(area.items.length, `${study.slug}: ${area.title}`).toBeGreaterThan(0);
+        }
+      }
+      for (const text of [...(study.task ?? []), ...contributions, ...study.results]) {
+        expect(text.trim().length, study.slug).toBeGreaterThan(0);
       }
     }
   });
 
-  it("keeps covers, sites and highlights usable", () => {
+  it("keeps covers and sites usable", () => {
     for (const study of CASE_STUDIES) {
       // Relative, or it ignores the base href and 404s on GitHub Pages.
       if (study.cover) {
@@ -58,10 +61,6 @@ describe("CaseStudyService", () => {
       }
       if (study.site) {
         expect(study.site).toMatch(/^https:\/\//);
-      }
-      for (const highlight of study.highlights ?? []) {
-        expect(highlight.title.length).toBeGreaterThan(0);
-        expect(highlight.text.length).toBeGreaterThan(0);
       }
     }
   });

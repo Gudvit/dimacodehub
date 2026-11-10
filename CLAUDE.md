@@ -81,6 +81,8 @@ src/
   styles/_motion.scss         slide-reveal() / view-reveal(): scroll-driven entrances (ADR 0025)
   styles/_layout.scss         page gutters and the text measure (pages run full width, text
                               keeps ~75 characters), the 12-column grid()
+  styles/_article.scss        article.page: the long-read layout shared by a blog post and a case
+                              study (centred column, header, sticky "On this page", reading bar)
   styles/_type.scss           the type scale in Urbanist: page-title(), label()
   styles.scss                 the theme custom properties, background effects, view-transition
                               rules for route changes, `.slide-section` snap rules

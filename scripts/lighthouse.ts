@@ -109,6 +109,31 @@ interface Run {
   readonly findings: readonly string[];
 }
 
+/** How many offending elements an audit lists in the log; enough to find the rule behind them. */
+const NODES_SHOWN = 5;
+
+/**
+ * The elements an accessibility audit failed on, one per line under its title, with the
+ * numbers axe measured (a contrast audit says which colours and what ratio). Without them a
+ * red build only says that something somewhere on the page is too pale.
+ */
+function failingNodes(details: unknown): string {
+  const items = (details as { items?: unknown[] } | undefined)?.items ?? [];
+  const nodes = items.flatMap((item) => {
+    const node = (item as { node?: { selector?: string; explanation?: string } }).node;
+    if (!node?.selector) {
+      return [];
+    }
+    const measured = node.explanation
+      ?.split("\n")
+      .find((line) => /ratio|colou?r/i.test(line))
+      ?.trim();
+    return [`${node.selector}${measured ? ` — ${measured}` : ""}`];
+  });
+  const more = nodes.length > NODES_SHOWN ? [`…and ${nodes.length - NODES_SHOWN} more`] : [];
+  return [...nodes.slice(0, NODES_SHOWN), ...more].map((line) => `\n      ${line}`).join("");
+}
+
 async function audit(url: string, port: number): Promise<Run> {
   const run = await lighthouse(url, {
     port,
@@ -124,7 +149,9 @@ async function audit(url: string, port: number): Promise<Run> {
       .map((ref) => lhr?.audits[ref.id])
       .filter((audit) => audit && audit.score !== null && audit.score < 0.9)
       .map(
-        (audit) => `${id}: ${audit?.title}${audit?.displayValue ? ` (${audit.displayValue})` : ""}`,
+        (audit) =>
+          `${id}: ${audit?.title}${audit?.displayValue ? ` (${audit.displayValue})` : ""}` +
+          failingNodes(audit?.details),
       ),
   );
   const score = (id: string) => Math.round((categories[id]?.score ?? 0) * 100);
