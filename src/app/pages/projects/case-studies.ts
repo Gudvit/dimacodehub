@@ -284,26 +284,40 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     ],
   },
   {
-    // [TODO] The cover is from modniy-ostrov.com; the text is to be written by the author.
+    // From the author's write-up; the cover is from modniy-ostrov.com. Work through Lazy Ants.
     slug: "modniy-ostriv",
-    title: "Modniy Ostriv",
+    title: "Modniy Ostrov",
     tileTitle: "MO",
-    tagline: "A wholesale online store of a Ukrainian clothing manufacturer",
+    tagline: "A fashion e-commerce platform built with Angular Universal",
     cover: {
       src: "images/projects/modniy-ostrov.webp",
-      alt: "The Modniy Ostriv store: a catalogue of women's clothing sold wholesale from five items, under the banner of its Fall Muse mid-season collection.",
+      alt: "The Modniy Ostrov store: a catalogue of women's clothing sold wholesale from five items, under the banner of its Fall Muse mid-season collection.",
     },
     site: "https://modniy-ostrov.com/ua",
-    summary: "[TODO: the result in one sentence]",
-    company: "[TODO: the client, and the company you worked through]",
-    role: "[TODO: your role]",
-    period: "[TODO: when]",
-    stack: ["[TODO: the stack]"],
-    task: ["[TODO: what the store was for, and what made it hard]"],
-    contributions: ["[TODO: what you did, starting with a verb]"],
-    results: ["[TODO: what came of it]"],
-    draft: true,
-    comingSoon: true,
+    summary:
+      "A large fashion e-commerce platform with an extensive catalogue, rendered on the server with Angular Universal: detailed designs turned into a responsive, pixel-perfect storefront with smooth animations and a consistent experience on every device.",
+    company: "Modniy Ostrov · via Lazy Ants",
+    role: "Angular Developer",
+    period: "2017 – 2018",
+    stack: ["Angular", "Angular Universal", "TypeScript", "RxJS", "SCSS"],
+    task: [
+      "Modniy Ostrov is a large fashion e-commerce platform with an extensive product catalogue and a complete online shopping experience.",
+      "As part of the frontend team, I helped turn detailed UI and UX designs into a working, responsive application — pixel-perfect, with smooth animations and the same experience on every device and screen size — while keeping the frontend fast and rendering it on the server with Angular Universal.",
+    ],
+    contributions: [
+      "Implemented the designs pixel-perfect, down to spacing, type and states.",
+      "Built smooth animations and interactive elements for the shopping experience.",
+      "Made every layout responsive and consistent across devices and screen sizes.",
+      "Built the complex parts of an e-commerce interface — the catalogue, product pages and the shopping flow.",
+      "Wrote reusable Angular components and kept the frontend architecture consistent as the store grew.",
+      "Rendered the store on the server with Angular Universal, so pages arrive ready to read and to index.",
+      "Worked on performance, so the store renders quickly and the same way on every device.",
+    ],
+    results: [
+      "A responsive storefront that follows its designs closely on phones, tablets and desktops.",
+      "Server-side rendering with Angular Universal, so the catalogue reaches the reader and search engines as finished pages.",
+      "A set of reusable components the team built the rest of the store from.",
+    ],
   },
 ];
 
