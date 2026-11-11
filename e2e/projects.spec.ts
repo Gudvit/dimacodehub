@@ -12,21 +12,21 @@ test("the old projects address lands on the home slide", async ({ page }) => {
 });
 
 test("a case that is coming soon shows the placeholder, not its draft", async ({ page }) => {
-  await page.goto("/projects/krakow-events");
+  await page.goto("/projects/agendo");
 
-  await expect(page.getByRole("heading", { level: 1, name: "Kraków Events" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Agendo" })).toBeVisible();
   await expect(page.getByText("Coming soon", { exact: true })).toBeVisible();
-  await expect(page).toHaveTitle(/^Kraków Events - /);
+  await expect(page).toHaveTitle(/^Agendo - /);
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    "A curated guide to what is on in Kraków, in a Telegram bot",
+    "An online booking widget any business can put on its own website",
   );
   await expect(page.getByRole("heading", { level: 2, name: "Task" })).toHaveCount(0);
   await expect(page.getByText("[TODO", { exact: false })).toHaveCount(0);
 });
 
 test("the dev server shows the draft of a coming-soon case at ?draft", async ({ page }) => {
-  await page.goto("/projects/krakow-events?draft");
+  await page.goto("/projects/agendo?draft");
 
   await expect(page.getByRole("note")).toContainText("Draft");
   await expect(page.getByRole("heading", { level: 2, name: "Task" })).toBeVisible();
@@ -45,7 +45,7 @@ test("a case study deep link renders the template and its metadata", async ({ pa
     "href",
     "https://apomeds.com",
   );
-  for (const heading of ["What I did", "Result", "What I'd do differently"]) {
+  for (const heading of ["What I did", "Result", "Takeaways"]) {
     await expect(page.getByRole("heading", { level: 2, name: heading })).toBeVisible();
   }
 });
@@ -69,7 +69,7 @@ test("a side project opens from its tile on the home slide", async ({ page }) =>
 
   await expect(page).toHaveURL(/\/projects\/krakow-events$/);
   await expect(page.getByRole("heading", { level: 1, name: "Kraków Events" })).toBeVisible();
-  await expect(page.getByText("Coming soon", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Task" })).toBeVisible();
 });
 
 test("unknown case study slug shows the not-found state", async ({ page }) => {

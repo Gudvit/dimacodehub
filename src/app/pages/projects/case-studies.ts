@@ -87,8 +87,8 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
   },
   {
     // Built from the krakow-now-api repository: README, PROJECT_VISION, ARCHITECTURE (its
-    // ADRs) and DEPLOYMENT. [TODO] marks what only the author knows. The repository and the
-    // code call it Kraków Now; in production the bot is Kraków Events.
+    // ADRs) and DEPLOYMENT, framed around the integration architecture. The repository and
+    // the code call it Kraków Now; in production the bot is Kraków Events.
     slug: "krakow-events",
     kind: "side",
     title: "Kraków Events",
@@ -99,39 +99,92 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
     },
     site: "https://t.me/KrakowEventsBot",
     summary:
-      "A curator, not an aggregator: a thousand events a week come in from seventeen sources, are cleaned, de-duplicated and scored by AI, and a human picks the twenty or thirty worth an evening — delivered by a Telegram bot. Built alone, from the pipeline to the admin panel.",
-    company: "Personal project",
-    role: "Author · product, architecture, backend and admin panel",
+      "Multi-source event aggregation for Kraków: an adapter-based integration layer over more than ten external providers, one processing flow that normalises, de-duplicates and stores every event, cron-scheduled ingestion with retries — a centralised dataset of roughly 5,000 to 20,000 events.",
+    company: "Personal project · event discovery and data integration",
+    role: "Product engineer · system architect",
     period: "Jun 2026 – present",
     stack: [
       "NestJS",
       "TypeScript",
       "PostgreSQL",
       "Prisma",
+      "pg-boss",
       "Gemini",
       "Telegraf",
       "Next.js",
-      "Docker",
     ],
     task: [
-      "Kraków has more events than anyone can read about, and newcomers, the Ukrainian community and people practising a language need a short list they can trust. The bot had to turn about a thousand events a week from seventeen sources into the twenty or thirty worth an evening — built and run by one person on a free VM with 1 GB of RAM.",
-      "[TODO: why you started it, and who uses it today]",
+      "Kraków Events aggregates event information from more than ten external sources into one dataset for event discovery and recommendation. One of the main engineering challenges was integrating many independent providers, each exposing its events through a different interface and a different data structure.",
+      "The integration layer had to cope with different providers and integration interfaces, inconsistent event data, the same event appearing in several sources, keeping one centralised dataset, collecting data on a schedule rather than by hand, temporary failures of external integrations — and stay extensible as new providers are added.",
     ],
     contributions: [
-      "Designed a modular monolith in NestJS shaped as a pipeline — sources, ingestion, normalisation, de-duplication, scoring, moderation, publishing — each stage behind a typed contract.",
-      "Built seventeen source connectors (iCal feeds, a public GraphQL API, HTML pages) behind one port; raw payloads are kept verbatim, so a re-import never duplicates an event or loses a moderator's decision.",
-      "Added AI scoring with Gemini — a score, a category and a blurb per event — while a human approves every event before the bot shows it.",
-      "Built the Telegram bot on Telegraf and the Next.js moderation panel, both reading from one publishing service, never from the database.",
-      "Deployed with Docker Compose: long polling instead of webhooks, so no domain or TLS; images built in CI and pulled to the server; a dead-man's-switch health check.",
+      {
+        title: "Adapter-based integration architecture",
+        items: [
+          "Designed a dedicated adapter per provider: each integration talks to its own source and adapts what comes back to what the platform's processing expects.",
+          "Kept provider-specific logic separate from the core business functionality, behind consistent integration boundaries.",
+          "Made each integration developed and maintained on its own, in a structure where a new provider is one more adapter — more than ten are supported today.",
+        ],
+      },
+      {
+        title: "Unified event processing",
+        items: [
+          "Designed one central workflow for all incoming events: scheduled collection jobs run, each adapter retrieves its source's events, the data is normalised, existing events are found through a combined deduplication strategy, and the result is persisted in the central dataset.",
+          "Made temporary integration failures part of the flow rather than an exception to it, handled by retries.",
+        ],
+      },
+      {
+        title: "Combined event deduplication",
+        items: [
+          "Identified duplicates by a combination of event attributes rather than any single identifier — the source's own key, the URL, and the date, title and venue together — so the same event from different providers ends up as one.",
+        ],
+      },
+      {
+        title: "Scheduled data ingestion",
+        items: [
+          "Automated recurring collection with cron-based scheduling, so the dataset stays current without anyone running imports by hand.",
+        ],
+      },
+      {
+        title: "Centralised data storage",
+        items: [
+          "Designed the central event model on PostgreSQL and Prisma: every incoming event is processed into the platform's primary representation, the one dataset everything downstream reads.",
+          "Stored each raw payload as it arrived, so any event can be traced back to its source and a re-import never creates a duplicate.",
+        ],
+      },
+      {
+        title: "Failure handling and retries",
+        items: [
+          "Ran ingestion as jobs on a Postgres-backed queue with retries and backoff, so the process recovers from a provider's temporary problems without every operation being restarted by hand — and one failing source never stops the rest.",
+        ],
+      },
+      {
+        title: "What the architecture gives",
+        items: [
+          "Extensibility through independently structured source adapters.",
+          "Provider-specific integration logic kept apart from core business functionality.",
+          "Consistent processing of heterogeneous external data.",
+          "Less duplication across the central event dataset.",
+          "Event ingestion that runs on its own.",
+          "Resilience to temporary failures of external integrations.",
+          "A foundation for adding providers without redesigning the integration layer.",
+        ],
+      },
     ],
     results: [
-      "[TODO: is the bot live for everyone? users, weekly readers, events published per week]",
-      "The API, the bot and the database run in 1 GB of RAM.",
-      "141 architecture decisions written down, 150 test files, CI on every pull request and a reviewer agent that holds changes to the principles.",
+      "Integrated more than ten external event sources.",
+      "Established a central event dataset of roughly 5,000 to 20,000 events.",
+      "Implemented the provider integrations as adapters.",
+      "Introduced automated, cron-based data collection.",
+      "Implemented combined event deduplication.",
+      "Established retry handling for integration failures.",
+      "Created an extensible foundation for further event sources.",
     ],
-    lessons: ["[TODO: what you would do differently]"],
-    draft: true,
-    comingSoon: true,
+    lessons: [
+      "The key architectural decision was separating external data acquisition from the internal event domain.",
+      "With provider-specific adapters and one central processing workflow, the platform integrates heterogeneous sources without coupling its core to any single provider.",
+      "That gives a maintainable foundation for growing the number of integrations and evolving event processing over time.",
+    ],
   },
   {
     // This site. Everything here can be checked in the repository and on /colophon, which
