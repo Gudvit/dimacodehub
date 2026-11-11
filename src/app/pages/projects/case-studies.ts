@@ -224,38 +224,64 @@ export const CASE_STUDIES: readonly CaseStudy[] = [
   },
   {
     // Built from the Agendo-Booking-Widget repository: its code and its history (my commits
-    // run Oct 2019 – Aug 2021, through IdeaSoft). [TODO] marks what only the author knows.
+    // run Oct 2019 – Aug 2021, through IdeaSoft). Business outcomes are inferred, not measured.
     slug: "agendo",
     title: "Agendo",
-    tagline: "An online booking widget any business can put on its own website",
+    tagline: "A booking widget embedded in other people's websites, behind a cross-domain iframe",
     cover: {
       src: "images/projects/agendo.webp",
       alt: "The Agendo website, “Alltid enkelt och tydligt för dina kunder”: four kinds of booking — a meeting room by the hour, a storage unit by the month, a time with a specialist and a group course with its schedule.",
     },
     summary:
-      "Two years on the booking widget of a Swedish scheduling platform: one script tag puts a book button on a business's own website, and the booking — service, resource, time, sign-in and payment — runs in an Angular app inside an iframe. I took over a codebase begun in 2016 and added several buttons per page, branded buttons, payment links and a rework of how the widget learns its language.",
+      "Two years on the booking widget of a Swedish scheduling platform, embedded in websites nobody on the team controls: a cross-domain iframe that isolates the booking from the host page, a postMessage boundary between the two, a booking button per entry point, and fallbacks for when the host's configuration is missing.",
     company: "Agendo · via IdeaSoft",
     role: "Angular Developer",
     period: "Oct 2019 – Aug 2021",
     stack: ["Angular", "NgRx", "RxJS", "TypeScript", "postMessage", "Angular Material"],
     task: [
-      "Agendo sells online booking to businesses in Sweden — rooms by the hour, storage by the month, a specialist's time, group courses — and their customers book on the business's own website. One script tag adds a book button, and the booking runs in an Angular app inside an iframe. I took over that widget, a codebase begun in 2016, on websites nobody on the team controls.",
-      "[TODO: what the business needed from the widget when you joined]",
+      "Agendo provided an online booking platform that businesses embedded straight into their own websites. A script added a booking button, and a visitor could start and finish a booking without leaving the business's site. The booking application ran inside an iframe, on websites outside our control — so it had to work as an independent application while integrating reliably with very different host pages, browsers and website setups. I took over the existing widget codebase and worked on its architecture, its integration with the host page and its booking functionality as the product grew.",
+      "The widget had to run inside third-party websites with their own layouts, styles and JavaScript; stay isolated from the host page; talk to it without access to its code; support several booking buttons on one page; behave the same across browsers and on phones; and keep the integration simple for a business — add a script, place the buttons. The central challenge was a predictable boundary between two environments controlled by different people.",
     ],
     contributions: [
-      "Kept the whole booking in an iframe that talks to the host page only through a small postMessage protocol, so neither side's styles or scripts can break the other.",
-      "Made one loader serve every book button on a page, so a business can put one next to each service.",
-      "Added branded buttons styled from the business's profile, with a plain button in the page's language when the profile cannot load — booking never disappears.",
-      "Built payment links: the widget rebuilds a booking from a hash and opens straight at the payment step, on any device.",
-      "Fixed the payment step for mobile browsers inside the iframe, and reworked how the widget learns its language.",
+      {
+        title: "Isolation in an iframe",
+        items: [
+          "Ran the booking inside an iframe rather than rendering it into the host page, so the host's CSS cannot reach the booking interface, the widget's styles cannot reach the website, and nothing depends on the host's framework or on whatever other scripts it runs.",
+          "Treated the iframe as the boundary of an independent application, so the booking could evolve without the websites that embed it changing anything.",
+        ],
+      },
+      {
+        title: "Explicit communication through postMessage",
+        items: [
+          "Kept all communication between the booking and its host page on postMessage — an explicit boundary that never needs access to the host website's own code.",
+          "Used it for what the host page has to know about the booking — its title as it changes, and whether a step succeeded or failed.",
+        ],
+      },
+      {
+        title: "A loader for every booking button",
+        items: [
+          "Supported several booking buttons on one page, each opening its own booking: a business can put one next to each service or booking option without building any booking interface itself.",
+          "Kept the loader light on the host's side, with the booking experience itself staying inside the iframe.",
+        ],
+      },
+      {
+        title: "Resilience in third-party environments",
+        items: [
+          "Styled booking buttons from the business's profile, with a plain button in the page's language when the profile cannot load — booking never disappears.",
+          "Reworked how the widget learns its language and removed the JSONP endpoint it used, so it depends less on the host page's configuration.",
+        ],
+      },
     ],
     results: [
-      "[TODO: what changed for the business — bookings, payments through links, support load]",
+      "The iframe architecture became a reusable foundation for embedding the booking into any business's website, with one consistent experience and no need for a business to rebuild its site or adopt a particular framework.",
+      "Everything the product grew into stayed available through the embedded widget: hourly, daily and monthly bookings; family and group course registrations; products and stock attached to a booking; customer accounts and booking management; deferred payments through payment links.",
       "270+ commits over two years on a codebase I took over.",
     ],
-    lessons: ["[TODO: what you would do differently]"],
-    draft: true,
-    comingSoon: true,
+    lessons: [
+      "An integration should not depend on the internals of the system that hosts it. The iframe gave isolation and postMessage an explicit channel between the two sides.",
+      "Designing it today, I would make the messaging protocol a versioned contract from the start, with every message type and its payload documented — and I would check the origin of every message on both sides and name the target origin when posting, instead of trusting whatever arrives.",
+      "And I would add dedicated tests for origin checks, browser compatibility and several widgets on one page, so the integration stays easy to maintain as both the booking application and the websites around it change.",
+    ],
   },
   {
     // [TODO] The cover is from modniy-ostrov.com; the text is to be written by the author.
