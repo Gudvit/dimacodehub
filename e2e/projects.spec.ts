@@ -12,21 +12,21 @@ test("the old projects address lands on the home slide", async ({ page }) => {
 });
 
 test("a case that is coming soon shows the placeholder, not its draft", async ({ page }) => {
-  await page.goto("/projects/agendo");
+  await page.goto("/projects/modniy-ostriv");
 
-  await expect(page.getByRole("heading", { level: 1, name: "Agendo" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Modniy Ostriv" })).toBeVisible();
   await expect(page.getByText("Coming soon", { exact: true })).toBeVisible();
-  await expect(page).toHaveTitle(/^Agendo - /);
+  await expect(page).toHaveTitle(/^Modniy Ostriv - /);
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    "An online booking widget any business can put on its own website",
+    "A wholesale online store of a Ukrainian clothing manufacturer",
   );
   await expect(page.getByRole("heading", { level: 2, name: "Task" })).toHaveCount(0);
   await expect(page.getByText("[TODO", { exact: false })).toHaveCount(0);
 });
 
 test("the dev server shows the draft of a coming-soon case at ?draft", async ({ page }) => {
-  await page.goto("/projects/agendo?draft");
+  await page.goto("/projects/modniy-ostriv?draft");
 
   await expect(page.getByRole("note")).toContainText("Draft");
   await expect(page.getByRole("heading", { level: 2, name: "Task" })).toBeVisible();
