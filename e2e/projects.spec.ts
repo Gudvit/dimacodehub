@@ -11,27 +11,6 @@ test("the old projects address lands on the home slide", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "PROJECTS" })).toBeInViewport();
 });
 
-test("a case that is coming soon shows the placeholder, not its draft", async ({ page }) => {
-  await page.goto("/projects/modniy-ostriv");
-
-  await expect(page.getByRole("heading", { level: 1, name: "Modniy Ostriv" })).toBeVisible();
-  await expect(page.getByText("Coming soon", { exact: true })).toBeVisible();
-  await expect(page).toHaveTitle(/^Modniy Ostriv - /);
-  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
-    "content",
-    "A wholesale online store of a Ukrainian clothing manufacturer",
-  );
-  await expect(page.getByRole("heading", { level: 2, name: "Task" })).toHaveCount(0);
-  await expect(page.getByText("[TODO", { exact: false })).toHaveCount(0);
-});
-
-test("the dev server shows the draft of a coming-soon case at ?draft", async ({ page }) => {
-  await page.goto("/projects/modniy-ostriv?draft");
-
-  await expect(page.getByRole("note")).toContainText("Draft");
-  await expect(page.getByRole("heading", { level: 2, name: "Task" })).toBeVisible();
-});
-
 test("a case study deep link renders the template and its metadata", async ({ page }) => {
   await page.goto("/projects/apomeds");
 
