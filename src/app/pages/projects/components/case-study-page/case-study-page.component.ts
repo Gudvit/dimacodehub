@@ -76,7 +76,7 @@ export class CaseStudyPageComponent {
       ...(study.task?.length ? [{ id: "task", text: "Task" }] : []),
       { id: "what-i-did", text: "What I did" },
       { id: "result", text: "Result" },
-      ...(study.lessons?.length ? [{ id: "lessons", text: "What I'd do differently" }] : []),
+      ...(study.lessons?.length ? [{ id: "lessons", text: "Takeaways" }] : []),
     ];
   });
 
